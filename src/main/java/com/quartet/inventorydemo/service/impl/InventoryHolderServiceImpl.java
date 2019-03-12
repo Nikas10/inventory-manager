@@ -4,10 +4,12 @@ import com.quartet.inventorydemo.model.InventoryHolder;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.InventoryHolderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service("InventoryHolderService")
 public class InventoryHolderServiceImpl implements InventoryHolderService {
 
     @Autowired

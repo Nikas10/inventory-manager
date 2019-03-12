@@ -20,7 +20,11 @@ public class InventoryHolder {
             joinColumns = @JoinColumn(name = "holderID", referencedColumnName = "holderID"),
             inverseJoinColumns = @JoinColumn(name = "roleID", referencedColumnName = "roleID")
     )
-    Set<Role> currentRoles;
+    private Set<Role> currentRoles;
+
+
+    @ManyToMany(mappedBy = "currentHolders")
+    private Set<Employee> employeesWithHolder;
 
     public InventoryHolder() {
     }
