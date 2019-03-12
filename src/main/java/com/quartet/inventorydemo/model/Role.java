@@ -25,6 +25,9 @@ public class Role {
     )
     private Set<InventoryPosition> roleInventoryPositions;
 
+    @ManyToMany(mappedBy = "currentRoles")
+    private Set<InventoryHolder> allHolders;
+
     public Role() {
     }
 

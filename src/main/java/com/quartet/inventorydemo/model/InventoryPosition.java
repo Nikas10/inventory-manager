@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
