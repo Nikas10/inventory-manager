@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,6 +17,9 @@ public class InventoryPosition {
 
     @Column(name = "name")
     private String name;
+
+    @ManyToMany(mappedBy = "roleInventoryPositions")
+    private Set<Role> rolesWithItem;
 
     public InventoryPosition() {
     }
