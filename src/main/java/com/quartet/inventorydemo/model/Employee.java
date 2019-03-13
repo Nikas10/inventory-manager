@@ -21,6 +21,11 @@ public class Employee {
     )
     private Set<InventoryHolder> currentHolders;
 
+    
+
+    @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
+    private Set<Request> employeeRequests;
+
     public Employee() {
     }
 
