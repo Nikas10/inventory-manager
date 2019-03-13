@@ -22,6 +22,9 @@ public class InventoryPosition {
     @ManyToMany(mappedBy = "roleInventoryPositions")
     private Set<Role> rolesWithItem;
 
+    @ManyToMany(mappedBy = "allPositions")
+    private Set<Request> allRequests;
+
     public InventoryPosition() {
     }
 
