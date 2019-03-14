@@ -18,12 +18,8 @@ public class Request {
     @Column(name = "status")
     String status;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "request_inventoryPosition",
-            joinColumns = @JoinColumn(name = "requestID", referencedColumnName = "requestID"),
-            inverseJoinColumns = @JoinColumn(name = "positionID", referencedColumnName = "positionID")
-    )
-    private Set<InventoryPosition> allPositions;
+    @OneToMany(mappedBy = "request", fetch = FetchType.EAGER)
+    private Set<Request_InventoryPosition> allPositions;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Employee creator;

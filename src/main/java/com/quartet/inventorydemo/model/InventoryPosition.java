@@ -22,8 +22,8 @@ public class InventoryPosition {
     @ManyToMany(mappedBy = "roleInventoryPositions")
     private Set<Role> rolesWithItem;
 
-    @ManyToMany(mappedBy = "allPositions")
-    private Set<Request> allRequests;
+    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.EAGER)
+    private Set<Request_InventoryPosition> allRequests;
 
     public InventoryPosition() {
     }
