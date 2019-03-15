@@ -23,5 +23,9 @@ public class Request_InventoryPosition implements Serializable {
 
 
     @Column(name = "amount")
-    Integer amount;
+    private Integer amount;
+
+    public void increaseAmount(Integer value) {
+        this.amount += value;
+    }
 }

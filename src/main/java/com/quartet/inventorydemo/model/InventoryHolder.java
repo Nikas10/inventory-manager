@@ -26,6 +26,9 @@ public class InventoryHolder {
     @ManyToMany(mappedBy = "currentHolders")
     private Set<Employee> employeesWithHolder;
 
+    @OneToMany(mappedBy = "inventoryHolder", fetch = FetchType.EAGER)
+    private Set<InventoryItem> holdedItems;
+
     public InventoryHolder() {
     }
 

@@ -25,6 +25,9 @@ public class InventoryPosition {
     @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.EAGER)
     private Set<Request_InventoryPosition> allRequests;
 
+    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.EAGER)
+    private Set<InventoryItem> currentTypeItems;
+
     public InventoryPosition() {
     }
 
