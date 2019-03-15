@@ -38,4 +38,8 @@ public class Account implements Serializable {
         this.admin = isadmin;
         this.email = email;
     }
+
+    public void setUid(UUID uid) {
+        this.uid = uid;
+    }
 }
