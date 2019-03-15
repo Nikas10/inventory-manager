@@ -8,8 +8,8 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "request", schema = "public")
-public class Request {
+@Table(name = "requisition", schema = "public")
+public class Requisition {
 
     @Id
     @Column(name = "requestID")
@@ -18,16 +18,16 @@ public class Request {
     @Column(name = "status")
     String status;
 
-    @OneToMany(mappedBy = "request", fetch = FetchType.EAGER)
-    private Set<Request_InventoryPosition> allPositions;
+    @OneToMany(mappedBy = "requisition", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Requisition_InventoryPosition> allPositions;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Employee creator;
 
-    public Request() {
+    public Requisition() {
     }
 
-    public Request(UUID requestID, String status) {
+    public Requisition(UUID requestID, String status) {
         this.requestID = requestID;
         this.status = status;
     }

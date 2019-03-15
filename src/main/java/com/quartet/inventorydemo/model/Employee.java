@@ -23,8 +23,8 @@ public class Employee {
 
 
 
-    @OneToMany(mappedBy = "creator", fetch = FetchType.EAGER)
-    private Set<Request> employeeRequests;
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Requisition> employeeRequisitions;
 
     public Employee() {
     }

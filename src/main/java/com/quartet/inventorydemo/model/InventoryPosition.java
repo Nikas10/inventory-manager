@@ -22,11 +22,19 @@ public class InventoryPosition {
     @ManyToMany(mappedBy = "roleInventoryPositions")
     private Set<Role> rolesWithItem;
 
-    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.EAGER)
-    private Set<Request_InventoryPosition> allRequests;
+    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Requisition_InventoryPosition> allRequests;
 
-    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<InventoryItem> currentTypeItems;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "bundleID")
+    private Set<InventoryPositionContents> bundleContent;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "positionID")
+    private Set<InventoryPositionContents> partOfBundles;
 
     public InventoryPosition() {
     }

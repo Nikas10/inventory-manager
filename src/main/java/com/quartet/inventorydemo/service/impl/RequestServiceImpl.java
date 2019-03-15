@@ -1,7 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
-import com.quartet.inventorydemo.model.Employee;
-import com.quartet.inventorydemo.model.Request;
+import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.repository.RequestRepository;
 import com.quartet.inventorydemo.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +16,23 @@ public class RequestServiceImpl implements RequestService {
     RequestRepository requestRepo;
 
     @Override
-    public List<Request> getAll() {
+    public List<Requisition> getAll() {
         return requestRepo.findAll();
     }
 
     @Override
-    public Request getByEmployeeID(UUID requestID) {
+    public Requisition getByEmployeeID(UUID requestID) {
         return requestRepo.findByRequestID(requestID);
     }
 
     @Override
-    public Request add(Request request) {
-        request.setRequestID(UUID.randomUUID());
-        return requestRepo.saveAndFlush(request);
+    public Requisition add(Requisition requisition) {
+        requisition.setRequestID(UUID.randomUUID());
+        return requestRepo.saveAndFlush(requisition);
     }
 
     @Override
-    public Request update(Request request) {
-        return requestRepo.saveAndFlush(request);
+    public Requisition update(Requisition requisition) {
+        return requestRepo.saveAndFlush(requisition);
     }
 }
