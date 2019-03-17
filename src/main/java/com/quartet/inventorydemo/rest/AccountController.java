@@ -142,7 +142,4 @@ public class AccountController {
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
     }
-
-
-
 }
