@@ -36,7 +36,4 @@ public class InventoryHolder {
         this.holderID = holderID;
     }
 
-    public void setHolderID(UUID holderID) {
-        this.holderID = holderID;
-    }
 }

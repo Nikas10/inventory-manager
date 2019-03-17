@@ -33,7 +33,4 @@ public class Employee {
         this.employeeID = employeeID;
     }
 
-    public void setHolderID(UUID holderID) {
-        this.employeeID = employeeID;
-    }
 }

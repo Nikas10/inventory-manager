@@ -39,7 +39,4 @@ public class Account implements Serializable {
         this.email = email;
     }
 
-    public void setUid(UUID uid) {
-        this.uid = uid;
-    }
 }

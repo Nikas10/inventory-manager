@@ -3,7 +3,6 @@ package com.quartet.inventorydemo.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,9 +41,5 @@ public class InventoryPosition {
     public InventoryPosition(UUID positionID, String name) {
         this.positionID = positionID;
         this.name = name;
-    }
-
-    public void setPositionID(UUID positionID) {
-        this.positionID = positionID;
     }
 }

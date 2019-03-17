@@ -28,7 +28,7 @@ public class EmployeeServiceImpl  implements EmployeeService {
 
     @Override
     public Employee add(Employee holder) {
-        holder.setHolderID(UUID.randomUUID());
+        holder.setEmployeeID(UUID.randomUUID());
         return employeeRepo.saveAndFlush(holder);
     }
 

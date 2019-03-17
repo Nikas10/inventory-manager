@@ -32,7 +32,5 @@ public class Requisition {
         this.status = status;
     }
 
-    public void setRequestID(UUID requestID) {
-        this.requestID = requestID;
-    }
+
 }
