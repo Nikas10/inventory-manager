@@ -24,7 +24,7 @@ public class InventoryHolder {
 
 
     @ManyToMany(mappedBy = "currentHolders")
-    private Set<Employee> employeesWithHolder;
+    private Set<Account> employeesWithHolder;
 
     @OneToMany(mappedBy = "inventoryHolder", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<InventoryItem> holdedItems;
