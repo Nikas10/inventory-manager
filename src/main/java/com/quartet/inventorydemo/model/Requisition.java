@@ -22,7 +22,7 @@ public class Requisition {
     private Set<Requisition_InventoryPosition> allPositions;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private Employee creator;
+    private Account creator;
 
     public Requisition() {
     }
@@ -32,7 +32,5 @@ public class Requisition {
         this.status = status;
     }
 
-    public void setRequestID(UUID requestID) {
-        this.requestID = requestID;
-    }
+
 }

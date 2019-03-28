@@ -36,7 +36,4 @@ public class Role {
         this.name = name;
     }
 
-    public void setRoleID(UUID roleID) {
-        this.roleID = roleID;
-    }
 }

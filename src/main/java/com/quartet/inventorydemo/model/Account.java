@@ -2,7 +2,10 @@ package com.quartet.inventorydemo.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Entity
@@ -16,17 +19,26 @@ public class Account implements Serializable {
     @Column (name = "login")
     private String login;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column (name = "pass")
     private String pass;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column (name = "admin")
-    private Boolean admin;
+    private Boolean admin = false;
 
     @Column (name = "email")
     private String email;
 
-    @Column (name = "is_active")
-    private Boolean isActive;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "employee_holder",
+            joinColumns = @JoinColumn(name = "employeeID", referencedColumnName = "uid"),
+            inverseJoinColumns = @JoinColumn(name = "holderID", referencedColumnName = "holderID")
+    )
+    private Set<InventoryHolder> currentHolders;
+
+    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Requisition> employeeRequisitions;
 
     public Account() {
     }
@@ -39,7 +51,4 @@ public class Account implements Serializable {
         this.email = email;
     }
 
-    public void setUid(UUID uid) {
-        this.uid = uid;
-    }
 }
