@@ -36,6 +36,9 @@ public class InventoryPosition {
     @JoinColumn(name = "positionID")
     private Set<InventoryPositionContents> partOfBundles;
 
+    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Requisition_InventoryPosition> allPositions;
+
     public InventoryPosition() {
     }
 
