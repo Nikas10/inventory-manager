@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,6 +18,15 @@ public class Requisition {
 
     @Column(name = "status")
     String status;
+
+    @Column (name = "creation_date")
+    private Date creationDate;
+
+    @Column (name = "relevance_duration")
+    private Long relevanceDuration;
+
+    @Column (name = "description")
+    private String description;
 
     @OneToMany(mappedBy = "requisition", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Requisition_InventoryPosition> allPositions;

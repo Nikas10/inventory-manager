@@ -1,6 +1,5 @@
 package com.quartet.inventorydemo.service;
 
-import com.quartet.inventorydemo.model.Employee;
 import com.quartet.inventorydemo.model.Requirement;
 
 import java.util.List;
