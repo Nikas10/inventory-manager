@@ -22,8 +22,8 @@ public class Requisition {
     @Column (name = "creation_date")
     private Date creationDate;
 
-    @Column (name = "relevance_duration")
-    private Long relevanceDuration;
+    @Column (name = "due_date")
+    private Date dueDate;
 
     @Column (name = "description")
     private String description;
