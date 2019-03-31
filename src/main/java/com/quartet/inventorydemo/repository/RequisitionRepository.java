@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
 
-public interface RequestRepository extends JpaRepository<Requisition, UUID> {
+public interface RequisitionRepository extends JpaRepository<Requisition, UUID> {
     List<Requisition> findAll();
     Requisition findByRequestID(UUID requestID);
 }

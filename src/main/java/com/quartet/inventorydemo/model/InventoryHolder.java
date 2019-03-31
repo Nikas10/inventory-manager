@@ -15,6 +15,9 @@ public class InventoryHolder {
     @Column(name = "holderID")
     private UUID holderID;
 
+    @Column (name = "description")
+    private String description;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "holder_role",
             joinColumns = @JoinColumn(name = "holderID", referencedColumnName = "holderID"),
@@ -24,7 +27,7 @@ public class InventoryHolder {
 
 
     @ManyToMany(mappedBy = "currentHolders")
-    private Set<Employee> employeesWithHolder;
+    private Set<Account> employeesWithHolder;
 
     @OneToMany(mappedBy = "inventoryHolder", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<InventoryItem> holdedItems;
@@ -36,7 +39,4 @@ public class InventoryHolder {
         this.holderID = holderID;
     }
 
-    public void setHolderID(UUID holderID) {
-        this.holderID = holderID;
-    }
 }
