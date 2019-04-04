@@ -12,9 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("com.quartet.inventorydemo")
 @EnableProcessApplication
 public class InventoryDemoApplication {
-
-	private static final String AUTH_SERVER = "localhost:8080";
-
 	public static void main(String[] args) {
 		SpringApplication.run(InventoryDemoApplication.class, args);
 	}

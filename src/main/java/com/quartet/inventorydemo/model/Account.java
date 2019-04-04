@@ -14,6 +14,7 @@ import lombok.Data;
 public class Account implements Serializable {
     @Id
     @Column(name = "uid")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID uid;
 
     @Column (name = "login")
@@ -23,7 +24,7 @@ public class Account implements Serializable {
     @Column (name = "pass")
     private String pass;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column (name = "admin")
     private Boolean admin = false;
 
@@ -39,9 +40,11 @@ public class Account implements Serializable {
     @Column (name = "last_name")
     private String lastName;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column (name = "active")
-    private Boolean active = false;
+    private Boolean active = true;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "employee_holder",
             joinColumns = @JoinColumn(name = "employeeID", referencedColumnName = "uid"),
@@ -49,6 +52,7 @@ public class Account implements Serializable {
     )
     private Set<InventoryHolder> currentHolders;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Requisition> employeeRequisitions;
 
