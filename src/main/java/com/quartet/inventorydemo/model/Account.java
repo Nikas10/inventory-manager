@@ -1,12 +1,12 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
 @Entity
 @Data
@@ -31,17 +31,17 @@ public class Account implements Serializable {
     @Column (name = "email")
     private String email;
 
-    @Column (name = "first_name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column (name = "middle_name")
+    @Column(name = "middle_name")
     private String middleName;
 
-    @Column (name = "last_name")
+    @Column(name = "last_name")
     private String lastName;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column (name = "active")
+    @Column(name = "active")
     private Boolean active = true;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

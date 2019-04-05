@@ -10,9 +10,8 @@ import java.io.Serializable;
 @Table(name = "requirement_inventory_position", schema = "public")
 public class Requirement_InventoryPosition implements Serializable {
 
-    public Requirement_InventoryPosition() {
-    }
-
+    @Column(name = "value")
+    String value;
     @Id
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Requisition requirement;
@@ -21,6 +20,6 @@ public class Requirement_InventoryPosition implements Serializable {
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private InventoryPosition inventoryPosition;
 
-    @Column(name = "value")
-    String value;
+    public Requirement_InventoryPosition() {
+    }
 }

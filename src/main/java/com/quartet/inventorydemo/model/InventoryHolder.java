@@ -15,7 +15,7 @@ public class InventoryHolder {
     @Column(name = "holderID")
     private UUID holderID;
 
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

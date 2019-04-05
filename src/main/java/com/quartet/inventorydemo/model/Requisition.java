@@ -19,13 +19,13 @@ public class Requisition {
     @Column(name = "status")
     String status;
 
-    @Column (name = "creation_date")
+    @Column(name = "creation_date")
     private Date creationDate;
 
-    @Column (name = "due_date")
+    @Column(name = "due_date")
     private Date dueDate;
 
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
 
     @OneToMany(mappedBy = "requisition", fetch = FetchType.LAZY, orphanRemoval = true)

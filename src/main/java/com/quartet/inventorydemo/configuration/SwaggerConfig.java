@@ -74,7 +74,7 @@ public class SwaggerConfig {
         authorizationScopeList.add(new AuthorizationScope("write", "access all"));
 
         List<GrantType> grantTypes = new ArrayList<>();
-        GrantType creGrant = new ResourceOwnerPasswordCredentialsGrant(authLink+"/oauth/token");
+        GrantType creGrant = new ResourceOwnerPasswordCredentialsGrant(authLink + "/oauth/token");
 
         grantTypes.add(creGrant);
 
