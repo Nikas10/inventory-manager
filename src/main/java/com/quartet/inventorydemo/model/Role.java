@@ -18,6 +18,9 @@ public class Role {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "role_inventoryPosition",
             joinColumns = @JoinColumn(name = "roleID", referencedColumnName = "roleID"),
@@ -36,7 +39,4 @@ public class Role {
         this.name = name;
     }
 
-    public void setRoleID(UUID roleID) {
-        this.roleID = roleID;
-    }
 }

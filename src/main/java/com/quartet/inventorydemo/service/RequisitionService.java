@@ -5,7 +5,7 @@ import com.quartet.inventorydemo.model.Requisition;
 import java.util.List;
 import java.util.UUID;
 
-public interface RequestService {
+public interface RequisitionService {
     List<Requisition> getAll();
     Requisition getByEmployeeID(UUID requestID);
     Requisition add(Requisition requisition);

@@ -3,7 +3,6 @@ package com.quartet.inventorydemo.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,6 +17,9 @@ public class InventoryPosition {
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
+    private String description;
 
     @ManyToMany(mappedBy = "roleInventoryPositions")
     private Set<Role> rolesWithItem;
@@ -36,15 +38,14 @@ public class InventoryPosition {
     @JoinColumn(name = "positionID")
     private Set<InventoryPositionContents> partOfBundles;
 
+    @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Requisition_InventoryPosition> allPositions;
+
     public InventoryPosition() {
     }
 
     public InventoryPosition(UUID positionID, String name) {
         this.positionID = positionID;
         this.name = name;
-    }
-
-    public void setPositionID(UUID positionID) {
-        this.positionID = positionID;
     }
 }

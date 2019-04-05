@@ -61,7 +61,7 @@ public class WelcomeController {
         JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(report);
 
         InputStream inputStream =
-                new ClassPathResource("Simple_Blue2.jrxml",
+                new ClassPathResource("report/Simple_Blue2.jrxml",
                         this.getClass().getClassLoader()).getInputStream();
         JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, jrBeanCollectionDataSource);

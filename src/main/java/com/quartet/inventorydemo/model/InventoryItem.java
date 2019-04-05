@@ -30,7 +30,4 @@ public class InventoryItem implements Serializable {
     @Column(name = "amount")
     Integer amount;
 
-    public void setInventoryItemID(UUID inventoryItemID) {
-        this.inventoryItemID = inventoryItemID;
-    }
 }

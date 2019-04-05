@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -37,7 +36,4 @@ public class InventoryPositionContents implements Serializable {
         this.amount = amount;
     }
 
-    public void setPositionID(UUID positionID) {
-        this.positionID = positionID;
-    }
 }

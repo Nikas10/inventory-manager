@@ -36,7 +36,7 @@ public class DetailsServiceImpl implements DetailsService {
             //TODO: Write exception handler
         }
         Account account  = accountRepository.findByLogin(username);
-        if (account!=null && account.getIsActive().equals(true))
+        if (account != null)
         {
             return new org.springframework.security.core.userdetails.User(account.getLogin(),
                     account.getPass(),
