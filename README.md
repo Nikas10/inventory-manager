@@ -3,8 +3,12 @@ enterprise-inventory-manager-demo
 
 # Getting started
 cmd -> git clone -b develop https://github.com/Nikas10/inventory-manager
+
 replace develop with the branch you need.
+
 build -> mvm clean install -Dmaven.test.skip=false
+
+Create db and tables in Postgre according to resources/schema.sql and application.properties
 
 # Workflow
 All unsafe changes (feature developement, bugfixes and stuff) are merged to 'develop' branch.

@@ -36,7 +36,6 @@ public class AccountController {
         Account acc = accSrv.getByLogin(login);
         if (acc==null)
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST,"No user found");
-        acc.setPass("");
         return Response.createResponse(acc);
     }
 
@@ -52,7 +51,6 @@ public class AccountController {
         if(principal == null)
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Wrong or empty access token");
         Account acc = accSrv.getByLogin(principal.getName());
-        acc.setPass("");
         return Response.createResponse(acc);
     }
 
@@ -76,7 +74,6 @@ public class AccountController {
         {
             return Response.createErrorResponse(HttpStatus.NO_CONTENT,"Not found");
         }
-        res.setPass("");
         return Response.createResponse(res);
     }
 
@@ -95,7 +92,7 @@ public class AccountController {
         String login  = account.getLogin();
         String email = account.getEmail();
 
-        if (login.equals("") || (email.equals("")) || (account.getPass().equals("")))
+        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
         Account check = accSrv.getByLogin(login);
 
@@ -126,7 +123,7 @@ public class AccountController {
         String login  = account.getLogin();
         String email = account.getEmail();
 
-        if (login.equals("") || (email.equals("")) || (account.getPass().equals("")))
+        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
         Account check = accSrv.getByLogin(login);
 
@@ -142,7 +139,4 @@ public class AccountController {
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
     }
-
-
-
 }
