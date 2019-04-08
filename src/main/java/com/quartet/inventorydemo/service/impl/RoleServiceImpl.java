@@ -1,6 +1,5 @@
 package com.quartet.inventorydemo.service.impl;
 
-import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RoleRepository;
 import com.quartet.inventorydemo.service.RoleService;
@@ -13,10 +12,10 @@ import java.util.UUID;
 
 @Service("RoleService")
 @Transactional
-public class RoleServiceImlementation implements RoleService {
+public class RoleServiceImpl implements RoleService {
 
     @Autowired
-    RoleRepository roleRepo;
+    private RoleRepository roleRepo;
 
     @Override
     public List<Role> getAll() {
@@ -24,8 +23,13 @@ public class RoleServiceImlementation implements RoleService {
     }
 
     @Override
-    public Role getByPositionID(UUID roleID) {
+    public Role getByRoleID(UUID roleID) {
         return roleRepo.findByRoleID(roleID);
+    }
+
+    @Override
+    public List<Role> findByRoleName(String roleName) {
+        return roleRepo.findByName(roleName);
     }
 
     @Override
@@ -37,5 +41,10 @@ public class RoleServiceImlementation implements RoleService {
     @Override
     public Role update(Role role) {
         return roleRepo.saveAndFlush(role);
+    }
+
+    @Override
+    public void remove(Role role) {
+        roleRepo.delete(role);
     }
 }

@@ -11,4 +11,6 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     @Override
     List<Role> findAll(Sort sort);
     Role findByRoleID(UUID roleID);
+
+    List<Role> findByName(String name);
 }
