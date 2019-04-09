@@ -25,8 +25,8 @@ public class Account implements Serializable {
     private String pass;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column (name = "admin")
-    private Boolean admin = false;
+    @Column (name = "role")
+    private String role = "user";
 
     @Column (name = "email")
     private String email;
@@ -59,11 +59,11 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public Account(UUID uid, String name, String pass, Boolean isadmin, String email) {
+    public Account(UUID uid, String name, String pass, String role, String email) {
         this.uid = uid;
         this.login = name;
         this.pass = pass;
-        this.admin = isadmin;
+        this.role = role;
         this.email = email;
     }
 

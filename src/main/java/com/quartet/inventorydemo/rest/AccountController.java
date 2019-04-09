@@ -104,7 +104,7 @@ public class AccountController {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
 
         //acc manage logic:
-        account.setAdmin(false);
+        account.setRole("user");
         account.setPass(passwordEncoder.encode(account.getPass()));
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
@@ -112,7 +112,7 @@ public class AccountController {
 
     /**
      * Admin register method
-     * Admin Accounts ais available to register here
+     * Admin Accounts are available to register here
      *
      * @param account
      * @return
@@ -134,9 +134,41 @@ public class AccountController {
         if (check!=null)
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
         //acc manage logic:
-        account.setAdmin(true);
+        account.setRole("admin");
         account.setPass(passwordEncoder.encode(account.getPass()));
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
     }
+
+    /**
+     * Staff register method
+     * Staff Accounts are available to register here
+     *
+     * @param account
+     * @return
+     */
+    @PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/staff/register", method = RequestMethod.POST)
+    public ResponseEntity<?> registerStaff(@RequestBody Account account) {
+        //acc check logic here
+        String login  = account.getLogin();
+        String email = account.getEmail();
+
+        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
+        Account check = accSrv.getByLogin(login);
+
+        if (check!=null)
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Login already in use.");
+        check = accSrv.getByEmail(email);
+
+        if (check!=null)
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
+        //acc manage logic:
+        account.setRole("staff");
+        account.setPass(passwordEncoder.encode(account.getPass()));
+        accSrv.add(account); //flush empty links object, receive new one
+        return Response.createResponse(HttpStatus.OK);
+    }
+
 }
