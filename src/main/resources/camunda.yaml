@@ -5,3 +5,5 @@ camunda.bpm:
     firstName: Admin AAA
   filter:
     create: All tasks
+  webapp:
+    index-redirect-enabled: false
