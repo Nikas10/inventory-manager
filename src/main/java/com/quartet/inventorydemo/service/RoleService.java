@@ -10,7 +10,7 @@ public interface RoleService {
 
     Role getByRoleID(UUID roleID);
 
-    List<Role> findByRoleName(String roleName);
+    List<Role> getByRoleName(String roleName);
     Role add(Role role);
     Role update(Role role);
 

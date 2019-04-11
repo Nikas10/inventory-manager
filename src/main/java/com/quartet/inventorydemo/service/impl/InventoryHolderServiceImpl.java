@@ -13,7 +13,7 @@ import java.util.UUID;
 public class InventoryHolderServiceImpl implements InventoryHolderService {
 
     @Autowired
-    InventoryHolderRepository invHoldRepo;
+    private InventoryHolderRepository invHoldRepo;
 
     @Override
     public List<InventoryHolder> getAll() {
@@ -26,6 +26,11 @@ public class InventoryHolderServiceImpl implements InventoryHolderService {
     }
 
     @Override
+    public List<InventoryHolder> getByHolderName(String holderName) {
+        return invHoldRepo.findByName(holderName);
+    }
+
+    @Override
     public InventoryHolder add(InventoryHolder holder) {
         holder.setHolderID(UUID.randomUUID());
         return invHoldRepo.saveAndFlush(holder);
@@ -34,5 +39,10 @@ public class InventoryHolderServiceImpl implements InventoryHolderService {
     @Override
     public InventoryHolder update(InventoryHolder holder) {
         return invHoldRepo.saveAndFlush(holder);
+    }
+
+    @Override
+    public void remove(InventoryHolder holder) {
+        invHoldRepo.delete(holder);
     }
 }

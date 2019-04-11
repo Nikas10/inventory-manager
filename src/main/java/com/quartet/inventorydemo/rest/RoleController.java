@@ -22,6 +22,7 @@ public class RoleController {
     @Qualifier("RoleService")
     private RoleService roleService;
 
+    @PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<?> getRole(@PathVariable("uuid") String stringUuid) {
         try {
@@ -38,7 +39,7 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createRole(@RequestBody Role role) {
         String requestRoleName = role.getName();
@@ -51,11 +52,11 @@ public class RoleController {
                 return Response.createResponse(result);
             }
         } else {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Role with same name already exists.");
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Role name is not correct.");
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRole(@PathVariable("uuid") String stringUuid) {
         try {
@@ -74,7 +75,7 @@ public class RoleController {
     }
 
     private boolean checkIfRoleWithSameNameExists(String roleName) {
-        List<Role> byRoleName = roleService.findByRoleName(roleName);   //TODO add constraint to db for name uniqueness
+        List<Role> byRoleName = roleService.getByRoleName(roleName);   //TODO add constraint to db for name uniqueness
         return !byRoleName.isEmpty();   //if list is not empty, then role with same name already exists
     }
 }

@@ -15,6 +15,9 @@ public class InventoryHolder {
     @Column(name = "holderID")
     private UUID holderID;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "description")
     private String description;
 
@@ -38,5 +41,4 @@ public class InventoryHolder {
     public InventoryHolder(UUID holderID) {
         this.holderID = holderID;
     }
-
 }

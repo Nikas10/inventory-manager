@@ -41,6 +41,4 @@ public class Requisition {
         this.requestID = requestID;
         this.status = status;
     }
-
-
 }
