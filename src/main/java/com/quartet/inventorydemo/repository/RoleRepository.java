@@ -12,7 +12,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     @Override
     List<Role> findAll(Sort sort);
 
-    Set<Role> findAll(Iterable<UUID> ids);
+    Set<Role> findByRoleIDIn(Iterable<UUID> ids);
 
     Role findByRoleID(UUID roleID);
 

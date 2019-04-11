@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service("InventoryHolderService")
@@ -23,6 +24,11 @@ public class InventoryHolderServiceImpl implements InventoryHolderService {
     @Override
     public InventoryHolder getByHolderID(UUID holderID) {
         return invHoldRepo.findByHolderID(holderID);
+    }
+
+    @Override
+    public Set<InventoryHolder> getByHolderIDs(Set<UUID> holderIDs) {
+        return invHoldRepo.findByHolderIDIn(holderIDs);
     }
 
     @Override

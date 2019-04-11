@@ -1,29 +1,34 @@
 package com.quartet.inventorydemo.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.*;
 
 @Data
-public class AddDeleteLinksForm {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private final Set<UUID> addByIds = new HashSet<>();
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private final Set<UUID> removeByIds = new HashSet<>();
+public class CreateAndDeleteLinksForm {
     private List<String> add;       //for adding associations by id
     private List<String> remove;    //for removing associations by id
 
-    public Set<UUID> getAddByIds() {
-        addByIds.clear();
-        addByIds.addAll(convertFromString(this.add));
-        return addByIds;
+    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private final Set<UUID> addIds = new HashSet<>();
+
+    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private final Set<UUID> removeIds = new HashSet<>();
+
+    public Set<UUID> getAddIds() {
+        addIds.clear();
+        addIds.addAll(convertFromString(this.add));
+        return addIds;
     }
 
-    public Set<UUID> getRemoveByIds() {
-        removeByIds.clear();
-        removeByIds.addAll(convertFromString(this.remove));
-        return removeByIds;
+    public Set<UUID> getRemoveIds() {
+        removeIds.clear();
+        removeIds.addAll(convertFromString(this.remove));
+        return removeIds;
     }
 
     private Set<UUID> convertFromString(Collection<String> stringUuids) {

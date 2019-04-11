@@ -30,7 +30,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Set<Role> getByRoleIDs(Set<UUID> uuidSet) {
-        return roleRepo.findAll(uuidSet);
+        return roleRepo.findByRoleIDIn(uuidSet);
     }
 
     @Override

@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface InventoryItemRepository extends JpaRepository<InventoryItem, UUID> {
     List<InventoryItem> findAll();
 
-    Set<InventoryItem> findAll(Iterable<UUID> ids);
+    Set<InventoryItem> findByInventoryItemIDIn(Iterable<UUID> ids);
     InventoryItem findByInventoryItemID(UUID inventoryItemID);
 }

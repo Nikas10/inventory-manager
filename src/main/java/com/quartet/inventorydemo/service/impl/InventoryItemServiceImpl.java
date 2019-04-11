@@ -29,7 +29,7 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
     @Override
     public Set<InventoryItem> getByInventoryItemIDs(Set<UUID> itemIDs) {
-        return invItemRepo.findAll(itemIDs);
+        return invItemRepo.findByInventoryItemIDIn(itemIDs);
     }
 
     @Override

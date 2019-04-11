@@ -26,7 +26,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Set<Account> getByAccountIDs(Set<UUID> uuidSet) {
-        return accRepo.findAll(uuidSet);
+        return accRepo.findByUidIn(uuidSet);
     }
 
     @Override
