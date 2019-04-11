@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service("RoleService")
@@ -25,6 +26,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getByRoleID(UUID roleID) {
         return roleRepo.findByRoleID(roleID);
+    }
+
+    @Override
+    public Set<Role> getByRoleIDs(Set<UUID> uuidSet) {
+        return roleRepo.findAll(uuidSet);
     }
 
     @Override

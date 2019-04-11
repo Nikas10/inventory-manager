@@ -26,11 +26,7 @@ public class RoleController {
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<?> getRole(@PathVariable("uuid") String stringUuid) {
         try {
-            UUID uuid = UUID.fromString(stringUuid);
-            Role byRoleID = roleService.getByRoleID(uuid);
-            if (byRoleID == null) {
-                throw new NotFoundException("no role with uuid: " + stringUuid + " found");
-            }
+            Role byRoleID = getRoleById(stringUuid);
             return Response.createResponse(byRoleID);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -60,11 +56,7 @@ public class RoleController {
     @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRole(@PathVariable("uuid") String stringUuid) {
         try {
-            UUID uuid = UUID.fromString(stringUuid);
-            Role byRoleID = roleService.getByRoleID(uuid);
-            if (byRoleID == null) {
-                throw new NotFoundException("no role with uuid: " + stringUuid + " found");
-            }
+            Role byRoleID = getRoleById(stringUuid);
             roleService.remove(byRoleID);
             return Response.createResponse();
         } catch (IllegalArgumentException e) {
@@ -72,6 +64,15 @@ public class RoleController {
         } catch (NotFoundException e) {
             return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
+    }
+
+    private Role getRoleById(String stringUuid) throws NotFoundException {
+        UUID uuid = UUID.fromString(stringUuid);
+        Role byRoleID = roleService.getByRoleID(uuid);
+        if (byRoleID == null) {
+            throw new NotFoundException("no role with uuid: " + stringUuid + " found");
+        }
+        return byRoleID;
     }
 
     private boolean checkIfRoleWithSameNameExists(String roleName) {
