@@ -5,7 +5,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 
 import java.util.Map;
 
-public class LogVariables implements JavaDelegate {
+public final class LogVariables implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) {
         String id = execution.getProcessInstanceId();
