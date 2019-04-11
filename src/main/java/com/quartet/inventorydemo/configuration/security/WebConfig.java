@@ -16,6 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/", "/home.html");
+        registry.addRedirectViewController("/camunda/app", "/app/admin/default");
     }
 
     @Autowired

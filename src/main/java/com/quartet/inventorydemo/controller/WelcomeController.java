@@ -33,7 +33,7 @@ public class WelcomeController {
 
     private List<String> tasks = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
 
-    @GetMapping("/")
+    @GetMapping("/welcome")
     public String main(Model model) {
         model.addAttribute("message", message);
         model.addAttribute("tasks", tasks);
