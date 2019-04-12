@@ -36,7 +36,7 @@ public class DetailsServiceImpl implements DetailsService {
             //TODO: Write exception handler
         }
         Account account  = accountRepository.findByLogin(username);
-        if (account!=null && account.getIsActive().equals(true))
+        if (account != null)
         {
             return new org.springframework.security.core.userdetails.User(account.getLogin(),
                     account.getPass(),
@@ -50,8 +50,11 @@ public class DetailsServiceImpl implements DetailsService {
 
     private Collection<? extends GrantedAuthority> getGrantedAuthorities(Account user) {
         Collection<? extends GrantedAuthority> authorities;
-        if (user.getAdmin()) {
-            authorities = AuthorityUtils.createAuthorityList("ADMIN", "USER");
+        if (("admin").equals(user.getRole())) {
+            authorities = AuthorityUtils.createAuthorityList("ADMIN", "USER", "STAFF");
+        } else
+        if (("staff").equals(user.getRole())) {
+            authorities = AuthorityUtils.createAuthorityList("USER", "STAFF");
         } else {
             authorities = AuthorityUtils.createAuthorityList("USER");
         }
