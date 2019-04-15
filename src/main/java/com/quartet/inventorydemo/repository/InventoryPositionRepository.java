@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface InventoryPositionRepository extends JpaRepository<InventoryPosition, UUID> {
     List<InventoryPosition> findAll();
     InventoryPosition findByPositionID(UUID positionID);
+    InventoryPosition findByName(String name);
 }

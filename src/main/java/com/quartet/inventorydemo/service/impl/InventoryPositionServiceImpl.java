@@ -15,7 +15,7 @@ import java.util.UUID;
 public class InventoryPositionServiceImpl implements InventoryPositionService {
 
     @Autowired
-    InventoryPositionRepository positionRepo;
+    private InventoryPositionRepository positionRepo;
 
     @Override
     public List<InventoryPosition> getAll() {
@@ -25,6 +25,11 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     @Override
     public InventoryPosition getByPositionID(UUID positionID) {
         return positionRepo.findByPositionID(positionID);
+    }
+
+    @Override
+    public InventoryPosition getByName(String name) {
+        return positionRepo.findByName(name);
     }
 
     @Override

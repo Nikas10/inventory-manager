@@ -11,7 +11,7 @@ import java.util.UUID;
 @Table(name = "requirement", schema = "public")
 public class Requirement {
     @Id
-    @Column(name = "employeeID")
+    @Column(name = "requirementID")
     private UUID requirementID;
 
     @Column(name = "name")
@@ -20,8 +20,10 @@ public class Requirement {
     @OneToMany(mappedBy = "requirement", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Requirement_InventoryPosition> allPositions;
 
-    public Requirement(UUID requirementID) {
+    public Requirement(UUID requirementID, String name) {
+
         this.requirementID = requirementID;
+        this.name = name;
     }
 
     public void setRequirementID(UUID requirementID) {

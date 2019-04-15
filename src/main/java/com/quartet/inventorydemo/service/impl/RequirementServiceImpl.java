@@ -13,7 +13,7 @@ import java.util.UUID;
 public class RequirementServiceImpl implements RequirementService {
 
     @Autowired
-    RequirementRepository requirementRepo;
+    private RequirementRepository requirementRepo;
 
     @Override
     public List<Requirement> getAll() {
@@ -23,6 +23,11 @@ public class RequirementServiceImpl implements RequirementService {
     @Override
     public Requirement getByRequirementID(UUID employeeID) {
         return requirementRepo.findByRequirementID(employeeID);
+    }
+
+    @Override
+    public Requirement getByRequirementName(String name) {
+        return requirementRepo.findByName(name);
     }
 
     @Override
