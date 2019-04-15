@@ -1,6 +1,8 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.model.InventoryHolder;
+import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.InventoryHolderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,10 @@ public class InventoryHolderServiceImpl implements InventoryHolderService {
 
     @Override
     public void remove(InventoryHolder holder) {
+        Set<InventoryItem> holdedItems = holder.getHoldedItems();
+        if (!holdedItems.isEmpty()) {
+            throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
+        }
         invHoldRepo.delete(holder);
     }
 }

@@ -1,5 +1,8 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.model.InventoryItem;
+import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RoleRepository;
 import com.quartet.inventorydemo.service.RoleService;
@@ -51,6 +54,15 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void remove(Role role) {
+        Set<InventoryPosition> roleInventoryPositions = role.getRoleInventoryPositions();
+        for (InventoryPosition roleInventoryPosition : roleInventoryPositions) {
+            Set<InventoryItem> currentTypeItems = roleInventoryPosition.getCurrentTypeItems();
+            if (!currentTypeItems.isEmpty()) {
+                throw new DeletionNotSupportedException("can not delete role, while it is connected to positions with real items");
+            }
+        }
         roleRepo.delete(role);
     }
+
+
 }

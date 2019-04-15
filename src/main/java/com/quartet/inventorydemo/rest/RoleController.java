@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.model.InventoryHolder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class RoleController {
     @Qualifier("InventoryPositionService")
     private InventoryPositionService inventoryPositionService;
 
-    @PreAuthorize("hasAuthority('USER')")
+    //@PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<?> getRole(@PathVariable("uuid") String stringUuid) {
         try {
@@ -49,7 +49,7 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('STAFF')")
+    //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createRole(@RequestBody Role role) {
         String requestRoleName = role.getName();
@@ -65,7 +65,7 @@ public class RoleController {
     }
 
 
-    @PreAuthorize("hasAuthority('STAFF')")
+    //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRole(@PathVariable("uuid") String stringUuid) {
         try {
@@ -76,10 +76,26 @@ public class RoleController {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
         } catch (NotFoundException e) {
             return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (DeletionNotSupportedException e) {
+            return Response.createErrorResponse(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS, e.getMessage());
         }
     }
 
-    @PreAuthorize("hasAuthority('STAFF')")
+    //@PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/{uuid}/holder", method = RequestMethod.GET)
+    public ResponseEntity<?> getRoleLinksToInventoryHolders(@PathVariable("uuid") String stringUuid) {
+        try {
+            Role roleById = getRoleById(stringUuid);
+            Set<InventoryHolder> inventoryHolders = roleById.getAllHolders();
+            return Response.createResponse(inventoryHolders);
+        } catch (IllegalArgumentException e) {
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
+        } catch (NotFoundException e) {
+            return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{uuid}/holder", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateRoleLinksToInventoryHolders(@PathVariable("uuid") String stringUuid,
                                                                @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -96,6 +112,9 @@ public class RoleController {
             inventoryHolders.removeAll(removeHolders);
 
             Role update = roleService.update(roleById);
+            for (InventoryHolder addHolder : addHolders) {
+                inventoryHolderService.update(addHolder);
+            }
             return Response.createResponse(update);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -104,7 +123,21 @@ public class RoleController {
         }
     }
 
-    @PreAuthorize("hasAuthority('STAFF')")
+    //@PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/{uuid}/position", method = RequestMethod.GET)
+    public ResponseEntity<?> getRoleLinksToInventoryPosition(@PathVariable("uuid") String stringUuid) {
+        try {
+            Role roleById = getRoleById(stringUuid);
+            Set<InventoryPosition> roleInventoryPositions = roleById.getRoleInventoryPositions();
+            return Response.createResponse(roleInventoryPositions);
+        } catch (IllegalArgumentException e) {
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
+        } catch (NotFoundException e) {
+            return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{uuid}/position", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateRoleLinksToInventoryPosition(@PathVariable("uuid") String stringUuid,
                                                                 @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -139,7 +172,7 @@ public class RoleController {
     }
 
     private boolean checkIfRoleWithSameNameExists(String roleName) {
-        List<Role> byRoleName = roleService.getByRoleName(roleName);   //TODO add constraint to db for name uniqueness
+        List<Role> byRoleName = roleService.getByRoleName(roleName);
         return !byRoleName.isEmpty();   //if list is not empty, then role with same name already exists
     }
 }
