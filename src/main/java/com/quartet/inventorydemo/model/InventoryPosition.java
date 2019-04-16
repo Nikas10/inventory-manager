@@ -30,12 +30,10 @@ public class InventoryPosition {
     @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<InventoryItem> currentTypeItems;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "bundleID")
+    @OneToMany(mappedBy = "bundle", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<InventoryPositionContents> bundleContent;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "positionID")
+    @OneToMany(mappedBy = "partOfInventoryPosition",fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<InventoryPositionContents> partOfBundles;
 
     @OneToMany(mappedBy = "inventoryPosition", fetch = FetchType.LAZY, orphanRemoval = true)

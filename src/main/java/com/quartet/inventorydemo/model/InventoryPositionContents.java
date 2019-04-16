@@ -10,30 +10,21 @@ import java.util.UUID;
 @Data
 @Table(name = "inventory_position_contents", schema = "public")
 public class InventoryPositionContents implements Serializable {
-    @Id
-    @Column(name = "bundleID")
-    private UUID bundleID;
-
-    @Id
-    @Column(name = "positionID")
-    private UUID positionID;
 
     @Column(name = "amount")
     Integer amount;
 
+    @Id
+    @JoinColumn(name = "BundleID")
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private InventoryPosition bundle;
 
+    @Id
+    @JoinColumn(name = "PositionID")
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private InventoryPosition partOfInventoryPosition;
 
     public InventoryPositionContents() {
-    }
-
-    public InventoryPositionContents(UUID positionID, UUID bundleID, Integer amount) {
-        this.positionID = positionID;
-        this.bundleID = bundleID;
-        this.amount = amount;
     }
 
 }
