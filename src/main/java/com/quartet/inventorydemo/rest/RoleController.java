@@ -112,9 +112,6 @@ public class RoleController {
             inventoryHolders.removeAll(removeHolders);
 
             Role update = roleService.update(roleById);
-            for (InventoryHolder addHolder : addHolders) {
-                inventoryHolderService.update(addHolder);
-            }
             return Response.createResponse(update);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
