@@ -23,7 +23,7 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
         Date dueDate = requisition.getDueDate();
 
         ProcessInstance process = runtimeService.startProcessInstanceByKey(PROCESS_NAME, businessKey);
-        runtimeService.setVariable(process.getProcessDefinitionId(), DUE_DATE, dueDate);
+        runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
     }
 
     @Override
@@ -33,7 +33,7 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
 
         ProcessInstance process = getByBusinessKey(businessKey);
 
-        runtimeService.setVariable(process.getProcessDefinitionId(), DUE_DATE, dueDate);
+        runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
     }
 
     @Override
