@@ -15,5 +15,4 @@ public class RequirInvPosID implements Serializable {
         this.inventoryPosition = inventoryPosition;
     }
 
-
 }

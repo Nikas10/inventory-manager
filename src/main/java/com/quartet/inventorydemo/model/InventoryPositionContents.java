@@ -1,12 +1,13 @@
 package com.quartet.inventorydemo.model;
 
+import com.quartet.inventorydemo.model.id.InventoryPositionContentsID;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
-@Entity
+@Entity @IdClass(InventoryPositionContentsID.class)
 @Data
 @Table(name = "inventory_position_contents", schema = "public")
 public class InventoryPositionContents implements Serializable {
@@ -27,4 +28,9 @@ public class InventoryPositionContents implements Serializable {
     public InventoryPositionContents() {
     }
 
+    public InventoryPositionContents(Integer amount, InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
+        this.amount = amount;
+        this.bundle = bundle;
+        this.partOfInventoryPosition = partOfInventoryPosition;
+    }
 }
