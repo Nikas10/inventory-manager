@@ -64,6 +64,36 @@ public class RoleController {
         return Response.createResponse(result);
     }
 
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateRole(@PathVariable("uuid") String stringUuid,
+                                        @RequestBody Role role) {
+        try {
+            Role byRoleID = getRoleById(stringUuid);
+
+            String requestRoleName = role.getName();
+            String requestRoleDescription = role.getDescription();
+
+            if (requestRoleName == null || "".equals(requestRoleName)) {
+                return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Role name is not correct.");
+            }
+            boolean nameExists = checkIfRoleWithSameNameExists(requestRoleName);
+            if (nameExists) {
+                return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Role with same name already exists.");
+            }
+
+            byRoleID.setName(requestRoleName);
+            byRoleID.setDescription(requestRoleDescription);
+
+            Role result = roleService.update(byRoleID);
+            return Response.createResponse(result);
+        } catch (IllegalArgumentException e) {
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
+        } catch (NotFoundException e) {
+            return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
 
     //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
