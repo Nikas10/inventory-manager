@@ -66,9 +66,39 @@ public class InventoryHolderController {
         boolean nameExists = checkIfHolderWithSameNameExists(requestInventoryHolderName);
         if (nameExists) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory holder with same name already exists.");
-        } else {
-            InventoryHolder result = inventoryHolderService.add(inventoryHolder);
+        }
+
+        InventoryHolder result = inventoryHolderService.add(inventoryHolder);
+        return Response.createResponse(result);
+    }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateInventoryHolder(@PathVariable("uuid") String stringUuid,
+                                                   @RequestBody InventoryHolder inventoryHolder) {
+        try {
+            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
+
+            String requestInventoryHolderName = inventoryHolder.getName();
+            String requestInventoryHolderDescription = inventoryHolder.getDescription();
+
+            if (requestInventoryHolderName == null || "".equals(requestInventoryHolderName)) {
+                return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory holder name is not correct.");
+            }
+            boolean nameExists = checkIfHolderWithSameNameExists(requestInventoryHolderName);
+            if (nameExists) {
+                return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory holder with same name already exists.");
+            }
+
+            byHolderID.setName(requestInventoryHolderName);
+            byHolderID.setDescription(requestInventoryHolderDescription);
+
+            InventoryHolder result = inventoryHolderService.update(byHolderID);
             return Response.createResponse(result);
+        } catch (IllegalArgumentException e) {
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
+        } catch (NotFoundException e) {
+            return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
