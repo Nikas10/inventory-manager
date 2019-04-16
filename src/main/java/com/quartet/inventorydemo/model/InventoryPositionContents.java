@@ -3,9 +3,11 @@ package com.quartet.inventorydemo.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
+//todo fix id's; add ApiModel and ApiModelProperty annotation
 @Entity
 @Data
 @Table(name = "inventory_position_contents", schema = "public")
@@ -21,9 +23,11 @@ public class InventoryPositionContents implements Serializable {
     @Column(name = "amount")
     Integer amount;
 
+    @NotNull
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private InventoryPosition bundle;
 
+    @NotNull
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private InventoryPosition partOfInventoryPosition;
 

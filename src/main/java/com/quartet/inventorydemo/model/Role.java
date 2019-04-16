@@ -1,8 +1,12 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,15 +16,22 @@ import java.util.UUID;
 public class Role {
 
     @Id
+    @ApiModelProperty(hidden = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "roleID")
     private UUID roleID;
 
+    @ApiModelProperty(position = 1, required = true, notes = "Role name")
+    @NotNull
     @Column(name = "name")
     private String name;
 
+    @ApiModelProperty(position = 2, notes = "Role description name")
     @Column(name = "description")
     private String description;
 
+    @ApiModelProperty(hidden = true)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "role_inventoryPosition",
             joinColumns = @JoinColumn(name = "roleID", referencedColumnName = "roleID"),
@@ -28,7 +39,9 @@ public class Role {
     )
     private Set<InventoryPosition> roleInventoryPositions;
 
-    @ManyToMany(mappedBy = "currentRoles")
+    @ApiModelProperty(hidden = true)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(mappedBy = "currentRoles", cascade = CascadeType.ALL)
     private Set<InventoryHolder> allHolders;
 
     public Role() {
@@ -39,4 +52,17 @@ public class Role {
         this.name = name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role)) return false;
+        Role role = (Role) o;
+        return Objects.equals(getName(), role.getName()) &&
+                Objects.equals(getDescription(), role.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getDescription());
+    }
 }

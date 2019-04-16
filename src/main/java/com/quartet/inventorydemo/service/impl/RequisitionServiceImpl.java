@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service("RequisitionService")
@@ -18,6 +19,11 @@ public class RequisitionServiceImpl implements RequisitionService {
     @Override
     public List<Requisition> getAll() {
         return requestRepo.findAll();
+    }
+
+    @Override
+    public Optional<Requisition> get(UUID requestID) {
+        return Optional.ofNullable(requestRepo.findByRequestID(requestID));
     }
 
     @Override

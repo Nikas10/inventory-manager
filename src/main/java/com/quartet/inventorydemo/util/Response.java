@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 public class Response {
     public static ResponseEntity<?> createErrorResponse(HttpStatus httpStatus, String message) {
-        return new ResponseEntity<> (new RespError(message, Long.parseLong(httpStatus.toString())), httpStatus);
+        return new ResponseEntity<>(new RespError(message, Long.parseLong("" + httpStatus.value())), httpStatus);
     }
 
     public static ResponseEntity<?> createResponse(Object object) {

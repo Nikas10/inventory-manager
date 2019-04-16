@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -16,11 +17,16 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
-    AccountRepository accRepo;
+    private AccountRepository accRepo;
 
     @Override
     public List<Account> getAll() {
         return accRepo.findAll();
+    }
+
+    @Override
+    public Set<Account> getByAccountIDs(Set<UUID> uuidSet) {
+        return accRepo.findByUidIn(uuidSet);
     }
 
     @Override
