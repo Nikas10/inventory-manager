@@ -18,7 +18,7 @@ public class InventoryPosition {
     @Column(name = "name")
     private String name;
 
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
 
     @ManyToMany(mappedBy = "roleInventoryPositions")

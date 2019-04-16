@@ -7,8 +7,12 @@ import java.util.UUID;
 
 public interface RequirementService {
     List<Requirement> getAll();
+
     Requirement getByRequirementID(UUID requirementID);
+
     Requirement getByRequirementName(String name);
+
     Requirement add(Requirement requirement);
+
     Requirement update(Requirement requirement);
 }

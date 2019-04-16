@@ -17,11 +17,10 @@ public class InventoryHolder {
     @Column(name = "holderID")
     private UUID holderID;
 
-
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
 
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

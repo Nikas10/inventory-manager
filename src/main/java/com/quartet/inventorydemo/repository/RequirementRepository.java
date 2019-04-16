@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface RequirementRepository extends JpaRepository<Requirement, UUID> {
 
     List<Requirement> findAll();
+
     Requirement findByRequirementID(UUID requirementID);
     Requirement findByName(String name);
 }

@@ -1,12 +1,12 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
 @Entity
 @Data
@@ -14,6 +14,7 @@ import lombok.Data;
 public class Account implements Serializable {
     @Id
     @Column(name = "uid")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID uid;
 
     @Column (name = "login")
@@ -23,25 +24,27 @@ public class Account implements Serializable {
     @Column (name = "pass")
     private String pass;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column (name = "admin")
-    private Boolean admin = false;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column (name = "role")
+    private String role = "user";
 
     @Column (name = "email")
     private String email;
 
-    @Column (name = "first_name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column (name = "middle_name")
+    @Column(name = "middle_name")
     private String middleName;
 
-    @Column (name = "last_name")
+    @Column(name = "last_name")
     private String lastName;
 
-    @Column (name = "active")
-    private Boolean active = false;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(name = "active")
+    private Boolean active = true;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "employee_holder",
             joinColumns = @JoinColumn(name = "employeeID", referencedColumnName = "uid"),
@@ -49,17 +52,18 @@ public class Account implements Serializable {
     )
     private Set<InventoryHolder> currentHolders;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Requisition> employeeRequisitions;
 
     public Account() {
     }
 
-    public Account(UUID uid, String name, String pass, Boolean isadmin, String email) {
+    public Account(UUID uid, String name, String pass, String role, String email) {
         this.uid = uid;
         this.login = name;
         this.pass = pass;
-        this.admin = isadmin;
+        this.role = role;
         this.email = email;
     }
 
