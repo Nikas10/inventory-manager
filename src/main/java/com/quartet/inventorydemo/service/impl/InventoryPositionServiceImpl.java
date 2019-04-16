@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service("InventoryPositionService")
@@ -20,6 +21,11 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     @Override
     public List<InventoryPosition> getAll() {
         return positionRepo.findAll();
+    }
+
+    @Override
+    public Set<InventoryPosition> getByPositionIDs(Set<UUID> positionIDs) {
+        return positionRepo.findByPositionIDIn(positionIDs);
     }
 
     @Override
