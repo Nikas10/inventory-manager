@@ -10,6 +10,8 @@ public interface RequirementService {
 
     Requirement getByRequirementID(UUID requirementID);
 
+    Requirement getByRequirementName(String name);
+
     Requirement add(Requirement requirement);
 
     Requirement update(Requirement requirement);
