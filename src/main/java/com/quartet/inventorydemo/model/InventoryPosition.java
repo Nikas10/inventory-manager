@@ -17,6 +17,7 @@ import java.util.UUID;
 public class InventoryPosition {
 
     @Id
+    @ApiModelProperty(hidden = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "positionID")
     private UUID positionID;

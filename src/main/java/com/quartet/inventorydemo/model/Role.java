@@ -17,6 +17,7 @@ public class Role {
 
     @Id
     @ApiModelProperty(hidden = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "roleID")
     private UUID roleID;
 

@@ -17,9 +17,9 @@ import java.util.UUID;
 public class InventoryHolder {
 
     @Id
-    @Column(name = "holderID")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ApiModelProperty(hidden = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(name = "holderID")
     private UUID holderID;
 
     @ApiModelProperty(position = 1, required = true, notes = "Holder name")

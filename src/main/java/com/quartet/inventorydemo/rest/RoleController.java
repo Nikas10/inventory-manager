@@ -95,31 +95,6 @@ public class RoleController {
         }
     }
 
-    //@PreAuthorize("hasAuthority('STAFF')")
-    @RequestMapping(value = "/{uuid}/holder", method = RequestMethod.PATCH)
-    public ResponseEntity<?> updateRoleLinksToInventoryHolders(@PathVariable("uuid") String stringUuid,
-                                                               @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
-        try {
-            Role roleById = getRoleById(stringUuid);
-            Set<InventoryHolder> inventoryHolders = roleById.getAllHolders();
-
-            Set<UUID> addByIds = createAndDeleteLinksForm.getAddIds();
-            Set<InventoryHolder> addHolders = inventoryHolderService.getByHolderIDs(addByIds);
-            inventoryHolders.addAll(addHolders);
-
-            Set<UUID> removeByIds = createAndDeleteLinksForm.getRemoveIds();
-            Set<InventoryHolder> removeHolders = inventoryHolderService.getByHolderIDs(removeByIds);
-            inventoryHolders.removeAll(removeHolders);
-
-            Role update = roleService.update(roleById);
-            return Response.createResponse(update);
-        } catch (IllegalArgumentException e) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
-        } catch (NotFoundException e) {
-            return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
-
     //@PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "/{uuid}/position", method = RequestMethod.GET)
     public ResponseEntity<?> getRoleLinksToInventoryPosition(@PathVariable("uuid") String stringUuid) {
