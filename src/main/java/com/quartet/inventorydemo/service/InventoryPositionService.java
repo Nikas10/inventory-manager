@@ -12,6 +12,7 @@ public interface InventoryPositionService {
     Set<InventoryPosition> getByPositionIDs(Set<UUID> positionIDs);
 
     InventoryPosition getByPositionID(UUID positionID);
+    InventoryPosition getByName(String name);
     InventoryPosition add(InventoryPosition position);
     InventoryPosition update(InventoryPosition position);
 }

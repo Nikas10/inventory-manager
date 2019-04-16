@@ -34,6 +34,11 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     }
 
     @Override
+    public InventoryPosition getByName(String name) {
+        return positionRepo.findByName(name);
+    }
+
+    @Override
     public InventoryPosition add(InventoryPosition position) {
         position.setPositionID(UUID.randomUUID());
         return positionRepo.saveAndFlush(position);
