@@ -19,9 +19,11 @@ public class InventoryItem implements Serializable {
     UUID inventoryItemID;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "holderID")
     InventoryHolder inventoryHolder;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "positionID")
     InventoryPosition inventoryPosition;
 
     @Column(name = "status")
