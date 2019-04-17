@@ -20,5 +20,5 @@ public interface InventoryHolderRepository extends JpaRepository<InventoryHolder
                 "JOIN account_inventory_holder acc_inv " +
                 "ON acc_inv.holderid = inventory_holder.holderid",
         nativeQuery = true)
-    List<Account> findHolderWithAccount();
+    List<InventoryHolder> findHolderWithAccount();
 }

@@ -17,5 +17,5 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, UU
     InventoryItem findByInventoryItemID(UUID inventoryItemID);
 
     @Query("SELECT item from InventoryItem item where item.inventoryPosition =:position")
-    List<InventoryItem> findByName(@Param("position") InventoryPosition position);
+    List<InventoryItem> findByInventoryPosition(@Param("position") InventoryPosition position);
 }
