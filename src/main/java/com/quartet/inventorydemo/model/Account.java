@@ -46,7 +46,7 @@ public class Account implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "employee_holder",
+    @JoinTable(name = "account_inventory_holder",
             joinColumns = @JoinColumn(name = "employeeID", referencedColumnName = "uid"),
             inverseJoinColumns = @JoinColumn(name = "holderID", referencedColumnName = "holderID")
     )
