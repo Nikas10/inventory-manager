@@ -3,5 +3,5 @@ function authorize(username, password) {
 	var request = tokenRequest + 'client_id=' + clientId 
 	+ '&client_secret=' + clientSecret + '&grant_type=password&username='
 	+ username +'&password=' + password;
-	processAjax("auth", 'POST', request, null, callbackTypesessionStorage);
+	processAjax("auth", 'POST', request, null, callbackTypeSessionStorage);
 }

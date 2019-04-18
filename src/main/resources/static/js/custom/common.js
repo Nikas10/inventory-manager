@@ -8,7 +8,7 @@ var apiAccount = apiRequest + '/account';
 var apiHolder = apiRequest + '/holder';
 var apiRole = apiRequest + '/role';
 var apiRequisition = apiRequest + '/requisition';
-var apiRole = apiInventory + '/inventory';
+var apiInventory = apiRequest + '/inventory';
 
 /*
 requestType - 'POST', 'GET', 'PUT', 'DELETE', 'PATCH'
@@ -19,17 +19,20 @@ callback - callback function after ajax to process result
 Compile an URL and pass it here with the rest of parameters (type, body, ..)
 */
 function processAjax(requestId, requestType, request, requestBody, callback) {
+    console.log(request);
+    console.log(JSON.stringify(requestBody));
 	var xhr = new XMLHttpRequest();
 	xhr.open(requestType, request, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
 	xhr.onreadystatechange = function()
     {
         if (xhr.readyState == 4)
         {
-            callback(JSON.parse(xhr.responseText), xhr.status);
+            callback(requestId, JSON.parse(xhr.responseText), xhr.status);
         }
     };
     if (requestBody != null && requestBody != undefined) {
-    	xhr.send(requestBody);	
+    	xhr.send(JSON.stringify(requestBody));	
     } else {
     	xhr.send();
     }
