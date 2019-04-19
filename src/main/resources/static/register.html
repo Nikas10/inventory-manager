@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Management - Register</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/bootstrap-grid.css"/>
+    <link rel="stylesheet" href="css/bootstrap-reboot.css"/>
+
+    <script src="js/custom/common.js" type="text/javascript"></script>
+    <script src="js/bootstrap/bootstrap.bundle.js" type="text/javascript"></script>
+    <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+    <script src="js/jquery/jquery.js" type="text/javascript"></script>
+    <script src="js/custom/register.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/main.css"/>
+</head>
+
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand ml-4" href="home.html">Quartet's Inventory Service</a>
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link ml-4" href="about.html">About</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav" id="navbar-right-side">   
+                <li class="nav-item" id="nrs-register">
+                    <a class="nav-link mr-4" href="register.html">Register</a>
+                </li>
+                <li class="nav-item" id="nrs-auth">
+                    <a class="nav-link mr-4" href="auth.html">Authorize</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <script>renderNavbar()</script> 
+</div>
+
+<div class="container-fluid">
+    <div class="card-group mt-5 mb-5 ml-5 mr-5">
+        <div class="card bg-light border-secondary col-sm-4 card-banner">
+            <img class="card-img-top w-100 h-100 img-fluid" src="img/register-side.jpg" alt="Card image cap">
+        </div>
+        <div id="intro" class="card bg-light border-secondary col-sm-8">
+            <div class="card-body mt-5 mb-5">
+                <h3 class="mb-5 text-center">Please enter your account data:</h3>
+                <div class="container">
+                    <div class="form-group row">
+                        <label for="registerEmail" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="registerEmail" placeholder="email@example.com" required="true">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="registerLogin" class="col-sm-2 col-form-label">Login</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="registerLogin" placeholder="Login" required="true">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="registerPassword" class="col-sm-2 col-form-label">Password</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="registerPassword" placeholder="Password" required="true">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="registerFirstName" class="col-sm-2 col-form-label">First name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="registerFirstName" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="registerMiddleName" class="col-sm-2 col-form-label">Middle name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="registerMiddleName" placeholder="Middle name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="registerFamilyName" class="col-sm-2 col-form-label">Family name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="registerFamilyName" placeholder="Surname">
+                        </div>
+                    </div>
+                    <div class="container text-center">
+                        <button class="btn btn-dark mb-2 w-25 mx-auto" onclick="register()">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="page-footer fixed-bottom font-small text-light bg-dark">
+  <div class="footer-copyright text-center py-3">© 2019 Copyright:
+    <a href="about.html">Quartet Inc.</a>
+    All rights reserved.
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Inventory Management - Authorization</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/bootstrap-grid.css"/>
+    <link rel="stylesheet" href="css/bootstrap-reboot.css"/>
+
+    <script src="js/custom/common.js" type="text/javascript"></script>
+    <script src="js/bootstrap/bootstrap.bundle.js" type="text/javascript"></script>
+    <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body>
+
+<div class="container">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand ml-4" href="home.html">Quartet's Inventory Service</a>
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link ml-4" href="about.html">About</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav" id="navbar-right-side">
+                <li class="nav-item" id="nrs-auth">
+                    <a class="nav-link mr-4" href="auth.html">Authorize</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <script>renderNavbar()</script> 
+</div>
+
+<div class="container-fluid mb-5 mt-5">
+    <div id="intro" class="card w-75 bg-light border-secondary mx-auto col-md-12 mb-5 text-center card-banner">
+        <img class="card-img-top img-fluid w-25 h-25 mx-auto" src="img/success.png" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Your registration is complete! Authorize or visit our home page!</h5>
+        </div>
+        <a class="btn btn-dark mb-2 w-25 mx-auto" href="home.html">Go back!</a>
+        <a class="btn btn-dark mb-2 w-25 mx-auto" href="auth.html">Authorize</a>
+    </div>
+</div>
+
+<footer class="page-footer fixed-bottom font-small text-light bg-dark">
+  <div class="footer-copyright text-center py-3">© 2019 Copyright:
+    <a href="about.html">Quartet Inc.</a>
+    All rights reserved.
+  </div>
+</footer>
+</body>
+</html>

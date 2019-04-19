@@ -1,5 +1,10 @@
 body {
-    padding-top: 5rem;
+  background: url('../img/background.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  padding-top: 5rem;
 }
 
 .starter-template {
@@ -13,4 +18,8 @@ h1 {
 
 h2 {
     color: #FF0000;
+}
+
+.card-banner {
+    padding:0;
 }

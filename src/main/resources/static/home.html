@@ -1,70 +1,76 @@
-<!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Inventory Management - Inventory flow monitoring suite for Enterprise</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/bootstrap-grid.css"/>
+    <link rel="stylesheet" href="css/bootstrap-reboot.css"/>
 
-    <title>Spring Boot Thymeleaf Hello World Example</title>
-
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-jsf.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min-jsf.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-grid.min-jsf.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-grid-jsf.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-reboot-jsf.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-reboot.min-jsf.css}"/>
-
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-grid.css}"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap-reboot.css}"/>
-
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <script src="js/custom/common.js" type="text/javascript"></script>
+    <script src="js/bootstrap/bootstrap.bundle.js" type="text/javascript"></script>
+    <script src="js/bootstrap/bootstrap.js" type="text/javascript"></script>
+    <script src="js/jquery/jquery.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/main.css"/>
 </head>
 
 <body>
+<div class="container">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand ml-4" href="#">Quartet's Inventory Service</a>
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link ml-4" href="about.html">About</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav" id="navbar-right-side">   
+                <li class="nav-item" id="nrs-register">
+                    <a class="nav-link mr-4" href="register.html">Register</a>
+                </li>
+                <li class="nav-item" id="nrs-auth">
+                    <a class="nav-link mr-4" href="auth.html">Authorize</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+     <script>renderNavbar()</script> 
+</div>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">Mkyong.com</a>
-</nav>
-
-<main class="container" role="main">
-
-    <div class="starter-template">
-        <h1>Spring Boot Web Thymeleaf Example</h1>
-        <h2>
-            <span th:text="'Hello, ' + ${message}"></span>
-        </h2>
+<div class="container-fluid">
+    <div id="intro" class="card w-75 bg-light border-secondary mx-auto col-md-12 mb-5 text-center card-banner">
+        <img class="card-img-top img-fluid" src="img/home-intro.jpg" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Welcome to Inventory Management - Inventory flow monitoring suite for Enterprise</h5>
+            <p class="card-text">Welcome to our product website! Our Inventory Manager is ready for service!</p>
+        </div>
+        <a class="btn btn-dark mb-2 w-25 mx-auto" href="#purpose">Learn more!</a>
     </div>
+    <div id="purpose" class="card w-75 bg-light border-secondary mx-auto col-md-12 mb-5 text-center card-banner">
+        <img class="card-img-top img-fluid" src="img/home-purpose.jpg" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">The purpose of Inventory Manager</h5>
+            <p class="card-text">Inventory Management provides means of monitoring and managing inventory flows on enterprise, getting rid of paperwork and unifying all necessary info in one place.</p>
+        </div>
+        <a class="btn btn-dark mb-2 w-25 mx-auto" href="#features">What can we do?</a>
+    </div>
+    <div id="features" class="card w-75 bg-light border-secondary mx-auto col-md-12 mb-5 text-center card-banner">
+        <img class="card-img-top img-fluid" src="img/home-capability.jpg" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Inventory Manager - Capabilities</h5>
+            <p class="card-text">Inventory Manager is capable of creating inventory repository, create flows and user inventory requests. It also generates reports after every executed user request.</p>
+        </div>
+        <a class="btn btn-dark mb-2 w-25 mx-auto" href="register.html">Register now!</a>
+    </div>
+</div>
 
-    <ol>
-        <li th:each="task : ${tasks}" th:text="${task}"></li>
-    </ol>
-
-</main>
-<!-- /.container -->
-
-<script th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.bundle.js}" type="text/javascript"></script>
-<script th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.js}" type="text/javascript"></script>
-<script th:src="@{webjars/jquery/3.1.1/jquery.js}" type="text/javascript"></script>
-
-<script type="text/javascript">
-authorize('test', 'test');
-
-
-function authorize(x, y) {
-	console.log("authorize");
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'http://localhost:8080/oauth/token?client_id=web'
-		+ '&client_secret=inventory&grant_type=password&username='+ x +'&password=' + y, true);
-	xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState == 4 && xhr.status == 200)
-        {
-            Classes = JSON.parse(xhr.responseText); // responseText -- текст ответа.
-	  		console.log(Classes);	  		
-        }
-    }; 
-	xhr.send();	
-}
-</script>
+<footer class="page-footer fixed-bottom font-small text-light bg-dark">
+  <div class="footer-copyright text-center py-3">© 2019 Copyright:
+    <a href="about.html">Quartet Inc.</a>
+    All rights reserved.
+  </div>
+</footer>
 </body>
 </html>
