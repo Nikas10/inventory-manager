@@ -1,91 +1,185 @@
 package com.quartet.inventorydemo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@ApiModel
-@Entity
-@Data
-@Table(name = "account", schema = "public")
+@ApiModel(description = "This entity/form represents user of system. Contains info to log in and other information related to user")
+@Entity(name = "Account")
+@Table(name = "quartet_account", schema = "public")
 public class Account implements Serializable {
+
+    @ApiModelProperty(hidden = true)
     @Id
-    @Column(name = "uid")
-    @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UUID uid;
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "pg-uuid")
+    @GenericGenerator(name = "pg-uuid", strategy = "uuid2",
+            parameters = @org.hibernate.annotations.Parameter(
+                    name = "uuid_gen_strategy_class",
+                    value = "com.quartet.inventorydemo.repository.PostgreSQLUUIDGenerationStrategy"))
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
+    private UUID id;
 
-    @ApiModelProperty(position = 1, required = true, notes = "Account login")
-    @NotNull
-    @Column (name = "login")
-    private String login;
-
-    @ApiModelProperty(position = 2, required = true, notes = "Account password")
-    @NotNull
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column (name = "pass")
-    private String pass;
-
-    @ApiModelProperty(hidden = true)
-    @NotNull
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column (name = "role")
-    private String role = "user";
-
-    @ApiModelProperty(position = 3, notes = "Email address")
-    @NotNull
-    @Column (name = "email")
-    private String email;
-
-    @ApiModelProperty(position = 4, notes = "First name")
-    @Column(name = "first_name")
+    @ApiModelProperty(position = 1, notes = "First name")
+    @NotBlank(message = "First name must be not empty")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @ApiModelProperty(position = 5, notes = "Middle name")
-    @Column(name = "middle_name")
-    private String middleName;
+    @ApiModelProperty(position = 2, notes = "Middle name")
+    @NotNull
+    @Column(name = "middle_name", nullable = false)
+    private String middleName = "";
 
-    @ApiModelProperty(position = 6, notes = "Family name")
-    @Column(name = "last_name")
+    @ApiModelProperty(position = 3, notes = "Family name")
+    @NotBlank(message = "Last(family) name must be not empty")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @ApiModelProperty(hidden = true)
-    @NotNull
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column(name = "active")
-    private Boolean active = true;
+    @ApiModelProperty(position = 4, required = true, notes = "Account login")
+    @NotBlank(message = "Login must be not empty")
+    @Column(name = "login", nullable = false, unique = true)
+    private String login;
 
+    @ApiModelProperty(position = 5, required = true, notes = "Account password")
+    @NotBlank(message = "Password must be not empty")
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "employee_holder",
-            joinColumns = @JoinColumn(name = "employeeID", referencedColumnName = "uid"),
-            inverseJoinColumns = @JoinColumn(name = "holderID", referencedColumnName = "holderID")
+    @Pattern(regexp = "(^user$|^staff$|^admin$)", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Role must be one of: user, staff or admin")
+    @Column(name = "role", nullable = false)
+    private String role = "user";
+
+    @ApiModelProperty(position = 6, notes = "Email address")
+    @Email(message = "Email must be valid")
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @ApiModelProperty(hidden = true)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "quartet_account__quartet_holder",
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "holder_id", referencedColumnName = "id", nullable = false)
     )
-    private Set<InventoryHolder> currentHolders;
+    private Set<Holder> holders;
 
     @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
-    private Set<Requisition> employeeRequisitions;
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<Requisition> requisitions;
 
-    public Account() {
+    private Account() {
     }
 
-    public Account(UUID uid, String name, String pass, String role, String email) {
-        this.uid = uid;
-        this.login = name;
-        this.pass = pass;
+    public Account(@NotBlank(message = "First name must be not empty") String firstName,
+                   @NotNull String middleName,
+                   @NotBlank(message = "Last(family) name must be not empty") String lastName,
+                   @NotBlank(message = "Login must be not empty") String login,
+                   @NotBlank(message = "Password must be not empty") String password,
+                   @Pattern(regexp = "(^user$|^staff$|^admin$)", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Role must be one of: user, staff or admin") String role,
+                   @Email(message = "Email must be valid") String email) {
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.login = login;
+        this.password = password;
         this.role = role;
         this.email = email;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
+        Account account = (Account) o;
+        return Objects.equals(id, account.id) &&
+                firstName.equals(account.firstName) &&
+                middleName.equals(account.middleName) &&
+                lastName.equals(account.lastName) &&
+                login.equals(account.login) &&
+                password.equals(account.password) &&
+                role.equals(account.role) &&
+                email.equals(account.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, middleName, lastName, login, password, role, email);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(@NotBlank(message = "First name must be not empty") String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(@NotNull String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(@NotBlank(message = "Last(family) name must be not empty") String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(@NotBlank(message = "Login must be not empty") String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank(message = "Password must be not empty") String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(@Pattern(regexp = "(user|staff|admin)", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Role must be one of: user, staff or admin") String role) {
+        this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email(message = "Email must be valid") String email) {
+        this.email = email;
+    }
+
+    public Set<Holder> getHolders() {
+        return holders;
+    }
+
+    public Set<Requisition> getRequisitions() {
+        return requisitions;
+    }
 }

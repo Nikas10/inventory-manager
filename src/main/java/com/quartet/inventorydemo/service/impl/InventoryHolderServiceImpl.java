@@ -1,7 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
-import com.quartet.inventorydemo.model.InventoryHolder;
+import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.InventoryHolderService;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,40 +20,43 @@ public class InventoryHolderServiceImpl implements InventoryHolderService {
     private InventoryHolderRepository invHoldRepo;
 
     @Override
-    public List<InventoryHolder> getAll() {
+    public List<Holder> getAll() {
         return invHoldRepo.findAll();
     }
 
     @Override
-    public InventoryHolder getByHolderID(UUID holderID) {
-        return invHoldRepo.findByHolderID(holderID);
+    public Holder getByHolderID(UUID holderID) {
+        Optional<Holder> byId = invHoldRepo.findById(holderID);
+        byId.orElseThrow(RuntimeException::new);
+        return byId.get();
     }
 
     @Override
-    public Set<InventoryHolder> getByHolderIDs(Set<UUID> holderIDs) {
-        return invHoldRepo.findByHolderIDIn(holderIDs);
+    public Set<Holder> getByHolderIDs(Set<UUID> holderIDs) {
+        return invHoldRepo.findByIdIn(holderIDs);
     }
 
     @Override
-    public List<InventoryHolder> getByHolderName(String holderName) {
-        return invHoldRepo.findByName(holderName);
+    public Holder getByHolderName(String holderName) {
+        Optional<Holder> byName = invHoldRepo.findByName(holderName);
+        byName.orElseThrow(RuntimeException::new);
+        return byName.get();
     }
 
     @Override
-    public InventoryHolder add(InventoryHolder holder) {
-        holder.setHolderID(UUID.randomUUID());
+    public Holder add(Holder holder) {
         return invHoldRepo.saveAndFlush(holder);
     }
 
     @Override
-    public InventoryHolder update(InventoryHolder holder) {
+    public Holder update(Holder holder) {
         return invHoldRepo.saveAndFlush(holder);
     }
 
     @Override
-    public void remove(InventoryHolder holder) {
-        Set<InventoryItem> holdedItems = holder.getHoldedItems();
-        if (!holdedItems.isEmpty()) {
+    public void remove(Holder holder) {
+        Set<InventoryItem> inventoryItems = holder.getInventoryItems();
+        if (!inventoryItems.isEmpty()) {
             throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
         }
         invHoldRepo.delete(holder);

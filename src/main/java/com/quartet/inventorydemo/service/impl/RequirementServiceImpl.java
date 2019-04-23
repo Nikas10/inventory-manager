@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service("RequirementService")
@@ -22,17 +23,20 @@ public class RequirementServiceImpl implements RequirementService {
 
     @Override
     public Requirement getByRequirementID(UUID employeeID) {
-        return requirementRepo.findByRequirementID(employeeID);
+        Optional<Requirement> byId = requirementRepo.findById(employeeID);
+        byId.orElseThrow(RuntimeException::new);
+        return byId.get();
     }
 
     @Override
     public Requirement getByRequirementName(String name) {
-        return requirementRepo.findByName(name);
+        Optional<Requirement> byName = requirementRepo.findByName(name);
+        byName.orElseThrow(RuntimeException::new);
+        return byName.get();
     }
 
     @Override
     public Requirement add(Requirement holder) {
-        holder.setRequirementID(UUID.randomUUID());
         return requirementRepo.saveAndFlush(holder);
     }
 

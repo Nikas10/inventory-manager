@@ -14,7 +14,7 @@ import java.util.UUID;
 public class RequisitionServiceImpl implements RequisitionService {
 
     @Autowired
-    RequisitionRepository requestRepo;
+    private RequisitionRepository requestRepo;
 
     @Override
     public List<Requisition> getAll() {
@@ -23,17 +23,11 @@ public class RequisitionServiceImpl implements RequisitionService {
 
     @Override
     public Optional<Requisition> get(UUID requestID) {
-        return Optional.ofNullable(requestRepo.findByRequestID(requestID));
-    }
-
-    @Override
-    public Requisition getByEmployeeID(UUID requestID) {
-        return requestRepo.findByRequestID(requestID);
+        return requestRepo.findById(requestID);
     }
 
     @Override
     public Requisition add(Requisition requisition) {
-        requisition.setRequestID(UUID.randomUUID());
         return requestRepo.saveAndFlush(requisition);
     }
 

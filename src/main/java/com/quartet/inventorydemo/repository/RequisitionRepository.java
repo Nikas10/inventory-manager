@@ -8,5 +8,4 @@ import java.util.UUID;
 
 public interface RequisitionRepository extends JpaRepository<Requisition, UUID> {
     List<Requisition> findAll();
-    Requisition findByRequestID(UUID requestID);
 }

@@ -2,7 +2,7 @@ package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.model.Account;
-import com.quartet.inventorydemo.model.InventoryHolder;
+import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.AccountService;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,7 +46,7 @@ public class InventoryHolderController {
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<?> getInventoryHolder(@PathVariable("uuid") String stringUuid) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
+            Holder byHolderID = getInventoryHolderById(stringUuid);
             return Response.createResponse(byHolderID);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -58,7 +57,7 @@ public class InventoryHolderController {
 
     //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createInventoryHolder(@RequestBody InventoryHolder inventoryHolder) {
+    public ResponseEntity<?> createInventoryHolder(@RequestBody Holder inventoryHolder) {
         String requestInventoryHolderName = inventoryHolder.getName();
         if (requestInventoryHolderName == null || "".equals(requestInventoryHolderName)) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory holder name is not correct.");
@@ -68,16 +67,16 @@ public class InventoryHolderController {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory holder with same name already exists.");
         }
 
-        InventoryHolder result = inventoryHolderService.add(inventoryHolder);
+        Holder result = inventoryHolderService.add(inventoryHolder);
         return Response.createResponse(result);
     }
 
     //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateInventoryHolder(@PathVariable("uuid") String stringUuid,
-                                                   @RequestBody InventoryHolder inventoryHolder) {
+                                                   @RequestBody Holder inventoryHolder) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
+            Holder byHolderID = getInventoryHolderById(stringUuid);
 
             String requestInventoryHolderName = inventoryHolder.getName();
             String requestInventoryHolderDescription = inventoryHolder.getDescription();
@@ -93,7 +92,7 @@ public class InventoryHolderController {
             byHolderID.setName(requestInventoryHolderName);
             byHolderID.setDescription(requestInventoryHolderDescription);
 
-            InventoryHolder result = inventoryHolderService.update(byHolderID);
+            Holder result = inventoryHolderService.update(byHolderID);
             return Response.createResponse(result);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -106,7 +105,7 @@ public class InventoryHolderController {
     @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteInventoryHolder(@PathVariable("uuid") String stringUuid) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
+            Holder byHolderID = getInventoryHolderById(stringUuid);
             inventoryHolderService.remove(byHolderID);
             return Response.createResponse();
         } catch (IllegalArgumentException e) {
@@ -122,8 +121,8 @@ public class InventoryHolderController {
     @RequestMapping(value = "/{uuid}/role", method = RequestMethod.GET)
     public ResponseEntity<?> getInventoryHolderLinksToRoles(@PathVariable("uuid") String stringUuid) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
-            Set<Role> currentRoles = byHolderID.getCurrentRoles();
+            Holder byHolderID = getInventoryHolderById(stringUuid);
+            Set<Role> currentRoles = byHolderID.getRoles();
             return Response.createResponse(currentRoles);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -137,8 +136,8 @@ public class InventoryHolderController {
     public ResponseEntity<?> updateInventoryHolderLinksToRoles(@PathVariable("uuid") String stringUuid,
                                                                @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
-            Set<Role> currentRoles = byHolderID.getCurrentRoles();
+            Holder byHolderID = getInventoryHolderById(stringUuid);
+            Set<Role> currentRoles = byHolderID.getRoles();
 
             Set<UUID> addByIds = createAndDeleteLinksForm.getAddIds();
             Set<Role> addRoles = roleService.getByRoleIDs(addByIds);
@@ -148,7 +147,7 @@ public class InventoryHolderController {
             Set<Role> removeRoles = roleService.getByRoleIDs(removeByIds);
             currentRoles.removeAll(removeRoles);
 
-            InventoryHolder update = inventoryHolderService.update(byHolderID);
+            Holder update = inventoryHolderService.update(byHolderID);
             return Response.createResponse(update);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -161,8 +160,8 @@ public class InventoryHolderController {
     @RequestMapping(value = "/{uuid}/account", method = RequestMethod.GET)
     public ResponseEntity<?> getInventoryHolderLinksToAccounts(@PathVariable("uuid") String stringUuid) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
-            Set<Account> employeesWithHolder = byHolderID.getEmployeesWithHolder();
+            Holder byHolderID = getInventoryHolderById(stringUuid);
+            Set<Account> employeesWithHolder = byHolderID.getAccounts();
             return Response.createResponse(employeesWithHolder);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -176,8 +175,8 @@ public class InventoryHolderController {
     public ResponseEntity<?> updateInventoryHolderLinksToAccounts(@PathVariable("uuid") String stringUuid,
                                                                   @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
-            Set<Account> employeesWithHolder = byHolderID.getEmployeesWithHolder();
+            Holder byHolderID = getInventoryHolderById(stringUuid);
+            Set<Account> employeesWithHolder = byHolderID.getAccounts();
 
             Set<UUID> addByIds = createAndDeleteLinksForm.getAddIds();
             Set<Account> addAccounts = accountService.getByAccountIDs(addByIds);
@@ -187,7 +186,7 @@ public class InventoryHolderController {
             Set<Account> removeAccounts = accountService.getByAccountIDs(addByIds);
             employeesWithHolder.removeAll(removeAccounts);
 
-            InventoryHolder update = inventoryHolderService.update(byHolderID);
+            Holder update = inventoryHolderService.update(byHolderID);
             return Response.createResponse(update);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -200,8 +199,8 @@ public class InventoryHolderController {
     @RequestMapping(value = "/{uuid}/item", method = RequestMethod.GET)
     public ResponseEntity<?> getInventoryHolderLinksToHoldedItems(@PathVariable("uuid") String stringUuid) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
-            Set<InventoryItem> holdedItems = byHolderID.getHoldedItems();
+            Holder byHolderID = getInventoryHolderById(stringUuid);
+            Set<InventoryItem> holdedItems = byHolderID.getInventoryItems();
             return Response.createResponse(holdedItems);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -215,18 +214,18 @@ public class InventoryHolderController {
     public ResponseEntity<?> updateInventoryHolderLinksToHoldedItems(@PathVariable("uuid") String stringUuid,
                                                                      @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
         try {
-            InventoryHolder byHolderID = getInventoryHolderById(stringUuid);
-            Set<InventoryItem> holdedItems = byHolderID.getHoldedItems();
+            Holder byHolderID = getInventoryHolderById(stringUuid);
+            Set<InventoryItem> holdedItems = byHolderID.getInventoryItems();
 
-            Set<UUID> addByIds = createAndDeleteLinksForm.getAddIds();
+          /*  Set<UUID> addByIds = createAndDeleteLinksForm.getAddIds();
             Set<InventoryItem> addInventoryItems = inventoryItemService.getByInventoryItemIDs(addByIds);
             holdedItems.addAll(addInventoryItems);
 
             Set<UUID> removeByIds = createAndDeleteLinksForm.getRemoveIds();
             Set<InventoryItem> removeInventoryItems = inventoryItemService.getByInventoryItemIDs(removeByIds);
-            holdedItems.removeAll(removeInventoryItems);
+            holdedItems.removeAll(removeInventoryItems);*/
 
-            InventoryHolder update = inventoryHolderService.update(byHolderID);
+            Holder update = inventoryHolderService.update(byHolderID);
             return Response.createResponse(update);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -235,9 +234,9 @@ public class InventoryHolderController {
         }
     }
 
-    private InventoryHolder getInventoryHolderById(String stringUuid) throws NotFoundException {
+    private Holder getInventoryHolderById(String stringUuid) throws NotFoundException {
         UUID uuid = UUID.fromString(stringUuid);
-        InventoryHolder byHolderID = inventoryHolderService.getByHolderID(uuid);
+        Holder byHolderID = inventoryHolderService.getByHolderID(uuid);
         if (byHolderID == null) {
             throw new NotFoundException("No inventory holder with uuid: " + stringUuid + " found");
         }
@@ -245,7 +244,7 @@ public class InventoryHolderController {
     }
 
     private boolean checkIfHolderWithSameNameExists(String holderName) {
-        List<InventoryHolder> byHolderName = inventoryHolderService.getByHolderName(holderName);
-        return !byHolderName.isEmpty();   //if list is not empty, then holder with same name already exists
+        Holder byHolderName = inventoryHolderService.getByHolderName(holderName);
+        return byHolderName != null;
     }
 }

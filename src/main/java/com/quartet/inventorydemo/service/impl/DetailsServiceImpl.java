@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service("DetailsService")
 @Transactional(rollbackFor = LockAcquisitionException.class)
@@ -35,29 +36,27 @@ public class DetailsServiceImpl implements DetailsService {
         } catch (UnsupportedEncodingException e) {
             //TODO: Write exception handler
         }
-        Account account  = accountRepository.findByLogin(username);
-        if (account != null)
-        {
+        Optional<Account> byLogin = accountRepository.findByLogin(username);
+        Account account = byLogin.get();
+        if (account != null) {
             return new org.springframework.security.core.userdetails.User(account.getLogin(),
-                    account.getPass(),
+                    account.getPassword(),
                     true, true, true, true,
                     getGrantedAuthorities(account));
-        }
-        else {
+        } else {
             throw new UsernameNotFoundException("User " + username + " not found in database.");
         }
     }
 
     private Collection<? extends GrantedAuthority> getGrantedAuthorities(Account user) {
         Collection<? extends GrantedAuthority> authorities;
-        if (("admin").equals(user.getRole())) {
-            authorities = AuthorityUtils.createAuthorityList("ADMIN", "USER", "STAFF");
-        } else
-        if (("staff").equals(user.getRole())) {
-            authorities = AuthorityUtils.createAuthorityList("USER", "STAFF");
-        } else {
-            authorities = AuthorityUtils.createAuthorityList("USER");
+        switch (user.getRole().toUpperCase()) {
+            case "ADMIN":
+                return AuthorityUtils.createAuthorityList("ADMIN", "USER", "STAFF");
+            case "STAFF":
+                return AuthorityUtils.createAuthorityList("USER", "STAFF");
+            default:
+                return AuthorityUtils.createAuthorityList("USER");
         }
-        return authorities;
     }
 }

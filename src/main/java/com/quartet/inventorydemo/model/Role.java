@@ -1,68 +1,82 @@
 package com.quartet.inventorydemo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity
-@Data
-@Table(name = "role", schema = "public")
+@ApiModel(description = "This entity/form represents what inventory positions are allowed to be provided for holder")
+@Entity(name = "Role")
+@Table(name = "quartet_role", schema = "public")
 public class Role {
 
-    @Id
     @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column(name = "roleID")
-    private UUID roleID;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "pg-uuid")
+    @GenericGenerator(name = "pg-uuid", strategy = "uuid2",
+            parameters = @org.hibernate.annotations.Parameter(
+                    name = "uuid_gen_strategy_class",
+                    value = "com.quartet.inventorydemo.repository.PostgreSQLUUIDGenerationStrategy"))
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
+    private UUID id;
 
     @ApiModelProperty(position = 1, required = true, notes = "Role name")
-    @NotNull
-    @Column(name = "name")
+    @NotBlank(message = "Name must be not empty")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ApiModelProperty(position = 2, notes = "Role description name")
-    @Column(name = "description")
+    @NotNull(message = "Description must be not null")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "role_inventoryPosition",
-            joinColumns = @JoinColumn(name = "roleID", referencedColumnName = "roleID"),
-            inverseJoinColumns = @JoinColumn(name = "positionID", referencedColumnName = "positionID")
-    )
-    private Set<InventoryPosition> roleInventoryPositions;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<InventoryPosition> inventoryPositions;
 
     @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToMany(mappedBy = "currentRoles", cascade = CascadeType.ALL)
-    private Set<InventoryHolder> allHolders;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<Holder> holders;
 
-    public Role() {
+    private Role() {
     }
 
-    public Role(UUID positionID, String name) {
-        this.roleID = positionID;
+    public Role(@NotBlank(message = "Name must be not empty") String name,
+                @NotNull(message = "Description must be not null") String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank(message = "Name must be not empty") String name) {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Role)) return false;
-        Role role = (Role) o;
-        return Objects.equals(getName(), role.getName()) &&
-                Objects.equals(getDescription(), role.getDescription());
+    public String getDescription() {
+        return description;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName(), getDescription());
+    public void setDescription(@NotNull(message = "Description must be not null") String description) {
+        this.description = description;
+    }
+
+    public Set<InventoryPosition> getInventoryPositions() {
+        return inventoryPositions;
+    }
+
+    public Set<Holder> getHolders() {
+        return holders;
     }
 }

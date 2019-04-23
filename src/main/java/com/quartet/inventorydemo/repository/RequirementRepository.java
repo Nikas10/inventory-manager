@@ -4,12 +4,11 @@ import com.quartet.inventorydemo.model.Requirement;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RequirementRepository extends JpaRepository<Requirement, UUID> {
-
     List<Requirement> findAll();
 
-    Requirement findByRequirementID(UUID requirementID);
-    Requirement findByName(String name);
+    Optional<Requirement> findByName(String name);
 }

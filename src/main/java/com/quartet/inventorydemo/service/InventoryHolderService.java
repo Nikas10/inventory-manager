@@ -1,21 +1,23 @@
 package com.quartet.inventorydemo.service;
 
-import com.quartet.inventorydemo.model.InventoryHolder;
+import com.quartet.inventorydemo.model.Holder;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 public interface InventoryHolderService {
-    List<InventoryHolder> getAll();
-    InventoryHolder getByHolderID(UUID holderID);
+    List<Holder> getAll();
 
-    Set<InventoryHolder> getByHolderIDs(Set<UUID> holderIDs);
+    Holder getByHolderID(UUID holderID);
 
-    List<InventoryHolder> getByHolderName(String holderName);
+    Set<Holder> getByHolderIDs(Set<UUID> holderIDs);
 
-    InventoryHolder add(InventoryHolder holder);
-    InventoryHolder update(InventoryHolder holder);
+    Holder getByHolderName(String holderName);
 
-    void remove(InventoryHolder holder);
+    Holder add(Holder holder);
+
+    Holder update(Holder holder);
+
+    void remove(Holder holder);
 }

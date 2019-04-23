@@ -92,7 +92,7 @@ public class AccountController {
         String login  = account.getLogin();
         String email = account.getEmail();
 
-        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
+        if (login.isEmpty() || (email.isEmpty()) || (account.getPassword().isEmpty()))
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
         Account check = accSrv.getByLogin(login);
 
@@ -105,7 +105,7 @@ public class AccountController {
 
         //acc manage logic:
         account.setRole("user");
-        account.setPass(passwordEncoder.encode(account.getPass()));
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
     }
@@ -123,7 +123,7 @@ public class AccountController {
         String login  = account.getLogin();
         String email = account.getEmail();
 
-        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
+        if (login.isEmpty() || (email.isEmpty()) || (account.getPassword().isEmpty()))
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
         Account check = accSrv.getByLogin(login);
 
@@ -135,7 +135,7 @@ public class AccountController {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
         //acc manage logic:
         account.setRole("admin");
-        account.setPass(passwordEncoder.encode(account.getPass()));
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
     }
@@ -154,7 +154,7 @@ public class AccountController {
         String login  = account.getLogin();
         String email = account.getEmail();
 
-        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
+        if (login.isEmpty() || (email.isEmpty()) || (account.getPassword().isEmpty()))
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
         Account check = accSrv.getByLogin(login);
 
@@ -166,7 +166,7 @@ public class AccountController {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
         //acc manage logic:
         account.setRole("staff");
-        account.setPass(passwordEncoder.encode(account.getPass()));
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
         accSrv.add(account); //flush empty links object, receive new one
         return Response.createResponse(HttpStatus.OK);
     }
