@@ -20,9 +20,8 @@ public class Requirement {
     @OneToMany(mappedBy = "requirement", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Requirement_InventoryPosition> allPositions;
 
-    public Requirement(UUID requirementID, String name) {
+    public Requirement(String name) {
 
-        this.requirementID = requirementID;
         this.name = name;
     }
 

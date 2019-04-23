@@ -12,4 +12,6 @@ public interface Requirement_InventoryPositionRepository extends JpaRepository<R
 
     List<Requirement_InventoryPosition> findAll();
     Requirement_InventoryPosition findByRequirementAndInventoryPosition(Requirement requirement, InventoryPosition position);
+    List<Requirement_InventoryPosition> findByRequirement(Requirement requirement);
+    List<Requirement_InventoryPosition> findByInventoryPosition(InventoryPosition position);
 }

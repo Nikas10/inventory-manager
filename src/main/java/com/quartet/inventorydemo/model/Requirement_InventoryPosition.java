@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class Requirement_InventoryPosition implements Serializable {
 
     @Column(name = "value")
-    String value;
+    private String value;
     @Id
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Requirement requirement;
@@ -29,4 +29,22 @@ public class Requirement_InventoryPosition implements Serializable {
         this.requirement = requirement;
         this.inventoryPosition = inventoryPosition;
     }
+
+    @Override
+    public boolean equals(Object requirement) {
+        if (!this.getClass().equals(requirement.getClass())) {
+            return false;
+        }
+
+        if (!this.value.equals( ((Requirement_InventoryPosition)requirement).value )) {
+            return false;
+        } else if (!this.requirement.equals( ((Requirement_InventoryPosition)requirement).requirement )) {
+            return false;
+        } else if (!this.inventoryPosition.equals( ((Requirement_InventoryPosition)requirement).inventoryPosition )) {
+            return false;
+        }
+
+        return true;
+    }
+
 }
