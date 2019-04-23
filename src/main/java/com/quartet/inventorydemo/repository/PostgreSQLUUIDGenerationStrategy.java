@@ -22,7 +22,7 @@ public class PostgreSQLUUIDGenerationStrategy implements UUIDGenerationStrategy 
             try (
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(
-                            "select uuid_generate_v4()\n"
+                            "select uuid_generate_v4()"
                     )
             ) {
                 while (resultSet.next()) {

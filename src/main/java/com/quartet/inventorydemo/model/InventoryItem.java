@@ -8,24 +8,27 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @ApiModel(description = "This entity/form represents fact of physical inventory objects have been given to profile (inventory holder).It contains information how much of items holder has and status of these items")
 @Entity(name = "InventoryItem")
-@IdClass(InventoryItem.InventoryItemId.class)
 @Table(name = "quartet_inventory_item", schema = "public")
 public class InventoryItem implements Serializable {
 
+    @EmbeddedId
+    private InventoryItemId inventoryItemId;
+
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Holder must be not null")
-    @Id
     @JoinColumn(name = "holder_id")
+    @MapsId("holderId")
     @ManyToOne(optional = false)
     private Holder holder;
 
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Inventory position must be not null")
-    @Id
     @JoinColumn(name = "inventory_position_id")
+    @MapsId("inventoryPositionId")
     @ManyToOne(optional = false)
     private InventoryPosition inventoryPosition;
 
@@ -100,14 +103,17 @@ public class InventoryItem implements Serializable {
         this.amount = amount;
     }
 
-    public static class InventoryItemId implements Serializable {
-        private Holder holder;
-        private InventoryPosition inventoryPosition;
+    @Embeddable
+    public class InventoryItemId implements Serializable {
+        private UUID holderId;
+        private UUID inventoryPositionId;
 
-        public InventoryItemId() {
+        private InventoryItemId() {
         }
 
-        public InventoryItemId(Holder holder, InventoryPosition inventoryPosition) {
+        public InventoryItemId(UUID holderId, UUID inventoryPositionId) {
+            this.holderId = holderId;
+            this.inventoryPositionId = inventoryPositionId;
         }
 
         @Override
@@ -115,13 +121,13 @@ public class InventoryItem implements Serializable {
             if (this == o) return true;
             if (!(o instanceof InventoryItemId)) return false;
             InventoryItemId that = (InventoryItemId) o;
-            return holder.equals(that.holder) &&
-                    inventoryPosition.equals(that.inventoryPosition);
+            return holderId.equals(that.holderId) &&
+                    inventoryPositionId.equals(that.inventoryPositionId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(holder, inventoryPosition);
+            return Objects.hash(holderId, inventoryPositionId);
         }
     }
 }
