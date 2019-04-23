@@ -1,43 +1,73 @@
 package com.quartet.inventorydemo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-@ApiModel
-@Entity
-@Data
-@Table(name = "requirement", schema = "public")
+@ApiModel(description = "This entity/form represents key of attribute value model for inventory position, like name of property")
+@Entity(name = "Requirement")
+@Table(name = "quartet_requirement", schema = "public")
 public class Requirement {
-    @Id
-    @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column(name = "requirementID")
-    private UUID requirementID;
 
-    @ApiModelProperty(position = 1, required = true, notes = "Requirement login")
-    @NotNull
-    @Column(name = "name")
+    @ApiModelProperty(hidden = true)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "pg-uuid")
+    @GenericGenerator(name = "pg-uuid", strategy = "uuid2",
+            parameters = @org.hibernate.annotations.Parameter(
+                    name = "uuid_gen_strategy_class",
+                    value = "com.quartet.inventorydemo.repository.PostgreSQLUUIDGenerationStrategy"))
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
+    private UUID id;
+
+    @ApiModelProperty(position = 1, required = true, notes = "Requirement name (name of property)")
+    @NotBlank(message = "Name must be not empty")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ApiModelProperty(hidden = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "requirement", fetch = FetchType.LAZY)
-    private Set<Requirement_InventoryPosition> allPositions;
+    @OneToMany(mappedBy = "requirement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<RequirementValue> requirementValues;
 
-    public Requirement(UUID requirementID, String name) {
+    private Requirement() {
+    }
 
-        this.requirementID = requirementID;
+    public Requirement(@NotBlank(message = "Name must be not empty") String name) {
         this.name = name;
     }
 
-    public void setRequirementID(UUID requirementID) {
-        this.requirementID = requirementID;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Requirement)) return false;
+        Requirement that = (Requirement) o;
+        return Objects.equals(id, that.id) &&
+                name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank(message = "Name must be not empty") String name) {
+        this.name = name;
+    }
+
+    public Set<RequirementValue> getRequirementValues() {
+        return requirementValues;
     }
 }

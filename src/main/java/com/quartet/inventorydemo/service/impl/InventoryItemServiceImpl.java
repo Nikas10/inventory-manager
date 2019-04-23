@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Service("InventoryItemService")
 @Transactional
@@ -23,18 +21,7 @@ public class InventoryItemServiceImpl implements InventoryItemService {
     }
 
     @Override
-    public InventoryItem getByInventoryItemID(UUID itemID) {
-        return invItemRepo.findByInventoryItemID(itemID);
-    }
-
-    @Override
-    public Set<InventoryItem> getByInventoryItemIDs(Set<UUID> itemIDs) {
-        return invItemRepo.findByInventoryItemIDIn(itemIDs);
-    }
-
-    @Override
     public InventoryItem add(InventoryItem item) {
-        item.setInventoryItemID(UUID.randomUUID());
         return invItemRepo.saveAndFlush(item);
     }
 

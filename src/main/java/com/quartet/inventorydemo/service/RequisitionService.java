@@ -9,7 +9,6 @@ import java.util.UUID;
 public interface RequisitionService {
     List<Requisition> getAll();
     Optional<Requisition> get(UUID id);
-    Requisition getByEmployeeID(UUID requestID);
     Requisition add(Requisition requisition);
     Requisition update(Requisition requisition);
 }

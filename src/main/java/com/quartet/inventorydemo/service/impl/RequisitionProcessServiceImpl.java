@@ -19,7 +19,7 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
 
     @Override
     public void create(Requisition requisition) {
-        String businessKey = requisition.getRequestID().toString();
+        String businessKey = requisition.getId().toString();
         Date dueDate = requisition.getDueDate();
 
         ProcessInstance process = runtimeService.startProcessInstanceByKey(PROCESS_NAME, businessKey);
@@ -28,7 +28,7 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
 
     @Override
     public void update(Requisition requisition) {
-        String businessKey = requisition.getRequestID().toString();
+        String businessKey = requisition.getId().toString();
         Date dueDate = requisition.getDueDate();
 
         ProcessInstance process = getByBusinessKey(businessKey);

@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,22 +30,25 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getByRoleID(UUID roleID) {
-        return roleRepo.findByRoleID(roleID);
+        Optional<Role> byId = roleRepo.findById(roleID);
+        byId.orElseThrow(ResourceNotFoundException::new);
+        return byId.get();
     }
 
     @Override
     public Set<Role> getByRoleIDs(Set<UUID> uuidSet) {
-        return roleRepo.findByRoleIDIn(uuidSet);
+        return roleRepo.findByIdIn(uuidSet);
     }
 
     @Override
-    public List<Role> getByRoleName(String roleName) {
-        return roleRepo.findByName(roleName);
+    public Role getByRoleName(String roleName) {
+        Optional<Role> byName = roleRepo.findByName(roleName);
+        byName.orElseThrow(ResourceNotFoundException::new);
+        return byName.get();
     }
 
     @Override
     public Role add(Role role) {
-        role.setRoleID(UUID.randomUUID());
         return roleRepo.saveAndFlush(role);
     }
 
@@ -54,9 +59,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void remove(Role role) {
-        Set<InventoryPosition> roleInventoryPositions = role.getRoleInventoryPositions();
+        Set<InventoryPosition> roleInventoryPositions = role.getInventoryPositions();
         for (InventoryPosition roleInventoryPosition : roleInventoryPositions) {
-            Set<InventoryItem> currentTypeItems = roleInventoryPosition.getCurrentTypeItems();
+            Set<InventoryItem> currentTypeItems = roleInventoryPosition.getInventoryItems();
             if (!currentTypeItems.isEmpty()) {
                 throw new DeletionNotSupportedException("can not delete role, while it is connected to positions with real items");
             }

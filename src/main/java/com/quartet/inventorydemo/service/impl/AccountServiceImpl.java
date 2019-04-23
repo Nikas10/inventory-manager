@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.repository.AccountRepository;
 import com.quartet.inventorydemo.service.AccountService;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,17 +28,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Set<Account> getByAccountIDs(Set<UUID> uuidSet) {
-        return accRepo.findByUidIn(uuidSet);
+        return accRepo.findByIdIn(uuidSet);
     }
 
     @Override
     public Account getByLogin(String login) {
-        return accRepo.findByLogin(login);
+        Optional<Account> byLogin = accRepo.findByLogin(login);
+        byLogin.orElseThrow(ResourceNotFoundException::new);
+        return byLogin.get();
     }
 
     @Override
     public Account add(Account acc) {
-        acc.setUid(UUID.randomUUID());
         return accRepo.saveAndFlush(acc);
     }
 
@@ -48,7 +51,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getByEmail(String email) {
-        return accRepo.findByEmail(email);
+        Optional<Account> byEmail = accRepo.findByEmail(email);
+        byEmail.orElseThrow(ResourceNotFoundException::new);
+        return byEmail.get();
     }
 
 

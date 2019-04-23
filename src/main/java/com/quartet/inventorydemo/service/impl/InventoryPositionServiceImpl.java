@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.InventoryPositionRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,22 +27,25 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
 
     @Override
     public Set<InventoryPosition> getByPositionIDs(Set<UUID> positionIDs) {
-        return positionRepo.findByPositionIDIn(positionIDs);
+        return positionRepo.findByIdIn(positionIDs);
     }
 
     @Override
     public InventoryPosition getByPositionID(UUID positionID) {
-        return positionRepo.findByPositionID(positionID);
+        Optional<InventoryPosition> byId = positionRepo.findById(positionID);
+        byId.orElseThrow(ResourceNotFoundException::new);
+        return byId.get();
     }
 
     @Override
     public InventoryPosition getByName(String name) {
-        return positionRepo.findByName(name);
+        Optional<InventoryPosition> byName = positionRepo.findByName(name);
+        byName.orElseThrow(ResourceNotFoundException::new);
+        return byName.get();
     }
 
     @Override
     public InventoryPosition add(InventoryPosition position) {
-        position.setPositionID(UUID.randomUUID());
         return positionRepo.saveAndFlush(position);
     }
 

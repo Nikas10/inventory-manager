@@ -1,7 +1,8 @@
 package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
-import com.quartet.inventorydemo.model.InventoryHolder;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.InventoryHolderService;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -116,7 +116,7 @@ public class RoleController {
     public ResponseEntity<?> getRoleLinksToInventoryHolders(@PathVariable("uuid") String stringUuid) {
         try {
             Role roleById = getRoleById(stringUuid);
-            Set<InventoryHolder> inventoryHolders = roleById.getAllHolders();
+            Set<Holder> inventoryHolders = roleById.getHolders();
             return Response.createResponse(inventoryHolders);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -130,7 +130,7 @@ public class RoleController {
     public ResponseEntity<?> getRoleLinksToInventoryPosition(@PathVariable("uuid") String stringUuid) {
         try {
             Role roleById = getRoleById(stringUuid);
-            Set<InventoryPosition> roleInventoryPositions = roleById.getRoleInventoryPositions();
+            Set<InventoryPosition> roleInventoryPositions = roleById.getInventoryPositions();
             return Response.createResponse(roleInventoryPositions);
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
@@ -145,7 +145,7 @@ public class RoleController {
                                                                 @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
         try {
             Role roleById = getRoleById(stringUuid);
-            Set<InventoryPosition> roleInventoryPositions = roleById.getRoleInventoryPositions();
+            Set<InventoryPosition> roleInventoryPositions = roleById.getInventoryPositions();
 
             Set<UUID> addByIds = createAndDeleteLinksForm.getAddIds();
             Set<InventoryPosition> addPositions = inventoryPositionService.getByPositionIDs(addByIds);
@@ -174,7 +174,11 @@ public class RoleController {
     }
 
     private boolean checkIfRoleWithSameNameExists(String roleName) {
-        List<Role> byRoleName = roleService.getByRoleName(roleName);
-        return !byRoleName.isEmpty();   //if list is not empty, then role with same name already exists
+        try {
+            Role byRoleName = roleService.getByRoleName(roleName);
+            return true;
+        } catch (ResourceNotFoundException e) {
+            return false;
+        }
     }
 }

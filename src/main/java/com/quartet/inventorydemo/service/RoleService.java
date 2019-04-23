@@ -13,7 +13,7 @@ public interface RoleService {
 
     Set<Role> getByRoleIDs(Set<UUID> uuidSet);
 
-    List<Role> getByRoleName(String roleName);
+    Role getByRoleName(String roleName);
     Role add(Role role);
     Role update(Role role);
 

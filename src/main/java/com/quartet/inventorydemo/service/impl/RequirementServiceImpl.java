@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Requirement;
 import com.quartet.inventorydemo.repository.RequirementRepository;
 import com.quartet.inventorydemo.service.RequirementService;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service("RequirementService")
@@ -22,17 +24,20 @@ public class RequirementServiceImpl implements RequirementService {
 
     @Override
     public Requirement getByRequirementID(UUID employeeID) {
-        return requirementRepo.findByRequirementID(employeeID);
+        Optional<Requirement> byId = requirementRepo.findById(employeeID);
+        byId.orElseThrow(ResourceNotFoundException::new);
+        return byId.get();
     }
 
     @Override
     public Requirement getByRequirementName(String name) {
-        return requirementRepo.findByName(name);
+        Optional<Requirement> byName = requirementRepo.findByName(name);
+        byName.orElseThrow(ResourceNotFoundException::new);
+        return byName.get();
     }
 
     @Override
     public Requirement add(Requirement holder) {
-        holder.setRequirementID(UUID.randomUUID());
         return requirementRepo.saveAndFlush(holder);
     }
 
