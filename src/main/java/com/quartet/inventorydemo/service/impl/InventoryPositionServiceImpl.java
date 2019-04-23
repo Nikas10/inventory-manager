@@ -3,18 +3,18 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.model.InventoryHolder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
+import com.quartet.inventorydemo.model.InventoryPositionContents;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.repository.InventoryItemRepository;
+import com.quartet.inventorydemo.repository.InventoryPositionContentsRepository;
 import com.quartet.inventorydemo.repository.InventoryPositionRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.Position;
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service("InventoryPositionService")
 @Transactional
@@ -28,6 +28,9 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
 
     @Autowired
     private InventoryHolderRepository inventoryHolderRepo;
+
+    @Autowired
+    private InventoryPositionContentsRepository inventoryPositionContentsRepo;
 
     @Override
     public List<InventoryPosition> getAll() {
@@ -63,27 +66,18 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     @Override
     public void remove(InventoryPosition position) {
         List<InventoryItem> itemsWithSelectedPosition = inventoryItemRepo.findByInventoryPosition(position);
-        Set<UUID> holderIDs = new HashSet<>();
+
+        List<InventoryPositionContents> bundlesWithThisPosition = inventoryPositionContentsRepo.findByPartOfInventoryPosition(position);
+
+        for (InventoryPositionContents bundle: bundlesWithThisPosition) {
+            inventoryPositionContentsRepo.delete(bundle);
+        }
 
         if (itemsWithSelectedPosition == null) {
             positionRepo.delete(position);
             return;
         }
 
-        for (InventoryItem current: itemsWithSelectedPosition) {
-            holderIDs.add(current.getInventoryHolder().getHolderID());
-        }
-
-        List<InventoryHolder> holdersWithAccount = inventoryHolderRepo.findHolderWithAccount();
-
-        for (InventoryHolder current: holdersWithAccount) {
-            if (holderIDs.contains(current.getHolderID())) {
-                //Not delete
-                return;
-            }
-        }
-
-        positionRepo.delete(position);
 
     }
 }

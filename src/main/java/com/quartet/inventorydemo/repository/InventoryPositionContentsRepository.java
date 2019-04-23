@@ -11,4 +11,5 @@ public interface InventoryPositionContentsRepository extends JpaRepository<Inven
 
     List<InventoryPositionContents> findAll();
     InventoryPositionContents findByBundleAndPartOfInventoryPosition(InventoryPosition bundle, InventoryPosition partOfInventoryPosition);
+    List<InventoryPositionContents> findByPartOfInventoryPosition(InventoryPosition partOfInventoryPosition);
 }
