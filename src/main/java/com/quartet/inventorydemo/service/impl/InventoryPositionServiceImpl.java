@@ -64,7 +64,7 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     }
 
     @Override
-    public void remove(InventoryPosition position) {
+    public void removeInventoryItem(InventoryPosition position) {
         List<InventoryItem> itemsWithSelectedPosition = inventoryItemRepo.findByInventoryPosition(position);
 
         List<InventoryPositionContents> bundlesWithThisPosition = inventoryPositionContentsRepo.findByPartOfInventoryPosition(position);
@@ -77,7 +77,58 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
             positionRepo.delete(position);
             return;
         }
+    }
 
+    @Override
+    public void removeBundle(InventoryPosition position) {
+        Set<InventoryItem> currentTypeItems = position.getCurrentTypeItems();
+        //check if everyone in storage else throw exception
+        Set<InventoryPositionContents> partOfBundles = position.getPartOfBundles();
+        List<InventoryItem> allItems = new ArrayList<>();
+        for (InventoryPositionContents partOfBundle : partOfBundles) {
+            Integer amount = partOfBundle.getAmount();
+            InventoryPosition partOfInventoryPosition = partOfBundle.getPartOfInventoryPosition();
+            Set<InventoryItem> currentTypeItems1 = partOfInventoryPosition.getCurrentTypeItems();
+            boolean existsInStorage = false;
+            for (InventoryItem inventoryItem : currentTypeItems1) {
+                InventoryHolder inventoryHolder = inventoryItem.getInventoryHolder();
+                //if holder = storage
+                existsInStorage = true;
+                inventoryItem.setAmount(amount + inventoryItem.getAmount());
+                break;
+            }
+            if (!existsInStorage) {
+                InventoryItem inventoryItem = new InventoryItem();
+                inventoryItem.setInventoryHolder(/*storage holder*/ new InventoryHolder());
+                inventoryItem.setInventoryPosition(partOfInventoryPosition);
+                inventoryItem.setAmount(amount);
+                //repo inventory item save this shit
+                allItems.add(inventoryItem);
 
+            }
+        }
+        inventoryItemRepo.saveAll(allItems);
+        positionRepo.delete(position); //если нет каскадного удаления, то удалить отдельно inventory item и хуйню
+
+    }
+
+    private List<InventoryPositionContents> findParents(InventoryPosition position){
+        return inventoryPositionContentsRepo.findByPartOfInventoryPosition(position);
+    }
+
+    private List<InventoryPositionContents> createParentsTree(InventoryPosition bundle) {
+        List<InventoryPositionContents> allParents = new ArrayList<>();
+
+        int i = 0;
+        while (true) {
+            if (i == allParents.size()) {
+                break;
+            }
+            allParents.addAll(findParents(bundle));
+            bundle = allParents.get(i).getBundle();
+            i++;
+        }
+
+        return allParents;
     }
 }

@@ -15,5 +15,6 @@ public interface InventoryPositionService {
     InventoryPosition getByName(String name);
     InventoryPosition add(InventoryPosition position);
     InventoryPosition update(InventoryPosition position);
-    void remove(InventoryPosition position);
+    void removeInventoryItem(InventoryPosition position);
+    void removeBundle(InventoryPosition position);
 }

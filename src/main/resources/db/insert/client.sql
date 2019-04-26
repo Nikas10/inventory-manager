@@ -1,1 +1,2 @@
 INSERT INTO oauth_client_details VALUES ('web',NULL,'$2a$10$GHRBb68j3ZEhrehTuYXiLeShSWxSPq2KggDfeda5DJR0elQAWAzAy','read,write,trust','password,authorization_code,refresh_token,implicit','','USER,ADMIN',NULL,NULL,NULL,NULL);
+INSERT INTO inventory_holder VALUES ("247aa21c-2953-4234-ad80-33bcae5b453b", 'stock holder', 'stock');

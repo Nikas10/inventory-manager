@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -70,11 +69,26 @@ public class InventoryController {
         return Response.createResponse(newPosition);
     }
 
-    @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "position/{uuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteInventoryPosition(@PathVariable("uuid") String stringUuid) {
         try {
             InventoryPosition byPositionID = getPositionById(stringUuid);
-            inventoryPositionService.remove(byPositionID);
+            inventoryPositionService.removeInventoryItem(byPositionID);
+            return Response.createResponse();
+        } catch (IllegalArgumentException e) {
+            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");
+        } catch (NotFoundException e) {
+            return Response.createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (DeletionNotSupportedException e) {
+            return Response.createErrorResponse(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS, e.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "bundle/{uuid}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteBundle(@PathVariable("uuid") String stringUuid) {
+        try {
+            InventoryPosition byPositionID = getPositionById(stringUuid);
+            inventoryPositionService.removeInventoryItem(byPositionID);
             return Response.createResponse();
         } catch (IllegalArgumentException e) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "UUID is not correct");

@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.repository;
 
+import com.quartet.inventorydemo.model.InventoryHolder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,7 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, UU
 
     @Query("SELECT item from InventoryItem item where item.inventoryPosition =:position")
     List<InventoryItem> findByInventoryPosition(@Param("position") InventoryPosition position);
+
+    @Query("SELECT item from InventoryItem item where item.inventoryPosition =:position and item.inventoryHolder =:holder")
+    InventoryItem findByInventoryPositionAndHolderID(@Param("position") InventoryPosition position, @Param("holder") InventoryHolder holder);
 }
