@@ -1,0 +1,80 @@
+package com.quartet.inventorydemo.service.impl;
+
+import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Holder;
+import com.quartet.inventorydemo.model.InventoryItem;
+import com.quartet.inventorydemo.repository.InventoryHolderRepository;
+import com.quartet.inventorydemo.service.HolderService;
+import com.quartet.inventorydemo.util.OnCreate;
+import com.quartet.inventorydemo.util.OnUpdate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+@Service("HolderService")
+@Validated
+@Transactional
+public class HolderServiceImpl implements HolderService {
+    private final InventoryHolderRepository inventoryHolderRepository;
+
+    @Autowired
+    public HolderServiceImpl(@Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepository) {
+        this.inventoryHolderRepository = inventoryHolderRepository;
+    }
+
+    @Override
+    public Set<Holder> getAll() {
+        return inventoryHolderRepository.findAllToSet();
+    }
+
+    @Override
+    public Holder getByHolderID(@NotNull @Valid UUID holderID) {
+        Optional<Holder> byId = inventoryHolderRepository.findById(holderID);
+        byId.orElseThrow(ResourceNotFoundException::new);
+        return byId.get();
+    }
+
+    @Override
+    public Set<Holder> getByHolderIDs(@NotNull @Valid Set<UUID> holderIDs) {
+        return inventoryHolderRepository.findByIdIn(holderIDs);
+    }
+
+    @Override
+    public Holder getByHolderName(@NotBlank @Valid String holderName) {
+        Optional<Holder> byName = inventoryHolderRepository.findByName(holderName);
+        byName.orElseThrow(ResourceNotFoundException::new);
+        return byName.get();
+    }
+
+    @Validated(OnCreate.class)
+    @Override
+    public Holder add(@NotNull @Valid Holder holder) {
+        return inventoryHolderRepository.saveAndFlush(holder);
+    }
+
+    @Validated(OnUpdate.class)
+    @Override
+    public Holder update(@NotNull @Valid Holder holder) {
+        return inventoryHolderRepository.saveAndFlush(holder);
+    }
+
+    @Validated(OnUpdate.class)
+    @Override
+    public void remove(@NotNull @Valid Holder holder) {
+        Set<InventoryItem> inventoryItems = holder.getInventoryItems();
+        if (!inventoryItems.isEmpty()) {
+            throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
+        }
+        inventoryHolderRepository.delete(holder);
+    }
+}

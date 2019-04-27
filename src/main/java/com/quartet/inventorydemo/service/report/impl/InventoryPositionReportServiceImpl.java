@@ -19,7 +19,7 @@ public class InventoryPositionReportServiceImpl implements InventoryPositionRepo
 
     @Override
     public List<Map<String, Object>> report() {
-        List<InventoryPosition> inventoryPositions = inventoryPositionService.getAll();
+        List<InventoryPosition> inventoryPositions = new ArrayList<>(inventoryPositionService.getAll());
         List<Map<String, Object>> result = new ArrayList<>();
         for (InventoryPosition inventoryPosition : inventoryPositions) {
             Map<String, Object> stringObjectMap = new HashMap<>();

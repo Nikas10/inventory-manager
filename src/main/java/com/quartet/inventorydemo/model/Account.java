@@ -1,14 +1,13 @@
 package com.quartet.inventorydemo.model;
 
+import com.quartet.inventorydemo.util.OnCreate;
+import com.quartet.inventorydemo.util.OnUpdate;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +19,8 @@ import java.util.UUID;
 public class Account implements Serializable {
 
     @ApiModelProperty(hidden = true)
+    @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")
+    @NotNull(groups = OnUpdate.class, message = "Resource id must be not null on update")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "pg-uuid")
     @GenericGenerator(name = "pg-uuid", strategy = "uuid2",

@@ -29,7 +29,7 @@ public class PostgreSQLUUIDGenerationStrategy implements UUIDGenerationStrategy 
                     return (UUID) resultSet.getObject(1);
                 }
             }
-            throw new IllegalArgumentException("Can't fetch a new UUID");
+            throw new IllegalArgumentException("Can't fetch a new UUIDString");
         });
     }
 }

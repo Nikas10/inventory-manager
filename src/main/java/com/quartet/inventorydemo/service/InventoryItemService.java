@@ -1,11 +1,24 @@
 package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.model.InventoryItem;
+import com.quartet.inventorydemo.util.OnCreate;
+import com.quartet.inventorydemo.util.OnUpdate;
+import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 public interface InventoryItemService {
-    List<InventoryItem> getAll();
-    InventoryItem add(InventoryItem item);
-    InventoryItem update(InventoryItem item);
+
+    Collection<InventoryItem> getAll();
+
+    @Validated(OnCreate.class)
+    InventoryItem add(@NotNull @Valid InventoryItem item);
+
+    @Validated(OnUpdate.class)
+    InventoryItem update(@NotNull @Valid InventoryItem item);
+
+    @Validated(OnUpdate.class)
+    void remove(@NotNull @Valid InventoryItem item);
 }

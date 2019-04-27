@@ -1,6 +1,6 @@
 package com.quartet.inventorydemo.service;
 
-import com.quartet.inventorydemo.model.Role;
+import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.util.OnCreate;
 import com.quartet.inventorydemo.util.OnUpdate;
 import org.springframework.validation.annotation.Validated;
@@ -12,22 +12,22 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
-public interface RoleService {
+public interface HolderService {
 
-    Collection<Role> getAll();
+    Collection<Holder> getAll();
 
-    Role getByRoleID(@NotNull @Valid UUID roleID);
+    Holder getByHolderID(@NotNull @Valid UUID holderID);
 
-    Role getByRoleName(@NotBlank @Valid String roleName);
+    Collection<Holder> getByHolderIDs(@NotNull @Valid Set<UUID> holderIDs);
 
-    Collection<Role> getByRoleIDs(@NotNull @Valid Set<UUID> uuidSet);
+    Holder getByHolderName(@NotBlank @Valid String holderName);
 
     @Validated(OnCreate.class)
-    Role add(@NotNull @Valid Role role);
+    Holder add(@NotNull @Valid Holder holder);
 
     @Validated(OnUpdate.class)
-    Role update(@NotNull @Valid Role role);
+    Holder update(@NotNull @Valid Holder holder);
 
     @Validated(OnUpdate.class)
-    void remove(@NotNull @Valid Role role);
+    void remove(@NotNull @Valid Holder holder);
 }

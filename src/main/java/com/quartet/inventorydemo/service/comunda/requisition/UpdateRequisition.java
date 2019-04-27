@@ -7,7 +7,6 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Component("UpdateRequisition")
@@ -19,11 +18,8 @@ public final class UpdateRequisition {
         String idString = execution.getProcessBusinessKey();
         UUID id = UUID.fromString(idString);
 
-        Optional<Requisition> requisition = requisitionService.get(id);
-
-        requisition.ifPresent(req -> {
-            req.setStatus(status);
-            requisitionService.update(req);
-        });
+        Requisition requisition = requisitionService.getById(id);
+        requisition.setStatus(status);
+        requisitionService.update(requisition);
     }
 }

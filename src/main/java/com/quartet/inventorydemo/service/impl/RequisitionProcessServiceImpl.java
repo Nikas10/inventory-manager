@@ -2,23 +2,34 @@ package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
+import com.quartet.inventorydemo.util.OnUpdate;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Service("RequisitionProcessService")
-public final class RequisitionProcessServiceImpl implements RequisitionProcessService {
+@Validated
+@org.springframework.transaction.annotation.Transactional
+public class RequisitionProcessServiceImpl implements RequisitionProcessService {
     private final static String PROCESS_NAME = "requisitionExecution";
     private final static String DUE_DATE = "dueDate";
 
-    @Autowired
-    private RuntimeService runtimeService;
+    private final RuntimeService runtimeService;
 
+    @Autowired
+    public RequisitionProcessServiceImpl(final RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
+    }
+
+    @Validated(OnUpdate.class)
     @Override
-    public void create(Requisition requisition) {
+    public void create(@NotNull @Valid Requisition requisition) {
         String businessKey = requisition.getId().toString();
         Date dueDate = requisition.getDueDate();
 
@@ -26,8 +37,9 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
         runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
     }
 
+    @Validated(OnUpdate.class)
     @Override
-    public void update(Requisition requisition) {
+    public void update(@NotNull @Valid Requisition requisition) {
         String businessKey = requisition.getId().toString();
         Date dueDate = requisition.getDueDate();
 
@@ -36,8 +48,9 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
         runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
     }
 
+    @Validated(OnUpdate.class)
     @Override
-    public void delete(Requisition requisition) {
+    public void delete(@NotNull @Valid Requisition requisition) {
 
     }
 
