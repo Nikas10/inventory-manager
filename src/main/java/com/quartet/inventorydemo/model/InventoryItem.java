@@ -13,7 +13,7 @@ import java.util.UUID;
 @ApiModel(description = "This entity/form represents fact of physical inventory objects have been given to profile (inventory holder).It contains information how much of items holder has and status of these items")
 @Entity(name = "InventoryItem")
 @Table(name = "quartet_inventory_item", schema = "public")
-public class InventoryItem implements Serializable {
+public class InventoryItem extends History implements Serializable {
 
     @EmbeddedId
     private InventoryItemId inventoryItemId;

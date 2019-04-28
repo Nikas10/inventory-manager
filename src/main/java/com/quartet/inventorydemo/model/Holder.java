@@ -17,7 +17,7 @@ import java.util.UUID;
 @ApiModel(description = "This entity/form represents profile that holds some inventory objects. May be storehouse profile or any user profile")
 @Entity(name = "Holder")
 @Table(name = "quartet_holder", schema = "public")
-public class Holder {
+public class Holder extends History {
 
     @ApiModelProperty(hidden = true)
     @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")

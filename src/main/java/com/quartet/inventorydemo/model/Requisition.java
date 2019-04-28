@@ -20,7 +20,7 @@ import java.util.UUID;
 @DateIsAfterProvidedDate(baseProvidedDateFieldName = "creationDate", testDateFieldName = "dueDate")
 @Entity(name = "Requisition")
 @Table(name = "quartet_requisition", schema = "public")
-public class Requisition {
+public class Requisition extends History {
 
     @ApiModelProperty(hidden = true)
     @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")

@@ -12,7 +12,7 @@ import java.util.UUID;
 @ApiModel(description = "This entity/form represents value of property(requirement) for current inventory position")
 @Entity(name = "RequirementValue")
 @Table(name = "quartet_requirement_value", schema = "public")
-public class RequirementValue implements Serializable {
+public class RequirementValue extends History implements Serializable {
 
     @EmbeddedId
     private RequirementValueID requirementValueID;
