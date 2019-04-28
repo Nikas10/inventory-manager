@@ -111,7 +111,7 @@ public class InventoryItem implements Serializable {
         private InventoryItemId() {
         }
 
-        public InventoryItemId(UUID holderId, UUID inventoryPositionId) {
+        public InventoryItemId(@NotNull UUID holderId, @NotNull UUID inventoryPositionId) {
             this.holderId = holderId;
             this.inventoryPositionId = inventoryPositionId;
         }

@@ -16,6 +16,6 @@ public interface InventoryPositionRepository extends JpaRepository<InventoryPosi
     }
 
     Optional<InventoryPosition> findByName(String name);
-
+    Optional<InventoryPosition> findById(UUID positionID);
     Set<InventoryPosition> findByIdIn(Iterable<UUID> ids);
 }

@@ -16,4 +16,5 @@ public interface RequirementRepository extends JpaRepository<Requirement, UUID> 
     }
 
     Optional<Requirement> findByName(String name);
+    Optional<Requirement> findById(UUID requirementID);
 }

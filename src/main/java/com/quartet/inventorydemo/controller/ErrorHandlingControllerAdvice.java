@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.controller;
 
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -55,6 +56,13 @@ public class ErrorHandlingControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     String onMissingEntity(ResourceNotFoundException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+    @ResponseBody
+    String onResourceExistance(ResourceAlreadyExistsException e) {
         return e.getMessage();
     }
 

@@ -7,20 +7,25 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @ApiModel(description = "This entity/form represents inventory position inside bundle")
 @Entity(name = "Bundle_InventoryPosition")
 @Table(name = "quartet_bundle_position__quartet_inventory_position", schema = "public")
 public class Bundle_InventoryPosition implements Serializable {
-    @Id
+
+    @EmbeddedId
+    private Bundle_InventoryPositionID bundle_InventoryPositionID;
+
     @NotNull(message = "Inventory position can not be null")
     @JoinColumn(name = "inventory_position_id", nullable = false)
+    @MapsId("inventoryID")
     @ManyToOne(optional = false, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private InventoryPosition inventoryPosition;
 
-    @Id
     @NotNull(message = "Bundle position can not be null")
     @JoinColumn(name = "bundle_position_id", nullable = false)
+    @MapsId("bundleID")
     @ManyToOne(optional = false, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private InventoryPosition bundlePosition;
 
@@ -76,5 +81,31 @@ public class Bundle_InventoryPosition implements Serializable {
 
     public void setAmount(@Positive(message = "Amount must be more than 0") Integer amount) {
         this.amount = amount;
+    }
+
+    @Embeddable
+    public class Bundle_InventoryPositionID implements Serializable {
+
+        private UUID inventoryID;
+        private UUID bundleID;
+
+        public Bundle_InventoryPositionID(@NotNull UUID inventoryPosition, @NotNull UUID bundlePosition) {
+            this.inventoryID = inventoryPosition;
+            this.bundleID = bundlePosition;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(bundleID, inventoryID);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Bundle_InventoryPosition.Bundle_InventoryPositionID)) return false;
+            Bundle_InventoryPosition.Bundle_InventoryPositionID that = (Bundle_InventoryPosition.Bundle_InventoryPositionID) obj;
+            return inventoryID.equals(that.inventoryID) &&
+                    bundleID.equals(that.bundleID);
+        }
     }
 }

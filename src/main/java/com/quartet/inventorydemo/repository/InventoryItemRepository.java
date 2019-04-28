@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Repository("InventoryItemRepository")
-public interface InventoryItemRepository extends JpaRepository<InventoryItem, UUID> {
+public interface InventoryItemRepository extends JpaRepository<InventoryItem, InventoryItem.InventoryItemId> {
     default Set<InventoryItem> findAllToSet() {
         return new HashSet<>(findAll());
     }
