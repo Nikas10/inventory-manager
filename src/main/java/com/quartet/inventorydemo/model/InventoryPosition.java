@@ -42,8 +42,8 @@ public class InventoryPosition {
     public InventoryPosition() {
     }
 
-    public InventoryPosition(UUID positionID, String name) {
-        this.positionID = positionID;
+    public InventoryPosition(String name, String description) {
+        this.description = description;
         this.name = name;
     }
 }

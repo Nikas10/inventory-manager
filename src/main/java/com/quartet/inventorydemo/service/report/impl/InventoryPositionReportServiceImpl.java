@@ -16,7 +16,7 @@ public class InventoryPositionReportServiceImpl implements InventoryPositionRepo
 
     @Override
     public List<Map<String, Object>> report() {
-        inventoryPositionService.add(new InventoryPosition(UUID.randomUUID(), "name1"));
+        inventoryPositionService.add(new InventoryPosition("name1", "description1"));
         List<InventoryPosition> inventoryPositions = inventoryPositionService.getAll();
         List<Map<String, Object>> result = new ArrayList<>();
         for (InventoryPosition inventoryPosition : inventoryPositions) {

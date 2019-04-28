@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.model.*;
 import com.quartet.inventorydemo.service.*;
@@ -54,18 +55,19 @@ public class InventoryController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createInventoryPosition(@RequestBody InventoryPosition position) {
-        String requestPositionName = position.getName();
-        if (requestPositionName == null || "".equals(requestPositionName)) {
+    public ResponseEntity<?> createInventoryPosition(@RequestBody InventoryPositionDTO position) {
+        String name = position.getName();
+        if (name == null || "".equals(name)) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory position name is not correct.");
         }
 
-        boolean nameExists = checkIfPositionWithSameNameExists(requestPositionName);
+        boolean nameExists = checkIfPositionWithSameNameExists(name);
         if (nameExists) {
             return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Role with same name already exists.");
         }
 
-        InventoryPosition newPosition = inventoryPositionService.add(position);
+        String description = position.getDescription();
+        InventoryPosition newPosition = inventoryPositionService.add(new InventoryPosition(name, description));
         return Response.createResponse(newPosition);
     }
 
@@ -100,7 +102,7 @@ public class InventoryController {
     }
 
     @RequestMapping(value = "/{name}", method = RequestMethod.POST)
-    public ResponseEntity<?> createNewRequirement(@PathVariable("name") String name) {
+    public ResponseEntity<?> createRequirement(@PathVariable("name") String name) {
         Requirement requirement = requirementService.getByRequirementName(name);
 
         if (requirement != null) {
@@ -113,7 +115,7 @@ public class InventoryController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteNewRequirement(@PathVariable("id") UUID id) {
+    public ResponseEntity<?> deleteRequirement(@PathVariable("id") UUID id) {
         Requirement requirement = requirementService.getByRequirementID(id);
 
         if (requirement == null) {
