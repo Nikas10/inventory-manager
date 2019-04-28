@@ -11,7 +11,7 @@ import java.io.Serializable;
 @ApiModel(description = "This entity/form represents what and how much of inventory positions connected to requisition")
 @Entity(name = "Requisition_InventoryPosition")
 @Table(name = "quartet_requisition__quartet_inventory_position", schema = "public")
-public class Requisition_InventoryPosition implements Serializable {
+public class Requisition_InventoryPosition extends History implements Serializable {
 
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Inventory position must be not null")

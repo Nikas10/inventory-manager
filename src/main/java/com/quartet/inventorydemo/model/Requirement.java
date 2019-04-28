@@ -17,7 +17,7 @@ import java.util.UUID;
 @ApiModel(description = "This entity/form represents key of attribute value model for inventory position, like name of property")
 @Entity(name = "Requirement")
 @Table(name = "quartet_requirement", schema = "public")
-public class Requirement {
+public class Requirement extends History {
 
     @ApiModelProperty(hidden = true)
     @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")

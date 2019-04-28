@@ -16,7 +16,7 @@ import java.util.UUID;
 @ApiModel(description = "This entity/form represents user of system. Contains info to log in and other information related to user")
 @Entity(name = "Account")
 @Table(name = "quartet_account", schema = "public")
-public class Account implements Serializable {
+public class Account extends History implements Serializable {
 
     @ApiModelProperty(hidden = true)
     @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")

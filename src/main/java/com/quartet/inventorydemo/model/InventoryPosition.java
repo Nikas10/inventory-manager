@@ -16,7 +16,7 @@ import java.util.UUID;
 @ApiModel(description = "This entity/form represents inventory position of any inventory item(like META information). It may be either bundle(position, that contains another position), nor simple position.")
 @Entity(name = "InventoryPosition")
 @Table(name = "quartet_inventory_position", schema = "public")
-public class InventoryPosition {
+public class InventoryPosition extends History {
 
     @ApiModelProperty(hidden = true)
     @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")
