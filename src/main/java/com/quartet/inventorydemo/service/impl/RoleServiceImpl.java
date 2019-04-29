@@ -8,6 +8,8 @@ import com.quartet.inventorydemo.util.OnCreate;
 import com.quartet.inventorydemo.util.OnUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -57,7 +59,20 @@ public class RoleServiceImpl implements RoleService {
     @Validated(OnCreate.class)
     @Override
     public Role add(@NotNull @Valid Role role) {
-        return roleRepository.saveAndFlush(role);
+        ExampleMatcher nameIgnoreSensitivityMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+                .withIgnorePaths("id", "description", "inventoryPositions", "holders");
+        Example<Role> roleExample = Example.of(role, nameIgnoreSensitivityMatcher);
+        Optional<Role> alreadyExists = roleRepository.findOne(roleExample);
+
+        alreadyExists.ifPresent(e -> {
+            throw new RuntimeException(""); //TODO
+        });
+
+        return alreadyExists.orElseGet(() -> {
+            Role newRole = new Role(role.getName(), role.getDescription());
+            return roleRepository.saveAndFlush(newRole);
+        });
     }
 
     @Validated(OnUpdate.class)

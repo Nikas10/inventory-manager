@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.controller;
 
+import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -14,6 +15,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ErrorHandlingControllerAdvice {
@@ -51,13 +53,19 @@ public class ErrorHandlingControllerAdvice {
         return "Changes from a side were occurred. Please retry again";
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler({ResourceNotFoundException.class, NoSuchElementException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    String onMissingEntity(ResourceNotFoundException e) {
+    String onMissingEntity(RuntimeException e) {
         return e.getMessage();
     }
 
+    @ExceptionHandler(DeletionNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ResponseBody
+    String onUnsupportedDeletion(DeletionNotSupportedException e) {
+        return e.getMessage();
+    }
 
     public class ValidationErrorResponse {
         private List<Violation> violations = new ArrayList<>();

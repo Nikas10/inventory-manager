@@ -10,6 +10,8 @@ import com.quartet.inventorydemo.util.OnCreate;
 import com.quartet.inventorydemo.util.OnUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -59,7 +61,20 @@ public class HolderServiceImpl implements HolderService {
     @Validated(OnCreate.class)
     @Override
     public Holder add(@NotNull @Valid Holder holder) {
-        return inventoryHolderRepository.saveAndFlush(holder);
+        ExampleMatcher nameIgnoreSensitivityMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+                .withIgnorePaths("id", "description", "roles", "accounts", "inventoryItems");
+        Example<Holder> holderExample = Example.of(holder, nameIgnoreSensitivityMatcher);
+        Optional<Holder> alreadyExists = inventoryHolderRepository.findOne(holderExample);
+
+        alreadyExists.ifPresent(e -> {
+            throw new RuntimeException(""); //TODO
+        });
+
+        return alreadyExists.orElseGet(() -> {
+            Holder newHolder = new Holder(holder.getName(), holder.getDescription());
+            return inventoryHolderRepository.saveAndFlush(newHolder);
+        });
     }
 
     @Validated(OnUpdate.class)
