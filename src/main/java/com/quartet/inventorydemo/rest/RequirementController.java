@@ -1,21 +1,20 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requirement;
 import com.quartet.inventorydemo.model.RequirementValue;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.service.RequirementValueService;
-import com.quartet.inventorydemo.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -35,107 +34,83 @@ public class RequirementController {
         this.requirementService = requirementService;
     }
 
-    @RequestMapping(value = "value/{name}", method = RequestMethod.POST)
-    public ResponseEntity<?> createRequiement(@PathVariable("name") String name) {
-        Requirement requirement = requirementService.getByRequirementName(name);
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<?> createRequiement(@RequestBody Requirement requirement) {
+        Requirement newRequirement = requirementService.add(requirement);
 
-        if (requirement != null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Requirement already exists.");
-        }
-
-        requirementService.add(new Requirement(name));
-
-        return Response.createResponse(requirement);
+        return new ResponseEntity<>(newRequirement, HttpStatus.OK);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRequirement(@PathVariable("id") UUID id) {
-        Requirement requirement = requirementService.getByRequirementID(id);
+        Optional<Requirement> requirementOptional = requirementService.getByRequirementID(id);
+        requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
 
-        if (requirement == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Requirement not found.");
-        }
-
-        requirementService.remove(requirement);
-
-        return Response.createResponse(requirement);
+        Requirement removed = requirementOptional.get();
+        requirementService.remove(id);
+        return new ResponseEntity(removed, HttpStatus.OK);
     }
 
     @RequestMapping(value = "requirement/{requirementID}/position/{positionID}/{value}", method = RequestMethod.POST)
     public ResponseEntity<?> createRequirementValue(@PathVariable("positionID") UUID positionID,
-                                    @PathVariable("requirementID") UUID requirementID,
-                                    @PathVariable("value") String value) {
-        InventoryPosition position = positionService.getByPositionID(positionID);
-        Requirement requirement = requirementService.getByRequirementID(requirementID);
+                                                    @PathVariable("requirementID") UUID requirementID,
+                                                    @RequestBody RequirementValue requirementValue) {
+        Optional<InventoryPosition> positionOptional = positionService.getByPositionID(positionID);
+        Optional<Requirement> requirementOptional = requirementService.getByRequirementID(requirementID);
 
-        if (position == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory position not found.");
-        }
+        positionOptional.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + positionID + " not found"));
+        requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID + " not found"));
 
-        if (requirement == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Requirement not found.");
-        }
+        Optional<RequirementValue> optionalProperty = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
 
-        RequirementValue newProperty = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
+        optionalProperty.ifPresent(property -> new ResourceAlreadyExistsException("Requirement with id: " + requirementID
+                                                                        + " for position with id: " + positionID
+                                                                        + " already exists."));
 
-        if (newProperty != null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Property already exists.");
-        }
+        RequirementValue newProperty = requirementValueService.add(positionID, requirementID, requirementValue);
 
-        newProperty = requirementValueService.create(positionID, requirementID, value);
-
-        return Response.createResponse(newProperty);
+        return new ResponseEntity<>(newProperty, HttpStatus.OK);
     }
 
     @RequestMapping(value = "requirement/{requirementID}/position/{positionID}/{value}", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateRequirementValue(@PathVariable("positionID") UUID positionID,
                                     @PathVariable("requirementID") UUID requirementID,
-                                    @PathVariable("value") String value) {
-        InventoryPosition position = positionService.getByPositionID(positionID);
-        Requirement requirement = requirementService.getByRequirementID(requirementID);
+                                    @RequestBody RequirementValue value) {
+        Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(positionID);
+        Optional<Requirement> optionalRequirement = requirementService.getByRequirementID(requirementID);
 
-        if (position == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory position not found.");
-        }
+        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id:" + positionID + " not found."));
+        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id:" + requirementID + " not found."));
 
-        if (requirement == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Requirement not found.");
-        }
+        Optional<RequirementValue> optionalRequirementValue = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
 
-        RequirementValue newProperty = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
+        optionalRequirementValue.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID
+                                                                                 + " for position with id: " + positionID
+                                                                                 + " not found."));
 
-        if (newProperty == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Property does not exist.");
-        }
+        RequirementValue newProperty = requirementValueService.update(positionID, requirementID, value);
 
-        newProperty = requirementValueService.update(positionID, requirementID, value);
-
-        return Response.createResponse(newProperty);
+        return new ResponseEntity<>(newProperty, HttpStatus.OK);
     }
 
     @RequestMapping(value = "requirement/{requirementID}/position/{positionID}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRequirementValue(@PathVariable("positionID") UUID positionID,
                                     @PathVariable("requirementID") UUID requirementID)
     {
-        InventoryPosition position = positionService.getByPositionID(positionID);
-        Requirement requirement = requirementService.getByRequirementID(requirementID);
+        Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(positionID);
+        Optional<Requirement> optionalRequirement = requirementService.getByRequirementID(requirementID);
 
-        if (position == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Inventory position not found.");
-        }
+        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id:" + positionID + " not found."));
+        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id:" + requirementID + " not found."));
 
-        if (requirement == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Requirement not found.");
-        }
+        Optional<RequirementValue> optionalRequirementValue = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
 
-        RequirementValue property = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
+        optionalRequirementValue.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID
+                + " for position with id: " + positionID
+                + " not found."));
 
-        if (property == null) {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Property does not exist.");
-        }
+        requirementValueService.remove(optionalRequirementValue.get());
 
-        requirementValueService.remove(property);
-
-        return Response.createResponse();
+        return new ResponseEntity<>(optionalRequirementValue.get(), HttpStatus.OK);
     }
 }

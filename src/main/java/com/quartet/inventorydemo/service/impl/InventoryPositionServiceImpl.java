@@ -1,10 +1,8 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
-import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
-import com.quartet.inventorydemo.model.Holder;
-import com.quartet.inventorydemo.model.InventoryItem;
-import com.quartet.inventorydemo.model.InventoryPosition;
+import com.quartet.inventorydemo.model.*;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.repository.InventoryItemRepository;
@@ -12,8 +10,11 @@ import com.quartet.inventorydemo.repository.InventoryPositionRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.util.IdNull;
 import com.quartet.inventorydemo.util.IdNotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -49,17 +50,13 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     }
 
     @Override
-    public InventoryPosition getByPositionID(@NotNull @Valid UUID positionID) {
-        Optional<InventoryPosition> byId = positionRepo.findById(positionID);
-        byId.orElseThrow(ResourceNotFoundException::new);
-        return byId.get();
+    public Optional<InventoryPosition> getByPositionID(@NotNull @Valid UUID positionID) {
+        return positionRepo.findById(positionID);
     }
 
     @Override
-    public InventoryPosition getByName(@NotBlank @Valid String name) {
-        Optional<InventoryPosition> byName = positionRepo.findByName(name);
-        byName.orElseThrow(ResourceNotFoundException::new);
-        return byName.get();
+    public Optional<InventoryPosition> getByName(@NotBlank @Valid String name) {
+        return positionRepo.findByName(name);
     }
 
     @Override
@@ -67,27 +64,43 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
         return positionRepo.findByIdIn(positionIDs);
     }
 
-    @Validated(IdNull.class)
     @Override
     public InventoryPosition add(@NotNull @Valid InventoryPosition position) {
+        if (isExists(position)) {
+            throw new ResourceAlreadyExistsException("Position with same name already exists. Can not make changes.");
+        }
+
+        InventoryPosition newPosition = new InventoryPosition(position.getName(), position.getDescription());
+        return positionRepo.saveAndFlush(newPosition);
+    }
+
+    
+    @Override
+    public InventoryPosition update(@NotNull @Valid UUID id, @NotNull @Valid InventoryPosition position) {
+        Optional<InventoryPosition> holderOptional = getByPositionID(id);
+        if (isExists(position)) {
+            throw new ResourceAlreadyExistsException("Position with same name already exists. Can not make changes.");
+        }
+
+        InventoryPosition modifiedRequirement = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + id + " not found"));
+
+        BeanUtils.copyProperties(position, modifiedRequirement, "id", "requirementValues");
         return positionRepo.saveAndFlush(position);
     }
 
-    @Validated(IdNotNull.class)
+    
     @Override
-    public InventoryPosition update(@NotNull @Valid InventoryPosition position) {
-        return positionRepo.saveAndFlush(position);
-    }
+    public void remove(@NotNull @Valid UUID id) {
+        Optional<InventoryPosition> optionalInventoryPosition = positionRepo.findById(id);
+        optionalInventoryPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + id + " not found."));
 
-    @Validated(IdNotNull.class)
-    @Override
-    public void remove(@NotNull @Valid InventoryPosition inventoryPosition) {
-        if (inventoryPosition.getBundleInventoryPositions() != null) {
+        InventoryPosition removed = optionalInventoryPosition.get();
+        if (removed.getBundleInventoryPositions() != null) {
             //inventoryPosition is bundle
-            removeBundle(inventoryPosition);
+            removeBundle(removed);
         } else {
             //inventoryPosition is not bundle
-            removeInventoryPosition(inventoryPosition);
+            removeInventoryPosition(removed);
         }
     }
 
@@ -134,5 +147,15 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
         inventoryItemRepo.saveAll(allItems);
         positionRepo.delete(position); //если нет каскадного удаления, то удалить отдельно inventory item и хуйню
 
+    }
+
+    private boolean isExists(@NotNull @Valid InventoryPosition position) {
+        ExampleMatcher uniqueMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+                .withIgnorePaths("id", "description", "roles", "requisitionInventoryPositions", "inventoryItems", "bundleInventoryPositions");
+        Example<InventoryPosition> accountExample = Example.of(position, uniqueMatcher);
+        Optional<InventoryPosition> alreadyExists = positionRepo.findOne(accountExample);
+
+        return alreadyExists.isPresent();
     }
 }

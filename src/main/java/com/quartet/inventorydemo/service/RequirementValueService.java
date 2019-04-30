@@ -15,9 +15,9 @@ public interface RequirementValueService {
 
     Optional<RequirementValue> getByPositionIDAndRequirementID(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID);
 
-    RequirementValue add(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid String value);
+    RequirementValue add(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid RequirementValue requirementValue);
 
-    RequirementValue update(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid String value);
+    RequirementValue update(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid RequirementValue requirementValue);
 
     void remove(@NotNull @Valid RequirementValue requirement_inventoryPosition);
 }

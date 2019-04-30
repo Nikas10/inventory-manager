@@ -22,7 +22,7 @@ public interface InventoryPositionService {
 
     InventoryPosition add(@NotNull @Valid InventoryPosition position);
 
-    InventoryPosition update(@NotNull @Valid InventoryPosition position);
+    InventoryPosition update(@NotNull @Valid UUID id, @NotNull @Valid InventoryPosition position);
 
-    void remove(@NotNull @Valid InventoryPosition inventoryPosition);
+    void remove(@NotNull @Valid UUID id);
 }

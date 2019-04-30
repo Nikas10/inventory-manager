@@ -1,13 +1,18 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Requirement;
 import com.quartet.inventorydemo.repository.RequirementRepository;
 import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.util.IdNull;
 import com.quartet.inventorydemo.util.IdNotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -35,34 +40,55 @@ public class RequirementServiceImpl implements RequirementService {
     }
 
     @Override
-    public Requirement getByRequirementID(@NotNull @Valid UUID employeeID) {
-        Optional<Requirement> byId = requirementRepo.findById(employeeID);
-        byId.orElseThrow(ResourceNotFoundException::new);
-        return byId.get();
+    public Optional<Requirement> getByRequirementID(@NotNull @Valid UUID employeeID) {
+        return requirementRepo.findById(employeeID);
     }
 
     @Override
-    public Requirement getByRequirementName(@NotBlank @Valid String name) {
-        Optional<Requirement> byName = requirementRepo.findByName(name);
-        byName.orElseThrow(ResourceNotFoundException::new);
-        return byName.get();
+    public Optional<Requirement> getByRequirementName(@NotBlank @Valid String name) {
+        return requirementRepo.findByName(name);
     }
 
-    @Validated(IdNull.class)
     @Override
-    public Requirement add(@NotNull @Valid Requirement holder) {
-        return requirementRepo.saveAndFlush(holder);
+    public Requirement add(@NotNull @Valid Requirement requirement) {
+        if (isExists(requirement)) {
+            throw new ResourceAlreadyExistsException("Requirement with same name already exists. Can not make changes.");
+        }
+
+        Requirement newRequirement = new Requirement(requirement.getName());
+        return requirementRepo.saveAndFlush(newRequirement);
     }
 
-    @Validated(IdNotNull.class)
+    
     @Override
-    public Requirement update(@NotNull @Valid Requirement holder) {
-        return requirementRepo.saveAndFlush(holder);
+    public Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid Requirement requirement) {
+        Optional<Requirement> holderOptional = getByRequirementID(id);
+        if (isExists(requirement)) {
+            throw new ResourceAlreadyExistsException("Requirement with same name already exists. Can not make changes.");
+        }
+
+        Requirement modifiedRequirement = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
+
+        BeanUtils.copyProperties(requirement, modifiedRequirement, "id", "requirementValues");
+        return requirementRepo.saveAndFlush(requirement);
     }
 
-    @Validated(IdNotNull.class)
+    
     @Override
-    public void remove(@NotNull @Valid Requirement requirement) {
+    public void remove(@NotNull @Valid UUID id) {
+        Optional<Requirement> requirementOptional = getByRequirementID(id);
+        requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
 
+        requirementRepo.delete(requirementOptional.get());
+    }
+
+    private boolean isExists(@NotNull @Valid Requirement requirement) {
+        ExampleMatcher uniqueMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+                .withIgnorePaths("id", "requirementValues");
+        Example<Requirement> accountExample = Example.of(requirement, uniqueMatcher);
+        Optional<Requirement> alreadyExists = requirementRepo.findOne(accountExample);
+
+        return alreadyExists.isPresent();
     }
 }
