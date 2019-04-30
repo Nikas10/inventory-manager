@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
@@ -8,7 +9,6 @@ import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.RoleService;
-import com.quartet.inventorydemo.util.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.util.Response;
 import com.quartet.inventorydemo.util.UUIDString;
 import org.springframework.beans.BeanUtils;

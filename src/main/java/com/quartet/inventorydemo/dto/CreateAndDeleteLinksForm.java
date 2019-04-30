@@ -1,6 +1,7 @@
-package com.quartet.inventorydemo.util;
+package com.quartet.inventorydemo.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.quartet.inventorydemo.util.UUIDStringValidator;
 
 import java.util.*;
 

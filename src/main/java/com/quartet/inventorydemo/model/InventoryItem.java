@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import com.quartet.inventorydemo.model.id.InventoryItemId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -8,7 +9,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 @ApiModel(description = "This entity/form represents fact of physical inventory objects have been given to profile (inventory holder).It contains information how much of items holder has and status of these items")
 @Entity(name = "InventoryItem")
@@ -101,33 +101,5 @@ public class InventoryItem extends History implements Serializable {
 
     public void setAmount(@Positive Integer amount) {
         this.amount = amount;
-    }
-
-    @Embeddable
-    public class InventoryItemId implements Serializable {
-        private UUID holderId;
-        private UUID inventoryPositionId;
-
-        private InventoryItemId() {
-        }
-
-        public InventoryItemId(@NotNull UUID holderId, @NotNull UUID inventoryPositionId) {
-            this.holderId = holderId;
-            this.inventoryPositionId = inventoryPositionId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof InventoryItemId)) return false;
-            InventoryItemId that = (InventoryItemId) o;
-            return holderId.equals(that.holderId) &&
-                    inventoryPositionId.equals(that.inventoryPositionId);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(holderId, inventoryPositionId);
-        }
     }
 }

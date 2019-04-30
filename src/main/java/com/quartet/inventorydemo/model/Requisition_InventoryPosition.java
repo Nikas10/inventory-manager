@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import com.quartet.inventorydemo.model.id.Requisition_InventoryPositionId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,17 +14,20 @@ import java.io.Serializable;
 @Table(name = "quartet_requisition__quartet_inventory_position", schema = "public")
 public class Requisition_InventoryPosition extends History implements Serializable {
 
+    @EmbeddedId
+    private Requisition_InventoryPositionId requisition_inventoryPositionId;
+
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Inventory position must be not null")
-    @Id
     @JoinColumn(name = "inventory_position_id", nullable = false)
+    @MapsId("inventoryPositionId")
     @ManyToOne(optional = false)
     private InventoryPosition inventoryPosition;
 
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Requisition must be not null")
-    @Id
     @JoinColumn(name = "requisition_id", nullable = false)
+    @MapsId("requisitionId")
     @ManyToOne(optional = false)
     private Requisition requisition;
 

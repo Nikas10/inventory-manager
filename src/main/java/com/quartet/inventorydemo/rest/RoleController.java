@@ -1,11 +1,11 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RoleService;
-import com.quartet.inventorydemo.util.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.util.UUIDString;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
