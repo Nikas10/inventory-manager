@@ -7,23 +7,27 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @ApiModel(description = "This entity/form represents value of property(requirement) for current inventory position")
 @Entity(name = "RequirementValue")
 @Table(name = "quartet_requirement_value", schema = "public")
 public class RequirementValue extends History implements Serializable {
 
+    @EmbeddedId
+    private RequirementValueID requirementValueID;
+
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Requirement must be not null")
-    @Id
     @JoinColumn(name = "requirement_id", nullable = false)
+    @MapsId("requirementID")
     @ManyToOne(optional = false)
     private Requirement requirement;
 
     @ApiModelProperty(hidden = true)
     @NotNull(message = "Inventory position must be not null")
-    @Id
     @JoinColumn(name = "inventory_position_id", nullable = false)
+    @MapsId("positionID")
     @ManyToOne(optional = false)
     private InventoryPosition inventoryPosition;
 
@@ -80,5 +84,32 @@ public class RequirementValue extends History implements Serializable {
 
     public void setValue(@NotNull(message = "Value must be not null") String value) {
         this.value = value;
+    }
+
+    @Embeddable
+    public class RequirementValueID implements Serializable {
+
+        private UUID requirementID;
+        private UUID positionID;
+
+        public RequirementValueID(@NotNull UUID requirementID, @NotNull UUID positionID) {
+            this.requirementID = requirementID;
+            this.positionID = positionID;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(requirementID, positionID);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof RequirementValue.RequirementValueID)) return false;
+            RequirementValue.RequirementValueID that = (RequirementValue.RequirementValueID) obj;
+            return requirementID.equals(that.requirementID) &&
+                    positionID.equals(that.positionID);
+        }
+
     }
 }

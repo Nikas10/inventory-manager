@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.controller;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -64,6 +65,13 @@ public class ErrorHandlingControllerAdvice {
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ResponseBody
     String onUnsupportedDeletion(DeletionNotSupportedException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+    @ResponseBody
+    String onResourceExistance(ResourceAlreadyExistsException e) {
         return e.getMessage();
     }
 
