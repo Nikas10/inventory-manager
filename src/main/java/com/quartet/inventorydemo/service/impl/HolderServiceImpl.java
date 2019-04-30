@@ -9,6 +9,7 @@ import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.util.IdNull;
 import com.quartet.inventorydemo.util.IdNotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -41,10 +42,14 @@ public class HolderServiceImpl implements HolderService {
     }
 
     @Override
-    public Holder getByHolderID(@NotNull @Valid UUID holderID) {
-        Optional<Holder> byId = inventoryHolderRepository.findById(holderID);
-        byId.orElseThrow(ResourceNotFoundException::new);
-        return byId.get();
+    public Optional<Holder> getByHolderID(@NotNull @Valid UUID holderID) {
+        return inventoryHolderRepository.findById(holderID);
+
+    }
+
+    @Override
+    public Optional<Holder> getByHolderName(@NotBlank @Valid String holderName) {
+        return inventoryHolderRepository.findByName(holderName);
     }
 
     @Override
@@ -53,44 +58,48 @@ public class HolderServiceImpl implements HolderService {
     }
 
     @Override
-    public Holder getByHolderName(@NotBlank @Valid String holderName) {
-        Optional<Holder> byName = inventoryHolderRepository.findByName(holderName);
-        byName.orElseThrow(ResourceNotFoundException::new);
-        return byName.get();
+    public Holder add(@NotNull @Valid Holder holder) {
+        if (isExists(holder)) {
+            throw new ResourceAlreadyExistsException("holder with same name already exists");
+        }
+        Holder newHolder = new Holder(holder.getName(), holder.getDescription());
+        return inventoryHolderRepository.saveAndFlush(newHolder);
     }
 
-    @Validated(IdNull.class)
     @Override
-    public Holder add(@NotNull @Valid Holder holder) {
+    public Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder) {
+        Optional<Holder> holderOptional = getByHolderID(uuid);
+        holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
+
+        if (isExists(holder)) {
+            throw new ResourceAlreadyExistsException("holder with same name already exists");
+        }
+
+        holderOptional.ifPresent(e -> BeanUtils.copyProperties(holder, e, "id", "roles", "accounts", "inventoryItems"));
+        Holder modifiedHolder = holderOptional.get();
+        return inventoryHolderRepository.saveAndFlush(modifiedHolder);
+    }
+
+    @Override
+    public void remove(@NotNull @Valid UUID uuid) {
+        Optional<Holder> holderOptional = getByHolderID(uuid);
+        holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
+        Holder holder = holderOptional.get();
+        Set<InventoryItem> inventoryItems = holder.getInventoryItems();
+
+        if (!inventoryItems.isEmpty()) {
+            throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
+        }
+        inventoryHolderRepository.delete(holder);
+    }
+
+    private boolean isExists(@NotNull @Valid Holder holder) {
         ExampleMatcher nameIgnoreSensitivityMatcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
                 .withIgnorePaths("id", "description", "roles", "accounts", "inventoryItems");
         Example<Holder> holderExample = Example.of(holder, nameIgnoreSensitivityMatcher);
         Optional<Holder> alreadyExists = inventoryHolderRepository.findOne(holderExample);
 
-        alreadyExists.ifPresent(e -> {
-            throw new ResourceAlreadyExistsException("holder with same name already exists");
-        });
-
-        return alreadyExists.orElseGet(() -> {
-            Holder newHolder = new Holder(holder.getName(), holder.getDescription());
-            return inventoryHolderRepository.saveAndFlush(newHolder);
-        });
-    }
-
-    @Validated(IdNotNull.class)
-    @Override
-    public Holder update(@NotNull @Valid Holder holder) {
-        return inventoryHolderRepository.saveAndFlush(holder);
-    }
-
-    @Validated(IdNotNull.class)
-    @Override
-    public void remove(@NotNull @Valid Holder holder) {
-        Set<InventoryItem> inventoryItems = holder.getInventoryItems();
-        if (!inventoryItems.isEmpty()) {
-            throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
-        }
-        inventoryHolderRepository.delete(holder);
+        return alreadyExists.isPresent();
     }
 }
