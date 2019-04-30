@@ -31,6 +31,10 @@
     <script src="new_js/router.js"></script>
 
     <script>
+        Vue.prototype.$server = axios.create({
+            baseURL: 'http://localhost:8000/api',
+        })
+
         window.app = new Vue({
             router,
             el: '#app',
