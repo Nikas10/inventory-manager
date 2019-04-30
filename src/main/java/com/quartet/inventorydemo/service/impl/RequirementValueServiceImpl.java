@@ -24,7 +24,6 @@ import java.util.UUID;
 @Validated
 @Transactional
 public class RequirementValueServiceImpl implements RequirementValueService {
-
     private final RequirementValueRepository requirementValueRepo;
     private final InventoryPositionRepository positionRepo;
     private final RequirementRepository requirementRepo;
@@ -38,7 +37,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
     }
 
     @Override
-    public RequirementValue create(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid String value) {
+    public RequirementValue add(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid String value) {
         InventoryPosition position = positionRepo.findById(positionID).get();
         Requirement requirement = requirementRepo.findById(requirementID).get();
         Optional<RequirementValue> requirementValueOptional = requirementValueRepo.findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);

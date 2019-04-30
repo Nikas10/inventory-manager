@@ -2,7 +2,7 @@ package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class RequisitionProcessServiceImpl implements RequisitionProcessService 
         this.runtimeService = runtimeService;
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void create(@NotNull @Valid Requisition requisition) {
         String businessKey = requisition.getId().toString();
@@ -37,7 +37,7 @@ public class RequisitionProcessServiceImpl implements RequisitionProcessService 
         runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void update(@NotNull @Valid Requisition requisition) {
         String businessKey = requisition.getId().toString();
@@ -48,7 +48,7 @@ public class RequisitionProcessServiceImpl implements RequisitionProcessService 
         runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void delete(@NotNull @Valid Requisition requisition) {
 

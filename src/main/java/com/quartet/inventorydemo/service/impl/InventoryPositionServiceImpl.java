@@ -10,8 +10,8 @@ import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.repository.InventoryItemRepository;
 import com.quartet.inventorydemo.repository.InventoryPositionRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -67,19 +67,19 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
         return positionRepo.findByIdIn(positionIDs);
     }
 
-    @Validated(OnCreate.class)
+    @Validated(IdNull.class)
     @Override
     public InventoryPosition add(@NotNull @Valid InventoryPosition position) {
         return positionRepo.saveAndFlush(position);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public InventoryPosition update(@NotNull @Valid InventoryPosition position) {
         return positionRepo.saveAndFlush(position);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void remove(@NotNull @Valid InventoryPosition inventoryPosition) {
         if (inventoryPosition.getBundleInventoryPositions() != null) {

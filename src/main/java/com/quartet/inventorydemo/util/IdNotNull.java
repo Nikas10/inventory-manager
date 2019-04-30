@@ -1,4 +1,4 @@
 package com.quartet.inventorydemo.util;
 
-public interface OnUpdate {
+public interface IdNotNull {
 }

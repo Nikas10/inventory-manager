@@ -3,8 +3,8 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.repository.InventoryItemRepository;
 import com.quartet.inventorydemo.service.InventoryItemService;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -31,19 +31,19 @@ public class InventoryItemServiceImpl implements InventoryItemService {
         return inventoryItemRepository.findAllToSet();
     }
 
-    @Validated(OnCreate.class)
+    @Validated(IdNull.class)
     @Override
     public InventoryItem add(@NotNull @Valid InventoryItem item) {
         return inventoryItemRepository.saveAndFlush(item);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public InventoryItem update(@NotNull @Valid InventoryItem item) {
         return inventoryItemRepository.saveAndFlush(item);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void remove(@NotNull @Valid InventoryItem item) {
 
