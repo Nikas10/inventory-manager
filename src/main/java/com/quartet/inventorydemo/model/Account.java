@@ -26,7 +26,7 @@ public class Account extends History implements Serializable {
     @GenericGenerator(name = "pg-uuid", strategy = "uuid2",
             parameters = @org.hibernate.annotations.Parameter(
                     name = "uuid_gen_strategy_class",
-                    value = "com.quartet.inventorydemo.repository.PostgreSQLUUIDGenerationStrategy"))
+                    value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private UUID id;
 

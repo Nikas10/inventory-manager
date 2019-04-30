@@ -1,4 +1,4 @@
-package com.quartet.inventorydemo.repository;
+package com.quartet.inventorydemo.model.id;
 
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
