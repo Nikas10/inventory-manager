@@ -1,5 +1,7 @@
 package com.quartet.inventorydemo.controller;
 
+import com.quartet.inventorydemo.dto.ValidationErrorResponse;
+import com.quartet.inventorydemo.dto.Violation;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -14,8 +16,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.persistence.OptimisticLockException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @ControllerAdvice
@@ -75,34 +75,8 @@ public class ErrorHandlingControllerAdvice {
         return e.getMessage();
     }
 
-    public class ValidationErrorResponse {
-        private List<Violation> violations = new ArrayList<>();
 
-        public List<Violation> getViolations() {
-            return violations;
-        }
 
-        public void setViolations(List<Violation> violations) {
-            this.violations = violations;
-        }
-    }
 
-    public class Violation {
-        private String fieldName;
-        private String message;
-
-        public Violation(String fieldName, String message) {
-            this.fieldName = fieldName;
-            this.message = message;
-        }
-
-        public String getFieldName() {
-            return fieldName;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
 
 }
