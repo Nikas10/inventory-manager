@@ -1,4 +1,4 @@
 package com.quartet.inventorydemo.util;
 
-public interface OnCreate {
+public interface IdNull {
 }

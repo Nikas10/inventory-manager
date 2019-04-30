@@ -1,13 +1,14 @@
 package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -58,7 +59,7 @@ public class HolderServiceImpl implements HolderService {
         return byName.get();
     }
 
-    @Validated(OnCreate.class)
+    @Validated(IdNull.class)
     @Override
     public Holder add(@NotNull @Valid Holder holder) {
         ExampleMatcher nameIgnoreSensitivityMatcher = ExampleMatcher.matchingAny()
@@ -68,7 +69,7 @@ public class HolderServiceImpl implements HolderService {
         Optional<Holder> alreadyExists = inventoryHolderRepository.findOne(holderExample);
 
         alreadyExists.ifPresent(e -> {
-            throw new RuntimeException(""); //TODO
+            throw new ResourceAlreadyExistsException("holder with same name already exists");
         });
 
         return alreadyExists.orElseGet(() -> {
@@ -77,13 +78,13 @@ public class HolderServiceImpl implements HolderService {
         });
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public Holder update(@NotNull @Valid Holder holder) {
         return inventoryHolderRepository.saveAndFlush(holder);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void remove(@NotNull @Valid Holder holder) {
         Set<InventoryItem> inventoryItems = holder.getInventoryItems();

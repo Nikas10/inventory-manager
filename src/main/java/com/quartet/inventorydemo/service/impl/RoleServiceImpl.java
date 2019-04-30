@@ -1,11 +1,12 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RoleRepository;
 import com.quartet.inventorydemo.service.RoleService;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -56,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.findByIdIn(uuidSet);
     }
 
-    @Validated(OnCreate.class)
+    @Validated(IdNull.class)
     @Override
     public Role add(@NotNull @Valid Role role) {
         ExampleMatcher nameIgnoreSensitivityMatcher = ExampleMatcher.matchingAny()
@@ -66,7 +67,7 @@ public class RoleServiceImpl implements RoleService {
         Optional<Role> alreadyExists = roleRepository.findOne(roleExample);
 
         alreadyExists.ifPresent(e -> {
-            throw new RuntimeException(""); //TODO
+            throw new ResourceAlreadyExistsException("role with same name already exists");
         });
 
         return alreadyExists.orElseGet(() -> {
@@ -75,13 +76,13 @@ public class RoleServiceImpl implements RoleService {
         });
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public Role update(@NotNull @Valid Role role) {
         return roleRepository.saveAndFlush(role);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void remove(@NotNull @Valid Role role) {
 

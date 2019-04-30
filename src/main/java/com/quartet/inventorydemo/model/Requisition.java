@@ -1,8 +1,8 @@
 package com.quartet.inventorydemo.model;
 
 import com.quartet.inventorydemo.util.DateIsAfterProvidedDate;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.GenericGenerator;
@@ -23,14 +23,14 @@ import java.util.UUID;
 public class Requisition extends History {
 
     @ApiModelProperty(hidden = true)
-    @Null(groups = OnCreate.class, message = "Trying to persist probably existing resource on create")
-    @NotNull(groups = OnUpdate.class, message = "Resource id must be not null on update")
+    @Null(groups = IdNull.class, message = "Trying to persist probably existing resource on create")
+    @NotNull(groups = IdNotNull.class, message = "Resource id must be not null on update")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "pg-uuid")
     @GenericGenerator(name = "pg-uuid", strategy = "uuid2",
             parameters = @org.hibernate.annotations.Parameter(
                     name = "uuid_gen_strategy_class",
-                    value = "com.quartet.inventorydemo.repository.PostgreSQLUUIDGenerationStrategy"))
+                    value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private UUID id;
 

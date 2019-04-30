@@ -1,8 +1,8 @@
 package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.model.Requisition;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -16,12 +16,12 @@ public interface RequisitionService {
 
     Requisition getById(@NotNull @Valid UUID id);
 
-    @Validated(OnCreate.class)
+    @Validated(IdNull.class)
     Requisition add(@NotNull @Valid Requisition requisition);
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     Requisition update(@NotNull @Valid Requisition requisition);
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     void remove(@NotNull @Valid Requisition requisition);
 }

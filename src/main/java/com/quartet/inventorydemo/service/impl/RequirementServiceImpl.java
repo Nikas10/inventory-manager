@@ -4,8 +4,8 @@ import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Requirement;
 import com.quartet.inventorydemo.repository.RequirementRepository;
 import com.quartet.inventorydemo.service.RequirementService;
-import com.quartet.inventorydemo.util.OnCreate;
-import com.quartet.inventorydemo.util.OnUpdate;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -48,19 +48,19 @@ public class RequirementServiceImpl implements RequirementService {
         return byName.get();
     }
 
-    @Validated(OnCreate.class)
+    @Validated(IdNull.class)
     @Override
     public Requirement add(@NotNull @Valid Requirement holder) {
         return requirementRepo.saveAndFlush(holder);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public Requirement update(@NotNull @Valid Requirement holder) {
         return requirementRepo.saveAndFlush(holder);
     }
 
-    @Validated(OnUpdate.class)
+    @Validated(IdNotNull.class)
     @Override
     public void remove(@NotNull @Valid Requirement requirement) {
 

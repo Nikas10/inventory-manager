@@ -5,6 +5,7 @@ import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -13,10 +14,12 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Transactional
 public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPositionService {
+    private final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
 
     @Autowired
-    private Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
-
+    public Bundle_InventoryPositionServiceImpl(@Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
+        this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
+    }
 
     @Override
     public int getAmount(InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
