@@ -28,4 +28,8 @@ public interface AccountService {
     Account update(@NotBlank @Valid String login, @NotNull @Valid Account acc);
 
     void remove(@NotBlank @Valid String login);
+
+    Account addHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds);
+
+    Account removeHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds);
 }

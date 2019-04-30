@@ -22,7 +22,11 @@ public interface HolderService {
 
     Holder add(@NotNull @Valid Holder holder);
 
-    Holder update(@NotNull @Valid Holder holder);
+    Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder);
 
-    void remove(@NotNull @Valid Holder holder);
+    void remove(@NotNull @Valid UUID uuid);
+
+    Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
+
+    Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
 }

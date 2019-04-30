@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.HolderService;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,24 +26,19 @@ import java.util.UUID;
 @Validated
 public class RoleController {
     private final RoleService roleService;
-    private final HolderService holderService;
-    private final InventoryPositionService inventoryPositionService;
 
     @Autowired
-    public RoleController(@Qualifier("RoleService") final RoleService roleService,
-                          @Qualifier("HolderService") final HolderService holderService,
-                          @Qualifier("InventoryPositionService") final InventoryPositionService inventoryPositionService) {
+    public RoleController(@Qualifier("RoleService") final RoleService roleService) {
         this.roleService = roleService;
-        this.holderService = holderService;
-        this.inventoryPositionService = inventoryPositionService;
     }
 
     //@PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<?> getRole(@PathVariable("uuid") @UUIDString @Valid String stringUuid) {
         UUID uuid = UUID.fromString(stringUuid);
-        Role role = roleService.getByRoleID(uuid);
-        return new ResponseEntity<>(role, HttpStatus.OK);
+        Optional<Role> roleOptional = roleService.getByRoleID(uuid);
+        roleOptional.orElseThrow(() -> new ResourceNotFoundException("Role with id: " + uuid + "not found"));
+        return new ResponseEntity<>(roleOptional.get(), HttpStatus.OK);
     }
 
     //@PreAuthorize("hasAuthority('STAFF')")
@@ -56,9 +53,7 @@ public class RoleController {
     public ResponseEntity<?> updateRole(@PathVariable("uuid") @UUIDString @Valid String stringUuid,
                                         @RequestBody Role role) {
         UUID uuid = UUID.fromString(stringUuid);
-        Role roleToUpdate = roleService.getByRoleID(uuid);
-        BeanUtils.copyProperties(role, roleToUpdate, "id");
-        Role updatedRole = roleService.update(roleToUpdate);
+        Role updatedRole = roleService.update(uuid, role);
         return new ResponseEntity<>(updatedRole, HttpStatus.OK);
     }
 
@@ -67,8 +62,7 @@ public class RoleController {
     @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRole(@PathVariable("uuid") @UUIDString @Valid String stringUuid) {
         UUID uuid = UUID.fromString(stringUuid);
-        Role roleToDelete = roleService.getByRoleID(uuid);
-        roleService.remove(roleToDelete);
+        roleService.remove(uuid);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -76,7 +70,8 @@ public class RoleController {
     @RequestMapping(value = "/{uuid}/holder", method = RequestMethod.GET)
     public ResponseEntity<?> getRoleLinksToInventoryHolders(@PathVariable("uuid") @UUIDString @Valid String stringUuid) {
         UUID uuid = UUID.fromString(stringUuid);
-        Role roleWithHolders = roleService.getByRoleID(uuid);
+        Optional<Role> roleOptional = roleService.getByRoleID(uuid);
+        Role roleWithHolders = roleOptional.orElseThrow(() -> new ResourceNotFoundException("Role with id: " + uuid + "not found"));
         return new ResponseEntity<>(roleWithHolders.getHolders(), HttpStatus.OK);
     }
 
@@ -84,7 +79,8 @@ public class RoleController {
     @RequestMapping(value = "/{uuid}/position", method = RequestMethod.GET)
     public ResponseEntity<?> getRoleLinksToInventoryPosition(@PathVariable("uuid") @UUIDString @Valid String stringUuid) {
         UUID uuid = UUID.fromString(stringUuid);
-        Role roleWithInventoryPositions = roleService.getByRoleID(uuid);
+        Optional<Role> roleOptional = roleService.getByRoleID(uuid);
+        Role roleWithInventoryPositions = roleOptional.orElseThrow(() -> new ResourceNotFoundException("Role with id: " + uuid + "not found"));
         return new ResponseEntity<>(roleWithInventoryPositions.getInventoryPositions(), HttpStatus.OK);
     }
 
@@ -94,18 +90,19 @@ public class RoleController {
                                                                 @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
 
         UUID uuid = UUID.fromString(stringUuid);
-        Role roleWithInventoryPositions = roleService.getByRoleID(uuid);
-        Set<InventoryPosition> currentInventoryPositions = roleWithInventoryPositions.getInventoryPositions();
-
         Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
-        Set<InventoryPosition> inventoryPositionsToAdd = (Set<InventoryPosition>) inventoryPositionService.getByPositionIDs(addByIds);
-        currentInventoryPositions.addAll(inventoryPositionsToAdd);
-
         Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
-        Set<InventoryPosition> inventoryPositionsToRemove = (Set<InventoryPosition>) inventoryPositionService.getByPositionIDs(removeByIds);
-        currentInventoryPositions.removeAll(inventoryPositionsToRemove);
+        Role result = null;
+        if (!addByIds.isEmpty()) {
+            result = roleService.addInventoryPositions(uuid, addByIds);
+        }
+        if (!removeByIds.isEmpty()) {
+            result = roleService.removeInventoryPositions(uuid, removeByIds);
+        }
+        if (result == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
 
-        Role roleWithUpdatedInventoryPositions = roleService.update(roleWithInventoryPositions);
-        return new ResponseEntity<>(roleWithUpdatedInventoryPositions.getInventoryPositions(), HttpStatus.OK);
+        return new ResponseEntity<>(result.getInventoryPositions(), HttpStatus.OK);
     }
 }
