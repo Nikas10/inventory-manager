@@ -1,9 +1,9 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.service.AccountService;
-import com.quartet.inventorydemo.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -19,6 +19,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/account")
@@ -125,4 +127,22 @@ public class AccountController {
         return new ResponseEntity<>(newAccount, HttpStatus.OK);
     }
 
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{login}/holder", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateInventoryHolderLinksToAccounts(@PathVariable("login") @NotBlank @Valid String login,
+                                                                  @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
+        Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
+        Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
+        Account result = null;
+        if (!addByIds.isEmpty()) {
+            result = accountService.addHolders(login, addByIds);
+        }
+        if (!removeByIds.isEmpty()) {
+            result = accountService.removeHolders(login, removeByIds);
+        }
+        if (result == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
+    }
 }

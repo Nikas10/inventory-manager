@@ -25,4 +25,8 @@ public interface HolderService {
     Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder);
 
     void remove(@NotNull @Valid UUID uuid);
+
+    Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
+
+    Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
 }

@@ -3,8 +3,10 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
+import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.repository.AccountRepository;
 import com.quartet.inventorydemo.service.AccountService;
+import com.quartet.inventorydemo.service.HolderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,10 +29,13 @@ import java.util.UUID;
 @org.springframework.transaction.annotation.Transactional
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final HolderService holderService;
 
     @Autowired
-    public AccountServiceImpl(@Qualifier("AccountRepository") final AccountRepository accountRepository) {
+    public AccountServiceImpl(@Qualifier("AccountRepository") final AccountRepository accountRepository,
+                              @Qualifier("HolderService") final HolderService holderService) {
         this.accountRepository = accountRepository;
+        this.holderService = holderService;
     }
 
     @Override
@@ -72,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
     public Account update(@NotBlank @Valid String login, @NotNull @Valid Account account) {
         //getting existing resource
         Optional<Account> accountOptional = getByLogin(login);
-        accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        Account accountToModify = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
 
         //checking if changes may lead to unnecessary exceptions
         if (isExists(account)) {
@@ -80,19 +85,39 @@ public class AccountServiceImpl implements AccountService {
         }
 
         //changing
-        accountOptional.ifPresent(e -> BeanUtils.copyProperties(account, e, "id", "holders", "requisitions"));
-        Account modifiedAccount = accountOptional.get();
-
-        return accountRepository.saveAndFlush(modifiedAccount);
+        BeanUtils.copyProperties(account, accountToModify, "id", "holders", "requisitions");
+        return accountRepository.saveAndFlush(accountToModify);
     }
 
     @Override
     public void remove(@NotBlank @Valid String login) {
         //getting existing resource
         Optional<Account> accountOptional = getByLogin(login);
-        accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        Account accountToDelete = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
 
-        accountRepository.delete(accountOptional.get());
+        accountRepository.delete(accountToDelete);
+    }
+
+    @Override
+    public Account addHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds) {
+        Optional<Account> accountOptional = getByLogin(login);
+        Account accountWithHolders = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+
+        Set<Holder> currentHolders = accountWithHolders.getHolders();
+        currentHolders.addAll(holderService.getByHolderIDs(holderIds));
+
+        return accountRepository.saveAndFlush(accountWithHolders);
+    }
+
+    @Override
+    public Account removeHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds) {
+        Optional<Account> accountOptional = getByLogin(login);
+        Account accountWithHolders = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+
+        Set<Holder> currentHolders = accountWithHolders.getHolders();
+        currentHolders.removeAll(holderService.getByHolderIDs(holderIds));
+
+        return accountRepository.saveAndFlush(accountWithHolders);
     }
 
     private boolean isExists(@NotNull @Valid Account account) {

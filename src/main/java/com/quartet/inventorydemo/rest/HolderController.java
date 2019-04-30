@@ -32,17 +32,16 @@ import java.util.UUID;
 @Validated
 public class HolderController {
     private final HolderService holderService;
-    private final RoleService roleService;
+
     private final AccountService accountService;
     private final InventoryItemService inventoryItemService;
 
     @Autowired
     public HolderController(@Qualifier("HolderService") final HolderService holderService,
-                            @Qualifier("RoleService") final RoleService roleService,
                             @Qualifier("AccountService") final AccountService accountService,
                             @Qualifier("InventoryItemService") final InventoryItemService inventoryItemService) {
         this.holderService = holderService;
-        this.roleService = roleService;
+
         this.accountService = accountService;
         this.inventoryItemService = inventoryItemService;
     }
@@ -94,22 +93,19 @@ public class HolderController {
     public ResponseEntity<?> updateInventoryHolderLinksToRoles(@PathVariable("uuid") @UUIDString @Valid String stringUuid,
                                                                @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
         UUID uuid = UUID.fromString(stringUuid);
-        Optional<Holder> holderOptional = holderService.getByHolderID(uuid);
-        holderOptional.orElseThrow(() -> new ResourceNotFoundException("inventory holder with id: " + uuid + "not found"));
-        Holder holderWithRoles = holderOptional.get();
-        Set<Role> currentRoles = holderWithRoles.getRoles();
-
         Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
-        Set<Role> addRoles = new HashSet<>(roleService.getByRoleIDs(addByIds));
-        currentRoles.addAll(addRoles);
-
         Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
-        Set<Role> removeRoles = new HashSet<>(roleService.getByRoleIDs(removeByIds));
-        currentRoles.removeAll(removeRoles);
-
-        Holder holderWithUpdatedRoles = holderService.update(uuid, holderWithRoles);
-
-        return new ResponseEntity<>(holderWithUpdatedRoles.getRoles(), HttpStatus.OK);
+        Holder result = null;
+        if (!addByIds.isEmpty()) {
+            result = holderService.addRoles(uuid, addByIds);
+        }
+        if (!removeByIds.isEmpty()) {
+            result = holderService.removeRoles(uuid, removeByIds);
+        }
+        if (result == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(result.getRoles(), HttpStatus.OK);
     }
 
     //@PreAuthorize("hasAuthority('USER')")
@@ -121,27 +117,7 @@ public class HolderController {
         return new ResponseEntity<>(holderOptional.get().getAccounts(), HttpStatus.OK);
     }
 
-    //@PreAuthorize("hasAuthority('STAFF')")
-    @RequestMapping(value = "/{uuid}/account", method = RequestMethod.PATCH)
-    public ResponseEntity<?> updateInventoryHolderLinksToAccounts(@PathVariable("uuid") @UUIDString @Valid String stringUuid,
-                                                                  @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
-        UUID uuid = UUID.fromString(stringUuid);
-        Optional<Holder> holderOptional = holderService.getByHolderID(uuid);
-        holderOptional.orElseThrow(() -> new ResourceNotFoundException("inventory holder with id: " + uuid + "not found"));
-        Holder holderWithAccounts = holderOptional.get();
-        Set<Account> currentAccounts = holderWithAccounts.getAccounts();
 
-        Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
-        Set<Account> accountsToAdd = new HashSet<>(accountService.getByAccountIDs(addByIds));
-        currentAccounts.addAll(accountsToAdd);
-
-        Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
-        Set<Account> accountsToDelete = new HashSet<>(accountService.getByAccountIDs(removeByIds));
-        currentAccounts.removeAll(accountsToDelete);
-
-        Holder holderWithUpdatedAccounts = holderService.update(uuid, holderWithAccounts);
-        return new ResponseEntity<>(holderWithUpdatedAccounts.getAccounts(), HttpStatus.OK);
-    }
 
     //@PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "/{uuid}/item", method = RequestMethod.GET)
