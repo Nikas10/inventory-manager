@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Component("GenerateReport")
 public final class GenerateReport implements JavaDelegate {
-    @Override
-    public void execute(DelegateExecution execution) {
-        // TODO: Сгенерировать отчет
-    }
+
+  @Override
+  public void execute(DelegateExecution execution) {
+    // TODO: Сгенерировать отчет
+  }
 }
