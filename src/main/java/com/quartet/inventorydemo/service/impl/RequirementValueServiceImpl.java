@@ -40,32 +40,47 @@ public class RequirementValueServiceImpl implements RequirementValueService {
 
     @Override
     public RequirementValue add(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid RequirementValue requirementValue) {
-        InventoryPosition position = positionRepo.findById(positionID).get();
-        Requirement requirement = requirementRepo.findById(requirementID).get();
-        Optional<RequirementValue> requirementValueOptional = requirementValueRepo.findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
+        Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
+        Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
+
+        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + positionID + " not found."));
+        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID + " not found."));
+
+        Optional<RequirementValue> requirementValueOptional = requirementValueRepo
+                .findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
         requirementValueOptional.ifPresent(s -> {
             throw new ResourceAlreadyExistsException("Requirement with id:" + requirementID
                                                      + " for position with id: " + positionID
                                                      + "already exists.");
         });
 
-        return requirementValueOptional.orElse(
-                requirementValueRepo.saveAndFlush(new RequirementValue(requirement, position, requirementValue.getValue()))
-        );
+        RequirementValue newRequirementValue = new RequirementValue(optionalRequirement.get(),
+                                                                    optionalPosition.get(),
+                                                                    requirementValue.getValue());
+        return requirementValueRepo.saveAndFlush(newRequirementValue);
     }
 
     @Override
     public RequirementValue update(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid RequirementValue requirementValue) {
-        InventoryPosition position = positionRepo.findById(positionID).get();
-        Requirement requirement = requirementRepo.findById(requirementID).get();
-        Optional<RequirementValue> requirementValueOptional = requirementValueRepo.findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
-        requirementValueOptional.ifPresent(s -> {
-            requirementValueOptional.orElse(
-                    requirementValueRepo.saveAndFlush(new RequirementValue(requirement, position, requirementValue.getValue()))
-            );
-        });
+        Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
+        Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
-        throw new ResourceNotFoundException("not found");
+        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + positionID + " not found."));
+        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID + " not found."));
+
+        Optional<RequirementValue> requirementValueOptional = requirementValueRepo.findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
+
+        requirementValueOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: "
+                                                                                 + requirementID
+                                                                                 + " for position with id: "
+                                                                                 + positionID
+                                                                                 + " not found."));
+
+        return requirementValueRepo.saveAndFlush(new RequirementValue(optionalRequirement.get(),
+                                                               optionalPosition.get(),
+                                                               requirementValue.getValue()
+                                                              )
+        );
     }
 
     @Override
@@ -79,8 +94,22 @@ public class RequirementValueServiceImpl implements RequirementValueService {
     }
 
     @Override
-    public void remove(@NotNull @Valid RequirementValue requirement_inventoryPosition) {
-        requirementValueRepo.delete(requirement_inventoryPosition);
+    public void remove(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID) {
+
+        Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
+        Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
+
+        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + positionID + " not found."));
+        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID + " not found."));
+
+        Optional<RequirementValue> optionalRequirementValue = requirementValueRepo
+                .findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
+
+        optionalRequirementValue.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID
+                                                                                 + " for position with id: " + positionID
+                                                                                 + " not found."));
+
+        requirementValueRepo.delete(optionalRequirementValue.get());
     }
 
 }

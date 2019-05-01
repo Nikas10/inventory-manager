@@ -19,5 +19,5 @@ public interface RequirementValueService {
 
     RequirementValue update(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID, @NotNull @Valid RequirementValue requirementValue);
 
-    void remove(@NotNull @Valid RequirementValue requirement_inventoryPosition);
+    void remove(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID);
 }
