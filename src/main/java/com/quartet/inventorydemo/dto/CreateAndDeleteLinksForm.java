@@ -1,6 +1,7 @@
-package com.quartet.inventorydemo.util;
+package com.quartet.inventorydemo.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.quartet.inventorydemo.util.UUIDStringValidator;
 
 import java.util.*;
 
@@ -30,29 +31,30 @@ public class CreateAndDeleteLinksForm {
         this.remove = remove;
     }
 
-    public Set<UUID> getAddIds() {
-        if (this.add != null) {
-            addIds.clear();
-            addIds.addAll(convertFromString(this.add));
-        }
+    private static UUIDStringValidator validator = new UUIDStringValidator();
+
+    /*converts current string list from add to UUID list*/
+    public Set<UUID> convertAndGetAddIds() {
+        addIds.clear();
+        addIds.addAll(convertFromString(this.add));
         return addIds;
     }
 
-    public Set<UUID> getRemoveIds() {
-        if (this.remove != null) {
-            removeIds.clear();
-            removeIds.addAll(convertFromString(this.remove));
-        }
+    /*converts current string list from remove to UUID list*/
+    public Set<UUID> convertAndGetRemoveIds() {
+        removeIds.clear();
+        removeIds.addAll(convertFromString(this.remove));
         return removeIds;
     }
 
     private Set<UUID> convertFromString(Collection<String> stringUuids) {
         Set<UUID> uuids = new HashSet<>();
         for (String item : stringUuids) {
-            try {
+            boolean isValid = validator.isValid(item, null);
+            if (isValid) {
                 UUID uuid = UUID.fromString(item);
                 uuids.add(uuid);
-            } catch (IllegalArgumentException e) {
+            } else {
                 //TODO log
             }
         }

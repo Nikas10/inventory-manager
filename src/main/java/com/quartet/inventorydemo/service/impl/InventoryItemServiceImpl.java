@@ -3,43 +3,49 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.repository.InventoryItemRepository;
 import com.quartet.inventorydemo.service.InventoryItemService;
+import com.quartet.inventorydemo.util.IdNull;
+import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
-import java.util.UUID;
 
 @Service("InventoryItemService")
+@Validated
 @Transactional
 public class InventoryItemServiceImpl implements InventoryItemService {
+    private final InventoryItemRepository inventoryItemRepository;
+
     @Autowired
-    private InventoryItemRepository invItemRepo;
-
-    @Override
-    public List<InventoryItem> getAll() {
-        return invItemRepo.findAll();
+    public InventoryItemServiceImpl(@Qualifier("InventoryItemRepository") final InventoryItemRepository inventoryItemRepository) {
+        this.inventoryItemRepository = inventoryItemRepository;
     }
 
     @Override
-    public InventoryItem getByInventoryItemID(UUID itemID) {
-        return invItemRepo.findByInventoryItemID(itemID);
+    public Set<InventoryItem> getAll() {
+        return inventoryItemRepository.findAllToSet();
     }
 
+    @Validated(IdNull.class)
     @Override
-    public Set<InventoryItem> getByInventoryItemIDs(Set<UUID> itemIDs) {
-        return invItemRepo.findByInventoryItemIDIn(itemIDs);
+    public InventoryItem add(@NotNull @Valid InventoryItem item) {
+        return inventoryItemRepository.saveAndFlush(item);
     }
 
+    @Validated(IdNotNull.class)
     @Override
-    public InventoryItem add(InventoryItem item) {
-        item.setInventoryItemID(UUID.randomUUID());
-        return invItemRepo.saveAndFlush(item);
+    public InventoryItem update(@NotNull @Valid InventoryItem item) {
+        return inventoryItemRepository.saveAndFlush(item);
     }
 
+    @Validated(IdNotNull.class)
     @Override
-    public InventoryItem update(InventoryItem item) {
-        return invItemRepo.saveAndFlush(item);
+    public void remove(@NotNull @Valid InventoryItem item) {
+
     }
 }

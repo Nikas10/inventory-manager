@@ -3,65 +3,66 @@ package com.quartet.inventorydemo.rest;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
-import com.quartet.inventorydemo.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/requisitions")
+@RequestMapping("api/requisition")
 public class RequisitionController {
-    @Autowired
-    private RequisitionService requestService;
+    private final RequisitionService requisitionService;
+    private final RequisitionProcessService requisitionProcessService;
 
     @Autowired
-    private RequisitionProcessService requisitionProcessService;
+    public RequisitionController(@Qualifier("RequisitionService") final RequisitionService requisitionService,
+                                 @Qualifier("RequisitionProcessService") final RequisitionProcessService requisitionProcessService) {
+        this.requisitionService = requisitionService;
+        this.requisitionProcessService = requisitionProcessService;
+    }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createReuisition(@RequestBody Requisition requisition) {
-        Requisition r = requestService.add(requisition);
-
-        requisitionProcessService.create(r);
-
-        return Response.createResponse(HttpStatus.OK);
+        Requisition newRequisition = requisitionService.add(requisition);
+        requisitionProcessService.create(newRequisition);
+        return new ResponseEntity<>(newRequisition, HttpStatus.OK);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getAll() {
-        List<Requisition> requisitions = requestService.getAll();
-
-        return Response.createResponse(requisitions);
+        Collection<Requisition> requisitions = requisitionService.getAll();
+        return new ResponseEntity<>(requisitions, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
     public ResponseEntity<?> update(@PathVariable("id") UUID id, @RequestBody Requisition requisition) {
-        Optional<Requisition> original = requestService.get(id);
+        Optional<Requisition> original = requisitionService.getById(id);
 
-        original.ifPresent(req -> {
-            String oldStatus = req.getStatus();
+        original.ifPresent(currentRequisition -> {
+            String oldStatus = currentRequisition.getStatus();
             String newStatus = requisition.getStatus();
 
             if (!oldStatus.equalsIgnoreCase(newStatus)) {
                 switch (newStatus.toUpperCase()) {
                     case "APPROVED":
-                        requisitionProcessService.approve(req);
+                        requisitionProcessService.approve(currentRequisition);
                         break;
                     case "REJECTED":
-                        requisitionProcessService.reject(req);
+                        requisitionProcessService.reject(currentRequisition);
                         break;
                     case "REQUIRE_CLARIFICATION":
-                        requisitionProcessService.requestClarification(req, "");
+                        requisitionProcessService.requestClarification(currentRequisition, "");
                         break;
                     case "REVIEW_NEEDED":
-                        requisitionProcessService.makeChanges(req);
+                        requisitionProcessService.makeChanges(currentRequisition);
                         break;
                     case "COMPLETED":
-                        requisitionProcessService.complete(req);
+                        requisitionProcessService.complete(currentRequisition);
                         break;
                 }
             }
@@ -69,6 +70,6 @@ public class RequisitionController {
             // TODO: Обработать остальные изменения
         });
 
-        return Response.createResponse(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

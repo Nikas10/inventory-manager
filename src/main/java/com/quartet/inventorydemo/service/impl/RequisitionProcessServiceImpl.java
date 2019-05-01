@@ -7,6 +7,8 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,7 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
 
     @Override
     public void create(Requisition requisition) {
-        String businessKey = requisition.getRequestID().toString();
+        String businessKey = requisition.getId().toString();
         Date dueDate = requisition.getDueDate();
 
         ProcessInstance process = runtimeService.startProcessInstanceByKey(PROCESS_NAME, businessKey);
@@ -91,8 +93,13 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
         runtimeService.correlateMessage(MESSAGE_COMPLETE, process.getBusinessKey());
     }
 
+    @Override
+    public void delete(@NotNull @Valid Requisition requisition) {
+
+    }
+
     private ProcessInstance getProcessFor(Requisition requisition) {
-        String businessKey = requisition.getRequestID().toString();
+        String businessKey = requisition.getId().toString();
 
         return runtimeService.createProcessInstanceQuery()
                 .processInstanceBusinessKey(businessKey)

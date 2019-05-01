@@ -1,25 +1,35 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.service.AccountService;
-import com.quartet.inventorydemo.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.security.Principal;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/account")
+@Validated
 public class AccountController {
 
     @Autowired
     @Qualifier("AccountService")
-    private AccountService accSrv;
+    private AccountService accountService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -32,11 +42,10 @@ public class AccountController {
      */
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "/{login}", method = RequestMethod.GET)
-    public ResponseEntity<?> getAccount(@PathVariable("login") String login) {
-        Account acc = accSrv.getByLogin(login);
-        if (acc==null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST,"No user found");
-        return Response.createResponse(acc);
+    public ResponseEntity<?> getAccount(@PathVariable("login") @NotBlank @Valid String login) {
+        Optional<Account> accountOptional = accountService.getByLogin(login);
+        accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        return new ResponseEntity<>(accountOptional.get(), HttpStatus.OK);
     }
 
     /**
@@ -47,36 +56,26 @@ public class AccountController {
      */
     @PreAuthorize("hasAuthority('USER')")
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getAccount(Principal principal) {
-        if(principal == null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Wrong or empty access token");
-        Account acc = accSrv.getByLogin(principal.getName());
-        return Response.createResponse(acc);
+    public ResponseEntity<?> getAccount(@NotNull @Valid Principal principal) {
+        Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
+        accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + principal.getName() + " not found"));
+        return new ResponseEntity<>(accountOptional.get(), HttpStatus.OK);
     }
 
 
     /**
      * Account find by email method
      *
-     * @param mail user's email
+     * @param email user's email
      * @return user's account
      */
     @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "find_user/mail/{mail}", method = RequestMethod.GET)
-    public ResponseEntity<?> getAccountByMail(@PathVariable("mail") String mail) {
-        String email = mail.replace('+','.');
-        if (email.equals(""))
-        {
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST,"Empty email");
-        }
-        Account res = accSrv.getByEmail(email);
-        if (res==null)
-        {
-            return Response.createErrorResponse(HttpStatus.NO_CONTENT,"Not found");
-        }
-        return Response.createResponse(res);
+    public ResponseEntity<?> getAccountByMail(@PathVariable("mail") @Email @Valid String email) {
+        Optional<Account> accountOptional = accountService.getByEmail(email);
+        accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with email: " + email + " not found"));
+        return new ResponseEntity<>(accountOptional.get(), HttpStatus.OK);
     }
-
 
 
     /**
@@ -88,26 +87,11 @@ public class AccountController {
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> registerNewAccount(@RequestBody Account account) {
-        //acc check logic here
-        String login  = account.getLogin();
-        String email = account.getEmail();
-
-        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
-        Account check = accSrv.getByLogin(login);
-
-        if (check!=null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Login already in use.");
-        check = accSrv.getByEmail(email);
-
-        if (check!=null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
-
         //acc manage logic:
         account.setRole("user");
-        account.setPass(passwordEncoder.encode(account.getPass()));
-        accSrv.add(account); //flush empty links object, receive new one
-        return Response.createResponse(HttpStatus.OK);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        Account newAccount = accountService.add(account);//flush empty links object, receive new one
+        return new ResponseEntity<>(newAccount, HttpStatus.OK);
     }
 
     /**
@@ -119,25 +103,11 @@ public class AccountController {
      */
     @RequestMapping(value = "/admin/register", method = RequestMethod.POST)
     public ResponseEntity<?> registerAdmin(@RequestBody Account account) {
-        //acc check logic here
-        String login  = account.getLogin();
-        String email = account.getEmail();
-
-        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
-        Account check = accSrv.getByLogin(login);
-
-        if (check!=null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Login already in use.");
-        check = accSrv.getByEmail(email);
-
-        if (check!=null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
         //acc manage logic:
         account.setRole("admin");
-        account.setPass(passwordEncoder.encode(account.getPass()));
-        accSrv.add(account); //flush empty links object, receive new one
-        return Response.createResponse(HttpStatus.OK);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        Account newAccount = accountService.add(account);//flush empty links object, receive new one
+        return new ResponseEntity<>(newAccount, HttpStatus.OK);
     }
 
     /**
@@ -150,25 +120,61 @@ public class AccountController {
     @PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/staff/register", method = RequestMethod.POST)
     public ResponseEntity<?> registerStaff(@RequestBody Account account) {
-        //acc check logic here
-        String login  = account.getLogin();
-        String email = account.getEmail();
-
-        if (login.isEmpty() || (email.isEmpty()) || (account.getPass().isEmpty()))
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Invalid login, mail, or password.");
-        Account check = accSrv.getByLogin(login);
-
-        if (check!=null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "Login already in use.");
-        check = accSrv.getByEmail(email);
-
-        if (check!=null)
-            return Response.createErrorResponse(HttpStatus.BAD_REQUEST, "E-mail already in use.");
         //acc manage logic:
         account.setRole("staff");
-        account.setPass(passwordEncoder.encode(account.getPass()));
-        accSrv.add(account); //flush empty links object, receive new one
-        return Response.createResponse(HttpStatus.OK);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        Account newAccount = accountService.add(account);//flush empty links object, receive new one
+        return new ResponseEntity<>(newAccount, HttpStatus.OK);
     }
 
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{login}/holder", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToHolders(@PathVariable("login") @NotBlank @Valid String login) {
+        Optional<Account> accountOptional = accountService.getByLogin(login);
+        Account accountWithHolders = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        return new ResponseEntity<>(accountWithHolders.getHolders(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/holder", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToHolders(@NotNull @Valid Principal principal) {
+        Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
+        Account accountWithHolders = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + principal.getName() + " not found"));
+        return new ResponseEntity<>(accountWithHolders.getHolders(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{login}/holder", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateInventoryHolderLinksToAccounts(@PathVariable("login") @NotBlank @Valid String login,
+                                                                  @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
+        Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
+        Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
+        Account result = null;
+        if (!addByIds.isEmpty()) {
+            result = accountService.addHolders(login, addByIds);
+        }
+        if (!removeByIds.isEmpty()) {
+            result = accountService.removeHolders(login, removeByIds);
+        }
+        if (result == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{login}/requisition", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToRequisitions(@PathVariable("login") @NotBlank @Valid String login) {
+        Optional<Account> accountOptional = accountService.getByLogin(login);
+        Account accountWithRequisitions = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        return new ResponseEntity<>(accountWithRequisitions.getRequisitions(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/requisition", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToRequisitions(@NotNull @Valid Principal principal) {
+        Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
+        Account accountWithRequisitions = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + principal.getName() + " not found"));
+        return new ResponseEntity<>(accountWithRequisitions.getRequisitions(), HttpStatus.OK);
+    }
 }

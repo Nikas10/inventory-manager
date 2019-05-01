@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.service.comunda.requisition;
 
 
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.RequisitionService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -19,11 +20,11 @@ public final class UpdateRequisition {
         String idString = execution.getProcessBusinessKey();
         UUID id = UUID.fromString(idString);
 
-        Optional<Requisition> requisition = requisitionService.get(id);
-
-        requisition.ifPresent(req -> {
-            req.setStatus(status);
-            requisitionService.update(req);
-        });
+        Optional<Requisition> optionalRequisition = requisitionService.getById(id);
+        optionalRequisition.orElseThrow(() -> new ResourceNotFoundException("Requisition with id: " + id
+                                                                            + " not found."));
+        Requisition requisitionToUpdate = optionalRequisition.get();
+        requisitionToUpdate.setStatus(status);
+        requisitionService.update(requisitionToUpdate);
     }
 }

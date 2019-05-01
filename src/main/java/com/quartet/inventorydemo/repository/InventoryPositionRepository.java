@@ -2,15 +2,20 @@ package com.quartet.inventorydemo.repository;
 
 import com.quartet.inventorydemo.model.InventoryPosition;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+@Repository("InventoryPositionRepository")
 public interface InventoryPositionRepository extends JpaRepository<InventoryPosition, UUID> {
-    List<InventoryPosition> findAll();
+    default Set<InventoryPosition> findAllToSet() {
+        return new HashSet<>(findAll());
+    }
 
-    Set<InventoryPosition> findByPositionIDIn(Iterable<UUID> ids);
-    InventoryPosition findByPositionID(UUID positionID);
-    InventoryPosition findByName(String name);
+    Optional<InventoryPosition> findByName(String name);
+
+    Set<InventoryPosition> findByIdIn(Iterable<UUID> ids);
 }

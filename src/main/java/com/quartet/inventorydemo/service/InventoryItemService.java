@@ -2,16 +2,17 @@ package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.model.InventoryItem;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 public interface InventoryItemService {
-    List<InventoryItem> getAll();
-    InventoryItem getByInventoryItemID(UUID inventoryItemID);
 
-    Set<InventoryItem> getByInventoryItemIDs(Set<UUID> itemIDs);
+    Collection<InventoryItem> getAll();
 
-    InventoryItem add(InventoryItem item);
-    InventoryItem update(InventoryItem item);
+    InventoryItem add(@NotNull @Valid InventoryItem item);
+
+    InventoryItem update(@NotNull @Valid InventoryItem item);
+
+    void remove(@NotNull @Valid InventoryItem item);
 }

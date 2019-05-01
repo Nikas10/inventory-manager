@@ -2,17 +2,34 @@ package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.model.Account;
 
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public interface AccountService {
-    List<Account> getAll();
 
-    Set<Account> getByAccountIDs(Set<UUID> uuidSet);
+    Collection<Account> getAll();
 
-    Account getByLogin(String login);
-    Account add(Account acc);
-    Account update(Account acc);
-    Account getByEmail(String email);
+    Optional<Account> getByAccountId(@NotNull @Valid UUID accountId);
+
+    Optional<Account> getByLogin(@NotBlank @Valid String login);
+
+    Optional<Account> getByEmail(@Email @Valid String email);
+
+    Collection<Account> getByAccountIDs(@NotNull @Valid Set<UUID> uuidSet);
+
+    Account add(@NotNull @Valid Account acc);
+
+    Account update(@NotBlank @Valid String login, @NotNull @Valid Account acc);
+
+    void remove(@NotBlank @Valid String login);
+
+    Account addHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds);
+
+    Account removeHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds);
 }
