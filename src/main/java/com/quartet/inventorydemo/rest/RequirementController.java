@@ -38,9 +38,6 @@ public class RequirementController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteRequirement(@PathVariable("id") UUID id) {
-        Optional<Requirement> requirementOptional = requirementService.getByRequirementID(id);
-        requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
-
         requirementService.remove(id);
         return new ResponseEntity(HttpStatus.OK);
     }
