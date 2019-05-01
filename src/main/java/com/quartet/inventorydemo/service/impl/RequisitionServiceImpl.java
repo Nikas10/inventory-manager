@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service("RequisitionService")
@@ -32,7 +33,8 @@ public class RequisitionServiceImpl implements RequisitionService {
     }
 
     @Override
-    public Requisition getById(@NotNull @Valid UUID id) {
+    public Optional<Requisition> getById(@NotNull @Valid UUID id) {
+
         return null;
     }
 

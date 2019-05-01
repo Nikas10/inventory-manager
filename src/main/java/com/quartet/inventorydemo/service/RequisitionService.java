@@ -8,13 +8,14 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RequisitionService {
 
     Collection<Requisition> getAll();
 
-    Requisition getById(@NotNull @Valid UUID id);
+    Optional<Requisition> getById(@NotNull @Valid UUID id);
 
     @Validated(IdNull.class)
     Requisition add(@NotNull @Valid Requisition requisition);

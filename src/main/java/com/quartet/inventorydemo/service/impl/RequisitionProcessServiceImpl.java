@@ -2,61 +2,107 @@ package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
-import com.quartet.inventorydemo.util.IdNotNull;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service("RequisitionProcessService")
-@Validated
-@org.springframework.transaction.annotation.Transactional
-public class RequisitionProcessServiceImpl implements RequisitionProcessService {
+public final class RequisitionProcessServiceImpl implements RequisitionProcessService {
     private final static String PROCESS_NAME = "requisitionExecution";
-    private final static String DUE_DATE = "dueDate";
 
-    private final RuntimeService runtimeService;
+    private final static String MESSAGE_REVIEW = "Message_Review";
+    private final static String MESSAGE_COMPLETE = "Message_Complete";
+    private final static String MESSAGE_MAKE_CHANGES = "Message_MakeChanges";
+
+    private final static String VARIABLE_REVIEW_RESULT = "reviewResult";
+    private final static String VARIABLE_DUE_DATE = "dueDate";
+
+    private final static String VALUE_APPROVE = "APPROVE";
+    private final static String VALUE_REJECT = "REJECT";
+    private final static String VALUE_REQUIRE_CLARIFICATION = "REQUIRE_CLARIFICATION";
 
     @Autowired
-    public RequisitionProcessServiceImpl(final RuntimeService runtimeService) {
-        this.runtimeService = runtimeService;
-    }
+    private RuntimeService runtimeService;
 
-    @Validated(IdNotNull.class)
     @Override
-    public void create(@NotNull @Valid Requisition requisition) {
+    public void create(Requisition requisition) {
         String businessKey = requisition.getId().toString();
         Date dueDate = requisition.getDueDate();
 
         ProcessInstance process = runtimeService.startProcessInstanceByKey(PROCESS_NAME, businessKey);
-        runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
+        runtimeService.setVariable(process.getProcessInstanceId(), VARIABLE_DUE_DATE, dueDate);
     }
 
-    @Validated(IdNotNull.class)
     @Override
-    public void update(@NotNull @Valid Requisition requisition) {
-        String businessKey = requisition.getId().toString();
+    public void update(Requisition requisition) {
         Date dueDate = requisition.getDueDate();
 
-        ProcessInstance process = getByBusinessKey(businessKey);
+        ProcessInstance process = getProcessFor(requisition);
 
-        runtimeService.setVariable(process.getProcessInstanceId(), DUE_DATE, dueDate);
+        runtimeService.setVariable(process.getProcessInstanceId(), VARIABLE_DUE_DATE, dueDate);
     }
 
-    @Validated(IdNotNull.class)
+    @Override
+    public void approve(Requisition requisition) {
+        ProcessInstance process = getProcessFor(requisition);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put(VARIABLE_REVIEW_RESULT, VALUE_APPROVE);
+
+        runtimeService.correlateMessage(MESSAGE_REVIEW, process.getBusinessKey(), variables);
+    }
+
+    @Override
+    public void reject(Requisition requisition) {
+        ProcessInstance process = getProcessFor(requisition);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put(VARIABLE_REVIEW_RESULT, VALUE_REJECT);
+
+        runtimeService.correlateMessage(MESSAGE_REVIEW, process.getBusinessKey(), variables);
+    }
+
+    @Override
+    public void requestClarification(Requisition requisition, String reason) {
+        ProcessInstance process = getProcessFor(requisition);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put(VARIABLE_REVIEW_RESULT, VALUE_REQUIRE_CLARIFICATION);
+
+        runtimeService.correlateMessage(MESSAGE_REVIEW, process.getBusinessKey(), variables);
+    }
+
+    @Override
+    public void makeChanges(Requisition requisition) {
+        ProcessInstance process = getProcessFor(requisition);
+
+        runtimeService.correlateMessage(MESSAGE_MAKE_CHANGES, process.getBusinessKey());
+    }
+
+    @Override
+    public void complete(Requisition requisition) {
+        ProcessInstance process = getProcessFor(requisition);
+
+        runtimeService.correlateMessage(MESSAGE_COMPLETE, process.getBusinessKey());
+    }
+
     @Override
     public void delete(@NotNull @Valid Requisition requisition) {
 
     }
 
-    private ProcessInstance getByBusinessKey(String key) {
+    private ProcessInstance getProcessFor(Requisition requisition) {
+        String businessKey = requisition.getId().toString();
+
         return runtimeService.createProcessInstanceQuery()
-                .processInstanceBusinessKey(key)
+                .processInstanceBusinessKey(businessKey)
                 .list()
                 .get(0);
     }
