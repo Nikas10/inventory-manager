@@ -77,9 +77,9 @@ public class RequirementServiceImpl implements RequirementService {
     @Override
     public void remove(@NotNull @Valid UUID id) {
         Optional<Requirement> requirementOptional = getByRequirementID(id);
-        requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
 
-        requirementRepo.delete(requirementOptional.get());
+        requirementRepo.delete(requirementOptional
+                .orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found")));
     }
 
     private boolean isExists(@NotNull @Valid Requirement requirement) {

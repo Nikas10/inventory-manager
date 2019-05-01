@@ -66,64 +66,36 @@ public class InventoryPositionController {
     }
 
     @RequestMapping(value = "{positionID}/requirement/{requirementID}/{value}", method = RequestMethod.POST)
-    public ResponseEntity<?> createRequirementValue(@PathVariable("positionID") UUID positionID,
-                                                    @PathVariable("requirementID") UUID requirementID,
+    public ResponseEntity<?> createRequirementValue(@PathVariable("positionID") String stringPositionID,
+                                                    @PathVariable("requirementID") String stringRequirementID,
                                                     @RequestBody RequirementValue requirementValue) {
-        Optional<InventoryPosition> positionOptional = positionService.getByPositionID(positionID);
-        Optional<Requirement> requirementOptional = requirementService.getByRequirementID(requirementID);
-
-        positionOptional.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + positionID + " not found"));
-        requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID + " not found"));
-
-        Optional<RequirementValue> optionalProperty = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
-
-        optionalProperty.ifPresent(property -> new ResourceAlreadyExistsException("Requirement with id: " + requirementID
-                + " for position with id: " + positionID
-                + " already exists."));
-
+        UUID positionID = UUID.fromString(stringPositionID);
+        UUID requirementID = UUID.fromString(stringRequirementID);
         RequirementValue newProperty = requirementValueService.add(positionID, requirementID, requirementValue);
 
         return new ResponseEntity<>(newProperty, HttpStatus.OK);
     }
 
     @RequestMapping(value = "{positionID}/requirement/{requirementID}/{value}", method = RequestMethod.PATCH)
-    public ResponseEntity<?> updateRequirementValue(@PathVariable("positionID") UUID positionID,
-                                                    @PathVariable("requirementID") UUID requirementID,
+    public ResponseEntity<?> updateRequirementValue(@PathVariable("positionID") String stringPositionID,
+                                                    @PathVariable("requirementID") String stringRequirementID,
                                                     @RequestBody RequirementValue value) {
-        Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(positionID);
-        Optional<Requirement> optionalRequirement = requirementService.getByRequirementID(requirementID);
-
-        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id:" + positionID + " not found."));
-        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id:" + requirementID + " not found."));
-
-        Optional<RequirementValue> optionalRequirementValue = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
-
-        optionalRequirementValue.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID
-                + " for position with id: " + positionID
-                + " not found."));
+        UUID positionID = UUID.fromString(stringPositionID);
+        UUID requirementID = UUID.fromString(stringRequirementID);
 
         RequirementValue newProperty = requirementValueService.update(positionID, requirementID, value);
 
         return new ResponseEntity<>(newProperty, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{positionID}/requirement/{requirementID}/", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteRequirementValue(@PathVariable("positionID") UUID positionID,
-                                                    @PathVariable("requirementID") UUID requirementID)
+    @RequestMapping(value = "{positionID}/requirement/{requirementID}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteRequirementValue(@PathVariable("positionID") String stringPositionID,
+                                                    @PathVariable("requirementID") String stringRequirementID)
     {
-        Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(positionID);
-        Optional<Requirement> optionalRequirement = requirementService.getByRequirementID(requirementID);
+        UUID positionID = UUID.fromString(stringPositionID);
+        UUID requirementID = UUID.fromString(stringRequirementID);
 
-        optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id:" + positionID + " not found."));
-        optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id:" + requirementID + " not found."));
-
-        Optional<RequirementValue> optionalRequirementValue = requirementValueService.getByPositionIDAndRequirementID(positionID, requirementID);
-
-        optionalRequirementValue.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID
-                + " for position with id: " + positionID
-                + " not found."));
-
-        requirementValueService.remove(optionalRequirementValue.get());
+        requirementValueService.remove(positionID, requirementID);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

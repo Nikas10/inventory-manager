@@ -37,8 +37,10 @@ public class RequirementController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteRequirement(@PathVariable("id") UUID id) {
+    public ResponseEntity<?> deleteRequirement(@PathVariable("id") String stringId) {
+        UUID id = UUID.fromString(stringId);
         requirementService.remove(id);
+
         return new ResponseEntity(HttpStatus.OK);
     }
 }
