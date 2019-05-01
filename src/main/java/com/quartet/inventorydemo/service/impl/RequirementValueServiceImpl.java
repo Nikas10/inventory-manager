@@ -48,11 +48,11 @@ public class RequirementValueServiceImpl implements RequirementValueService {
 
         Optional<RequirementValue> requirementValueOptional = requirementValueRepo
                 .findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
-        requirementValueOptional.ifPresent(s -> {
-            throw new ResourceAlreadyExistsException("Requirement with id:" + requirementID
+        requirementValueOptional
+                .ifPresent(s -> {throw new ResourceAlreadyExistsException("Requirement with id:" + requirementID
                                                      + " for position with id: " + positionID
                                                      + "already exists.");
-        });
+                });
 
         RequirementValue newRequirementValue = new RequirementValue(optionalRequirement.get(),
                                                                     optionalPosition.get(),
@@ -68,15 +68,18 @@ public class RequirementValueServiceImpl implements RequirementValueService {
         optionalPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + positionID + " not found."));
         optionalRequirement.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID + " not found."));
 
-        Optional<RequirementValue> requirementValueOptional = requirementValueRepo.findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
+        Optional<RequirementValue> requirementValueOptional = requirementValueRepo
+                .findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
 
-        requirementValueOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: "
-                                                                                 + requirementID
-                                                                                 + " for position with id: "
-                                                                                 + positionID
-                                                                                 + " not found."));
+        requirementValueOptional
+                .orElseThrow(() -> new ResourceNotFoundException("Requirement with id: "
+                                                                 + requirementID
+                                                                 + " for position with id: "
+                                                                 + positionID
+                                                                 + " not found."));
 
-        return requirementValueRepo.saveAndFlush(new RequirementValue(optionalRequirement.get(),
+        return requirementValueRepo
+                .saveAndFlush(new RequirementValue(optionalRequirement.get(),
                                                                optionalPosition.get(),
                                                                requirementValue.getValue()
                                                               )
@@ -105,11 +108,14 @@ public class RequirementValueServiceImpl implements RequirementValueService {
         Optional<RequirementValue> optionalRequirementValue = requirementValueRepo
                 .findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
 
-        optionalRequirementValue.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + requirementID
-                                                                                 + " for position with id: " + positionID
-                                                                                 + " not found."));
 
-        requirementValueRepo.delete(optionalRequirementValue.get());
+
+        requirementValueRepo
+                .delete(optionalRequirementValue.orElseThrow(() ->
+                new ResourceNotFoundException("Requirement with id: " + requirementID
+                                              + " for position with id: " + positionID
+                                              + " not found."))
+        );
     }
 
 }
