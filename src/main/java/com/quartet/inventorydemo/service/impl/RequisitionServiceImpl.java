@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.repository.RequisitionRepository;
 import com.quartet.inventorydemo.service.RequisitionService;
@@ -7,6 +8,8 @@ import com.quartet.inventorydemo.util.IdNull;
 import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,23 +37,19 @@ public class RequisitionServiceImpl implements RequisitionService {
 
     @Override
     public Optional<Requisition> getById(@NotNull @Valid UUID id) {
-
-        return null;
+        return requisitionRepository.getById(id);
     }
 
-    @Validated(IdNull.class)
     @Override
     public Requisition add(@NotNull @Valid Requisition requisition) {
         return requisitionRepository.saveAndFlush(requisition);
     }
 
-    @Validated(IdNotNull.class)
     @Override
     public Requisition update(@NotNull @Valid Requisition requisition) {
         return requisitionRepository.saveAndFlush(requisition);
     }
 
-    @Validated(IdNotNull.class)
     @Override
     public void remove(@NotNull @Valid Requisition requisition) {
 

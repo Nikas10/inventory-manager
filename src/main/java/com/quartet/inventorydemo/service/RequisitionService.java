@@ -14,15 +14,9 @@ import java.util.UUID;
 public interface RequisitionService {
 
     Collection<Requisition> getAll();
-
+@Validated(IdNull.class)
     Optional<Requisition> getById(@NotNull @Valid UUID id);
-
-    @Validated(IdNull.class)
     Requisition add(@NotNull @Valid Requisition requisition);
-
-    @Validated(IdNotNull.class)
     Requisition update(@NotNull @Valid Requisition requisition);
-
-    @Validated(IdNotNull.class)
     void remove(@NotNull @Valid Requisition requisition);
 }

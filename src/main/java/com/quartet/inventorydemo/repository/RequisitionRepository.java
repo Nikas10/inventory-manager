@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,4 +14,5 @@ public interface RequisitionRepository extends JpaRepository<Requisition, UUID> 
     default Set<Requisition> findAllToSet() {
         return new HashSet<>(findAll());
     }
+    Optional<Requisition> getById(UUID uuid);
 }
