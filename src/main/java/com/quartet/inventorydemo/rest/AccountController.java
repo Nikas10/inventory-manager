@@ -128,6 +128,22 @@ public class AccountController {
     }
 
     //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{login}/holder", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToHolders(@PathVariable("login") @NotBlank @Valid String login) {
+        Optional<Account> accountOptional = accountService.getByLogin(login);
+        Account accountWithHolders = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        return new ResponseEntity<>(accountWithHolders.getHolders(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/holder", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToHolders(@NotNull @Valid Principal principal) {
+        Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
+        Account accountWithHolders = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + principal.getName() + " not found"));
+        return new ResponseEntity<>(accountWithHolders.getHolders(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
     @RequestMapping(value = "/{login}/holder", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateInventoryHolderLinksToAccounts(@PathVariable("login") @NotBlank @Valid String login,
                                                                   @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
