@@ -12,17 +12,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Optional;
 
 @Service("DetailsService")
-@Validated
 @Transactional(rollbackFor = LockAcquisitionException.class)
 public class DetailsServiceImpl implements DetailsService {
     private final AccountRepository accountRepository;
@@ -33,7 +29,7 @@ public class DetailsServiceImpl implements DetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(@NotBlank @Valid String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             String decodedUsername = URLDecoder.decode(username, "UTF-8");
             Optional<Account> byLogin = accountRepository.findByLogin(username);
