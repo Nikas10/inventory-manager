@@ -2,17 +2,13 @@ package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
-import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
-import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
-import com.quartet.inventorydemo.service.RoleService;
 import com.quartet.inventorydemo.util.Response;
 import com.quartet.inventorydemo.util.UUIDString;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -21,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -51,8 +46,8 @@ public class HolderController {
     public ResponseEntity<?> getInventoryHolder(@PathVariable("uuid") @UUIDString @Valid String stringUuid) {
         UUID uuid = UUID.fromString(stringUuid);
         Optional<Holder> holderOptional = holderService.getByHolderID(uuid);
-        holderOptional.orElseThrow(() -> new ResourceNotFoundException("inventory holder with id: " + uuid + "not found"));
-        return new ResponseEntity<>(holderOptional.get(), HttpStatus.OK);
+        Holder holder = holderOptional.orElseThrow(() -> new ResourceNotFoundException("inventory holder with id: " + uuid + "not found"));
+        return new ResponseEntity<>(holder, HttpStatus.OK);
     }
 
     //@PreAuthorize("hasAuthority('STAFF')")
