@@ -40,7 +40,7 @@ public class InventoryPositionController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> create(@RequestBody InventoryPosition position) {
         InventoryPosition newPosition = positionService.add(position);
-        return Response.createResponse(newPosition);
+        return new ResponseEntity<>(newPosition, HttpStatus.OK);
     }
 
     @RequestMapping(value = "{uuid}", method = RequestMethod.DELETE)
