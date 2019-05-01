@@ -20,6 +20,8 @@ public interface HolderService {
 
     Collection<Holder> getByHolderIDs(@NotNull @Valid Set<UUID> holderIDs);
 
+    Holder getStorageHolder();
+
     Holder add(@NotNull @Valid Holder holder);
 
     Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder);

@@ -9,9 +9,8 @@ import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.RoleService;
-import com.quartet.inventorydemo.util.IdNull;
-import com.quartet.inventorydemo.util.IdNotNull;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -23,15 +22,21 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service("HolderService")
 @Validated
 @Transactional
-public class HolderServiceImpl implements HolderService {
+public class HolderServiceImpl implements HolderService, InitializingBean {
+    private final String STORAGE_NAME = "STORAGE";
+    private final String STORAGE_DESCRIPTION = "DEFAULT STORAGE THAT CONTAINS INVENTORY ITEMS";
+
+    private Holder storage;
+
     private final InventoryHolderRepository inventoryHolderRepository;
     private final RoleService roleService;
-
 
     @Autowired
     public HolderServiceImpl(@Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepository,
@@ -59,6 +64,15 @@ public class HolderServiceImpl implements HolderService {
     @Override
     public Set<Holder> getByHolderIDs(@NotNull @Valid Set<UUID> holderIDs) {
         return inventoryHolderRepository.findByIdIn(holderIDs);
+    }
+
+    @Override
+    public Holder getStorageHolder() {
+        if (storage != null) {
+            return storage;
+        }
+        Optional<Holder> storageOptional = getByHolderName(STORAGE_NAME);
+        return storageOptional.orElseGet(() -> add(new Holder(STORAGE_NAME, STORAGE_DESCRIPTION)));
     }
 
     @Override
@@ -123,5 +137,10 @@ public class HolderServiceImpl implements HolderService {
         Optional<Holder> alreadyExists = inventoryHolderRepository.findOne(holderExample);
 
         return alreadyExists.isPresent();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.storage = getStorageHolder();
     }
 }

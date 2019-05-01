@@ -36,7 +36,6 @@ public class HolderController {
                             @Qualifier("AccountService") final AccountService accountService,
                             @Qualifier("InventoryItemService") final InventoryItemService inventoryItemService) {
         this.holderService = holderService;
-
         this.accountService = accountService;
         this.inventoryItemService = inventoryItemService;
     }

@@ -13,8 +13,8 @@ public class AuditorAwareImpl implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        if (SecurityContextHolder.getContext().getAuthentication() != null ||
-                !SecurityContextHolder.getContext().getAuthentication().isAuthenticated() ||
+        if (SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null &&
+                !SecurityContextHolder.getContext().getAuthentication().isAuthenticated() &&
                 SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
 
             if (SecurityContextHolder.getContext().getAuthentication().getClass().isAssignableFrom(OAuth2Authentication.class)) {
