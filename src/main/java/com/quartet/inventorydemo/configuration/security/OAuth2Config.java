@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.configuration.security;
 
 import com.quartet.inventorydemo.service.DetailsService;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -18,63 +19,61 @@ import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeSe
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
-import javax.sql.DataSource;
-
 @Configuration
 @EnableAuthorizationServer
-@ComponentScan({ "com.quartet.inventorydemo" })
+@ComponentScan({"com.quartet.inventorydemo"})
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
-    private final AuthenticationManager auth;
-    private final DetailsService userDetailsService;
-    private final DataSource dataSource;
+  private final AuthenticationManager auth;
+  private final DetailsService userDetailsService;
+  private final DataSource dataSource;
 
-    @Autowired
-    public OAuth2Config(@Qualifier("authenticationManagerBean") AuthenticationManager auth,
-                        DataSource dataSource, DetailsService userDetailsService) {
-        this.auth = auth;
-        this.dataSource = dataSource;
-        this.userDetailsService = userDetailsService;
-    }
+  @Autowired
+  public OAuth2Config(
+      @Qualifier("authenticationManagerBean") AuthenticationManager auth,
+      DataSource dataSource,
+      DetailsService userDetailsService) {
+    this.auth = auth;
+    this.dataSource = dataSource;
+    this.userDetailsService = userDetailsService;
+  }
 
-    @Bean
-    public JdbcTokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
-    }
+  @Bean
+  public JdbcTokenStore tokenStore() {
+    return new JdbcTokenStore(dataSource);
+  }
 
-    @Bean
-    protected AuthorizationCodeServices authorizationCodeServices() {
-        return new JdbcAuthorizationCodeServices(dataSource);
-    }
+  @Bean
+  protected AuthorizationCodeServices authorizationCodeServices() {
+    return new JdbcAuthorizationCodeServices(dataSource);
+  }
 
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer security)
-            throws Exception {
-        security.allowFormAuthenticationForClients();
-    }
+  @Override
+  public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+    security.allowFormAuthenticationForClients();
+  }
 
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-            throws Exception {
-        endpoints.authorizationCodeServices(authorizationCodeServices())
-                .authenticationManager(auth)
-                .tokenStore(tokenStore())
-                .approvalStoreDisabled()
-                .userDetailsService(userDetailsService);
-    }
+  @Override
+  public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    endpoints
+        .authorizationCodeServices(authorizationCodeServices())
+        .authenticationManager(auth)
+        .tokenStore(tokenStore())
+        .approvalStoreDisabled()
+        .userDetailsService(userDetailsService);
+  }
 
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients
-                .jdbc(dataSource);
-    }
+  @Override
+  public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+    clients.jdbc(dataSource);
+  }
 
-    @Bean
-    @Primary
-    public DefaultTokenServices tokenServices() {
-        DefaultTokenServices tokenServices = new DefaultTokenServices();
-        tokenServices.setSupportRefreshToken(true);
-        tokenServices.setTokenStore(tokenStore());
-        return tokenServices;
-    }
+  @Bean
+  @Primary
+  public DefaultTokenServices tokenServices() {
+    DefaultTokenServices tokenServices = new DefaultTokenServices();
+    tokenServices.setSupportRefreshToken(true);
+    tokenServices.setTokenStore(tokenStore());
+    return tokenServices;
+  }
 }

@@ -14,32 +14,38 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Transactional
 public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPositionService {
-    private final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
 
-    @Autowired
-    public Bundle_InventoryPositionServiceImpl(@Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
-        this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
+  private final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
+
+  @Autowired
+  public Bundle_InventoryPositionServiceImpl(
+      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
+    this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
+  }
+
+  @Override
+  public int getAmount(InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
+    Bundle_InventoryPosition inventoryPositionContents =
+        bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(
+            bundle, partOfInventoryPosition);
+
+    return inventoryPositionContents.getAmount();
+  }
+
+  @Override
+  public Bundle_InventoryPosition update(
+      InventoryPosition inventoryPosition, InventoryPosition bundlePosition, int value) {
+    Bundle_InventoryPosition inventoryPositionContents =
+        bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(
+            inventoryPosition, bundlePosition);
+
+    if (inventoryPositionContents == null) {
+      inventoryPositionContents =
+          new Bundle_InventoryPosition(inventoryPosition, bundlePosition, value);
+    } else {
+      inventoryPositionContents.setAmount(value);
     }
 
-    @Override
-    public int getAmount(InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
-        Bundle_InventoryPosition inventoryPositionContents = bundle_InventoryPositionRepo
-                .findByInventoryPositionAndBundlePosition(bundle, partOfInventoryPosition);
-
-        return inventoryPositionContents.getAmount();
-    }
-
-    @Override
-    public Bundle_InventoryPosition update(InventoryPosition inventoryPosition, InventoryPosition bundlePosition, int value) {
-        Bundle_InventoryPosition inventoryPositionContents = bundle_InventoryPositionRepo
-                .findByInventoryPositionAndBundlePosition(inventoryPosition, bundlePosition);
-
-        if (inventoryPositionContents == null) {
-            inventoryPositionContents = new Bundle_InventoryPosition(inventoryPosition, bundlePosition, value);
-        } else {
-            inventoryPositionContents.setAmount(value);
-        }
-
-        return bundle_InventoryPositionRepo.saveAndFlush(inventoryPositionContents);
-    }
+    return bundle_InventoryPositionRepo.saveAndFlush(inventoryPositionContents);
+  }
 }

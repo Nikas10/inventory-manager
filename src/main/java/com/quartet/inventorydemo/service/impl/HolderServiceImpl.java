@@ -10,6 +10,12 @@ import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.RoleService;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,131 +26,132 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
 @Service("HolderService")
 @Validated
 @Transactional
 public class HolderServiceImpl implements HolderService, InitializingBean {
-    private final String STORAGE_NAME = "STORAGE";
-    private final String STORAGE_DESCRIPTION = "DEFAULT STORAGE THAT CONTAINS INVENTORY ITEMS";
 
-    private Holder storage;
+  private final String STORAGE_NAME = "STORAGE";
+  private final String STORAGE_DESCRIPTION = "DEFAULT STORAGE THAT CONTAINS INVENTORY ITEMS";
+  private final InventoryHolderRepository inventoryHolderRepository;
+  private final RoleService roleService;
+  private Holder storage;
 
-    private final InventoryHolderRepository inventoryHolderRepository;
-    private final RoleService roleService;
+  @Autowired
+  public HolderServiceImpl(
+      @Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepository,
+      @Qualifier("RoleService") final RoleService roleService) {
+    this.inventoryHolderRepository = inventoryHolderRepository;
+    this.roleService = roleService;
+  }
 
-    @Autowired
-    public HolderServiceImpl(@Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepository,
-                             @Qualifier("RoleService") final RoleService roleService) {
-        this.inventoryHolderRepository = inventoryHolderRepository;
-        this.roleService = roleService;
+  @Override
+  public Set<Holder> getAll() {
+    return inventoryHolderRepository.findAllToSet();
+  }
+
+  @Override
+  public Optional<Holder> getByHolderID(@NotNull @Valid UUID holderID) {
+    return inventoryHolderRepository.findById(holderID);
+  }
+
+  @Override
+  public Optional<Holder> getByHolderName(@NotBlank @Valid String holderName) {
+    return inventoryHolderRepository.findByName(holderName);
+  }
+
+  @Override
+  public Set<Holder> getByHolderIDs(@NotNull @Valid Set<UUID> holderIDs) {
+    return inventoryHolderRepository.findByIdIn(holderIDs);
+  }
+
+  @Override
+  public Holder getStorageHolder() {
+    if (storage != null) {
+      return storage;
     }
+    Optional<Holder> storageOptional = getByHolderName(STORAGE_NAME);
+    return storageOptional.orElseGet(() -> add(new Holder(STORAGE_NAME, STORAGE_DESCRIPTION)));
+  }
 
-    @Override
-    public Set<Holder> getAll() {
-        return inventoryHolderRepository.findAllToSet();
+  @Override
+  public Holder add(@NotNull @Valid Holder holder) {
+    if (isExists(holder)) {
+      throw new ResourceAlreadyExistsException("holder with same name already exists");
     }
+    Holder newHolder = new Holder(holder.getName(), holder.getDescription());
+    return inventoryHolderRepository.saveAndFlush(newHolder);
+  }
 
-    @Override
-    public Optional<Holder> getByHolderID(@NotNull @Valid UUID holderID) {
-        return inventoryHolderRepository.findById(holderID);
-
+  @Override
+  public Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder) {
+    Optional<Holder> holderOptional = getByHolderID(uuid);
+    if (isExists(holder)) {
+      throw new ResourceAlreadyExistsException("holder with same name already exists");
     }
-
-    @Override
-    public Optional<Holder> getByHolderName(@NotBlank @Valid String holderName) {
-        return inventoryHolderRepository.findByName(holderName);
+    Holder holderToModified =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
+    if (holderToModified.equals(getStorageHolder())) {
+      throw new UpdateNotSupportedException("Can not modify storage");
     }
+    BeanUtils.copyProperties(holder, holderToModified, "id", "roles", "accounts", "inventoryItems");
+    return inventoryHolderRepository.saveAndFlush(holderToModified);
+  }
 
-    @Override
-    public Set<Holder> getByHolderIDs(@NotNull @Valid Set<UUID> holderIDs) {
-        return inventoryHolderRepository.findByIdIn(holderIDs);
+  @Override
+  public void remove(@NotNull @Valid UUID uuid) {
+    Optional<Holder> holderOptional = getByHolderID(uuid);
+    Holder holder =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
+    Set<InventoryItem> inventoryItems = holder.getInventoryItems();
+
+    if (!inventoryItems.isEmpty()) {
+      throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
     }
+    inventoryHolderRepository.delete(holder);
+  }
 
-    @Override
-    public Holder getStorageHolder() {
-        if (storage != null) {
-            return storage;
-        }
-        Optional<Holder> storageOptional = getByHolderName(STORAGE_NAME);
-        return storageOptional.orElseGet(() -> add(new Holder(STORAGE_NAME, STORAGE_DESCRIPTION)));
-    }
+  @Override
+  public Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds) {
+    Optional<Holder> holderOptional = getByHolderID(holderId);
+    Holder holderWithRoles =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
 
-    @Override
-    public Holder add(@NotNull @Valid Holder holder) {
-        if (isExists(holder)) {
-            throw new ResourceAlreadyExistsException("holder with same name already exists");
-        }
-        Holder newHolder = new Holder(holder.getName(), holder.getDescription());
-        return inventoryHolderRepository.saveAndFlush(newHolder);
-    }
+    Set<Role> currentRoles = holderWithRoles.getRoles();
+    currentRoles.addAll(roleService.getByRoleIDs(roleIds));
 
-    @Override
-    public Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder) {
-        Optional<Holder> holderOptional = getByHolderID(uuid);
-        if (isExists(holder)) {
-            throw new ResourceAlreadyExistsException("holder with same name already exists");
-        }
-        Holder holderToModified = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
-        if (holderToModified.equals(getStorageHolder())) {
-            throw new UpdateNotSupportedException("Can not modify storage");
-        }
-        BeanUtils.copyProperties(holder, holderToModified, "id", "roles", "accounts", "inventoryItems");
-        return inventoryHolderRepository.saveAndFlush(holderToModified);
-    }
+    return inventoryHolderRepository.saveAndFlush(holderWithRoles);
+  }
 
-    @Override
-    public void remove(@NotNull @Valid UUID uuid) {
-        Optional<Holder> holderOptional = getByHolderID(uuid);
-        Holder holder = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
-        Set<InventoryItem> inventoryItems = holder.getInventoryItems();
+  @Override
+  public Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds) {
+    Optional<Holder> holderOptional = getByHolderID(holderId);
+    Holder holderWithRoles =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
 
-        if (!inventoryItems.isEmpty()) {
-            throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
-        }
-        inventoryHolderRepository.delete(holder);
-    }
+    Set<Role> currentRoles = holderWithRoles.getRoles();
+    currentRoles.removeAll(roleService.getByRoleIDs(roleIds));
 
-    @Override
-    public Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds) {
-        Optional<Holder> holderOptional = getByHolderID(holderId);
-        Holder holderWithRoles = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
+    return inventoryHolderRepository.saveAndFlush(holderWithRoles);
+  }
 
-        Set<Role> currentRoles = holderWithRoles.getRoles();
-        currentRoles.addAll(roleService.getByRoleIDs(roleIds));
+  private boolean isExists(@NotNull @Valid Holder holder) {
+    ExampleMatcher nameIgnoreSensitivityMatcher =
+        ExampleMatcher.matchingAny()
+            .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+            .withIgnorePaths("id", "description", "roles", "accounts", "inventoryItems");
+    Example<Holder> holderExample = Example.of(holder, nameIgnoreSensitivityMatcher);
+    Optional<Holder> alreadyExists = inventoryHolderRepository.findOne(holderExample);
 
-        return inventoryHolderRepository.saveAndFlush(holderWithRoles);
-    }
+    return alreadyExists.isPresent();
+  }
 
-    @Override
-    public Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds) {
-        Optional<Holder> holderOptional = getByHolderID(holderId);
-        Holder holderWithRoles = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
-
-        Set<Role> currentRoles = holderWithRoles.getRoles();
-        currentRoles.removeAll(roleService.getByRoleIDs(roleIds));
-
-        return inventoryHolderRepository.saveAndFlush(holderWithRoles);
-    }
-
-    private boolean isExists(@NotNull @Valid Holder holder) {
-        ExampleMatcher nameIgnoreSensitivityMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
-                .withIgnorePaths("id", "description", "roles", "accounts", "inventoryItems");
-        Example<Holder> holderExample = Example.of(holder, nameIgnoreSensitivityMatcher);
-        Optional<Holder> alreadyExists = inventoryHolderRepository.findOne(holderExample);
-
-        return alreadyExists.isPresent();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.storage = getStorageHolder();
-    }
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    this.storage = getStorageHolder();
+  }
 }
