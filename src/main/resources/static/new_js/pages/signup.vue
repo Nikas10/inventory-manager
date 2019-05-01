@@ -18,7 +18,7 @@
           </b-form-group>
 
           <b-form-group label="Password:">
-            <b-form-input id="password" v-model="form.password" required placeholder="Password"></b-form-input>
+            <b-form-input id="pass" v-model="form.pass" required placeholder="Password"></b-form-input>
           </b-form-group>
 
           <b-form-group label="First Name:">
@@ -55,17 +55,21 @@ module.exports = {
       form: {
         email: "",
         login: "",
-        password: "",
+        pass: "",
         firstName: "",
-        secondName: "",
+        middleName: "",
         lastName: ""
       }
     };
   },
   methods: {
     onSubmit(evt) {
+      this.$server.post("/account", this.form).then(function() {
+        // TODO Добавить обработку ошибок.
+        // TODO Добавить сообщение об успешной регистрации.
+      });
+
       evt.preventDefault();
-      alert(JSON.stringify(this.form));
     }
   }
 };
