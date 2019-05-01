@@ -82,9 +82,9 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
             throw new ResourceAlreadyExistsException("Position with same name already exists. Can not make changes.");
         }
 
-        InventoryPosition modifiedRequirement = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + id + " not found"));
+        InventoryPosition positionToModify = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + id + " not found"));
 
-        BeanUtils.copyProperties(position, modifiedRequirement, "id", "requirementValues");
+        BeanUtils.copyProperties(position, positionToModify, "id", "requirementValues");
         return positionRepo.saveAndFlush(position);
     }
 
@@ -94,13 +94,13 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
         Optional<InventoryPosition> optionalInventoryPosition = positionRepo.findById(id);
         optionalInventoryPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + id + " not found."));
 
-        InventoryPosition removed = optionalInventoryPosition.get();
-        if (removed.getBundleInventoryPositions() != null) {
+        InventoryPosition positionToRemove = optionalInventoryPosition.get();
+        if (!positionToRemove.getBundleInventoryPositions().isEmpty()) {
             //inventoryPosition is bundle
-            removeBundle(removed);
+            removeBundle(positionToRemove);
         } else {
             //inventoryPosition is not bundle
-            removeInventoryPosition(removed);
+            removeInventoryPosition(positionToRemove);
         }
     }
 
