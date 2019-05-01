@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.Role;
@@ -91,6 +92,9 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
             throw new ResourceAlreadyExistsException("holder with same name already exists");
         }
         Holder holderToModified = holderOptional.orElseThrow(() -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
+        if (holderToModified.equals(getStorageHolder())) {
+            throw new UpdateNotSupportedException("Can not modify storage");
+        }
         BeanUtils.copyProperties(holder, holderToModified, "id", "roles", "accounts", "inventoryItems");
         return inventoryHolderRepository.saveAndFlush(holderToModified);
     }

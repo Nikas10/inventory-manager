@@ -5,6 +5,7 @@ import com.quartet.inventorydemo.dto.Violation;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,6 +66,13 @@ public class ErrorHandlingControllerAdvice {
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ResponseBody
     String onUnsupportedDeletion(DeletionNotSupportedException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(UpdateNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ResponseBody
+    String onUnsupportedUpdate(UpdateNotSupportedException e) {
         return e.getMessage();
     }
 
