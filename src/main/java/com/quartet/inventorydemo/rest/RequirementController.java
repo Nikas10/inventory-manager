@@ -46,7 +46,6 @@ public class RequirementController {
         Optional<Requirement> requirementOptional = requirementService.getByRequirementID(id);
         requirementOptional.orElseThrow(() -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
 
-        Requirement removed = requirementOptional.get();
         requirementService.remove(id);
         return new ResponseEntity(HttpStatus.OK);
     }
