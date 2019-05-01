@@ -48,7 +48,7 @@ public class RequirementController {
 
         Requirement removed = requirementOptional.get();
         requirementService.remove(id);
-        return new ResponseEntity(removed, HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @RequestMapping(value = "requirement/{requirementID}/position/{positionID}/{value}", method = RequestMethod.POST)
@@ -111,6 +111,6 @@ public class RequirementController {
 
         requirementValueService.remove(optionalRequirementValue.get());
 
-        return new ResponseEntity<>(optionalRequirementValue.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

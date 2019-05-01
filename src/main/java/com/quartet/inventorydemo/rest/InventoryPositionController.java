@@ -49,7 +49,7 @@ public class InventoryPositionController {
             byPositionID.orElseThrow(() -> new ResourceNotFoundException("Position with id: " + id + " not found."));
             InventoryPosition removed = byPositionID.get();
             positionService.remove(id);
-            return new ResponseEntity<>(removed, HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
