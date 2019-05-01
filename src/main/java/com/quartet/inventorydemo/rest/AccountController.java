@@ -161,4 +161,20 @@ public class AccountController {
         }
         return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
     }
+
+    //@PreAuthorize("hasAuthority('STAFF')")
+    @RequestMapping(value = "/{login}/requisition", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToRequisitions(@PathVariable("login") @NotBlank @Valid String login) {
+        Optional<Account> accountOptional = accountService.getByLogin(login);
+        Account accountWithRequisitions = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + login + " not found"));
+        return new ResponseEntity<>(accountWithRequisitions.getRequisitions(), HttpStatus.OK);
+    }
+
+    //@PreAuthorize("hasAuthority('USER')")
+    @RequestMapping(value = "/requisition", method = RequestMethod.GET)
+    public ResponseEntity<?> getAccountLinksToRequisitions(@NotNull @Valid Principal principal) {
+        Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
+        Account accountWithRequisitions = accountOptional.orElseThrow(() -> new ResourceNotFoundException("Account with login: " + principal.getName() + " not found"));
+        return new ResponseEntity<>(accountWithRequisitions.getRequisitions(), HttpStatus.OK);
+    }
 }

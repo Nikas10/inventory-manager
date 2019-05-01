@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/requisitions")
+@RequestMapping("api/requisition")
 public class RequisitionController {
     private final RequisitionService requisitionService;
     private final RequisitionProcessService requisitionProcessService;
