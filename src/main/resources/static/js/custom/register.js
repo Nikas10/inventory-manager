@@ -2,7 +2,7 @@ function register() {
 	console.log("register");
 	var body = {};
 	body.login = 		document.getElementById("registerLogin").value;
-	body.pass = 		document.getElementById("registerPassword").value;
+	body.password =		document.getElementById("registerPassword").value;
 	body.email = 		document.getElementById("registerEmail").value;
 	body.firstName = 	document.getElementById("registerFirstName").value;
 	body.middleName = 	document.getElementById("registerMiddleName").value;

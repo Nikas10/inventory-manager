@@ -38,26 +38,6 @@ function processAjax(requestId, requestType, request, requestBody, callback) {
     }	
 }
 
-function processAjax(requestId, requestType, request, requestBody, callback) {
-    console.log(request);
-    console.log(JSON.stringify(requestBody));
-    var xhr = new XMLHttpRequest();
-    xhr.open(requestType, request, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState == 4)
-        {
-            callback(requestId, JSON.parse(xhr.responseText), xhr.status);
-        }
-    };
-    if (requestBody != null && requestBody != undefined) {
-        xhr.send(JSON.stringify(requestBody));  
-    } else {
-        xhr.send();
-    }    
-}
-
 function processSecuredAjax(requestId, requestType, request, requestBody, callback) {
     console.log(request);
     console.log(JSON.stringify(requestBody));
