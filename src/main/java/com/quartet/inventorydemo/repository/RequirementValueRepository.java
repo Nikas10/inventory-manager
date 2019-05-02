@@ -15,7 +15,5 @@ public interface RequirementValueRepository
   Optional<RequirementValue> findByRequirement_IdAndInventoryPosition_Id(
       UUID requirementId, UUID inventoryPositionId);
 
-  Collection<RequirementValue> findAllByInventoryPosition_Id(
-      UUID inventoryPositionId
-  );
+  Collection<RequirementValue> findAllByInventoryPosition_Id(UUID inventoryPositionId);
 }

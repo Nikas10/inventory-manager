@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.service;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.util.IdNull;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -16,7 +17,12 @@ public interface RequisitionService {
   @Validated(IdNull.class)
   Optional<Requisition> getById(@NotNull @Valid UUID id);
 
-  Requisition add(@NotNull @Valid Requisition requisition);
+  Requisition add(
+      @NotNull @Valid String login,
+      @NotNull @Valid Date creationDate,
+      @NotNull @Valid String description,
+      @NotNull @Valid Date dueDate,
+      @NotNull @Valid String status);
 
   Requisition update(@NotNull @Valid Requisition requisition);
 

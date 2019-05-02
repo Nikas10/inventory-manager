@@ -45,8 +45,10 @@ public class SwaggerConfig {
         "Provides access to REST API for developers purpose.",
         "API TOS",
         "Terms of service",
-        new Contact("Abramenko Nikita, Antsevich Dmitry, Myakishev Dmitry, Daniluk Kirill",
-            "www.github.com/Nikas10/inventory-manager", "nikas31415@gmail.com"),
+        new Contact(
+            "Abramenko Nikita, Antsevich Dmitry, Myakishev Dmitry, Daniluk Kirill",
+            "www.github.com/Nikas10/inventory-manager",
+            "nikas31415@gmail.com"),
         "GPL 3.0",
         "",
         Collections.emptyList());

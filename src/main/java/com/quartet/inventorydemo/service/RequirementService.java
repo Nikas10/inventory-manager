@@ -18,7 +18,7 @@ public interface RequirementService {
 
   Requirement add(@NotNull @Valid Requirement requirement);
 
-  Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid Requirement requirement);
+  Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid String name);
 
   void remove(@NotNull @Valid UUID id);
 }

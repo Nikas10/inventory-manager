@@ -65,8 +65,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
         });
 
     RequirementValue newRequirementValue =
-        new RequirementValue(
-            optionalRequirement.get(), optionalPosition.get(), requirementValue);
+        new RequirementValue(optionalRequirement.get(), optionalPosition.get(), requirementValue);
     return requirementValueRepo.saveAndFlush(newRequirementValue);
   }
 

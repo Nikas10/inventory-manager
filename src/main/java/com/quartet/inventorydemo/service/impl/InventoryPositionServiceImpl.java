@@ -70,14 +70,17 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
   }
 
   @Override
-  public InventoryPosition add(@NotNull @Valid InventoryPosition position) {
-    if (isExists(position)) {
-      throw new ResourceAlreadyExistsException(
-          "Position with same name already exists. Can not make changes.");
-    }
+  public InventoryPosition add(@NotNull @Valid String name, @NotNull @Valid String description) {
 
-    InventoryPosition newPosition =
-        new InventoryPosition(position.getName(), position.getDescription());
+    Optional<InventoryPosition> optionalPosition = getByName(name);
+
+    optionalPosition.ifPresent(
+        optPos -> {
+          throw new ResourceAlreadyExistsException(
+              "Position with name: " + name + " already exists");
+        });
+
+    InventoryPosition newPosition = new InventoryPosition(name, description);
     return positionRepo.saveAndFlush(newPosition);
   }
 

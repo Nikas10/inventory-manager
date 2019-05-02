@@ -124,8 +124,12 @@ public class RoleServiceImpl implements RoleService {
       @NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> inventoryPositionIds) {
     Set<Role> rolesByHolderId =
         roleRepository.findByHolders_Id(holderId); // can delegate to holder service
-    Set<UUID> allowedIds = rolesByHolderId.stream().map(Role::getInventoryPositions)
-        .flatMap(Collection::stream).map(InventoryPosition::getId).collect(Collectors.toSet());
+    Set<UUID> allowedIds =
+        rolesByHolderId.stream()
+            .map(Role::getInventoryPositions)
+            .flatMap(Collection::stream)
+            .map(InventoryPosition::getId)
+            .collect(Collectors.toSet());
     HashSet<UUID> idsToBeRestricted = new HashSet<>(inventoryPositionIds);
     idsToBeRestricted.removeAll(allowedIds);
     return idsToBeRestricted;

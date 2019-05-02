@@ -19,7 +19,7 @@ public interface InventoryPositionService {
 
   Collection<InventoryPosition> getByPositionIDs(@NotNull @Valid Set<UUID> positionIDs);
 
-  InventoryPosition add(@NotNull @Valid InventoryPosition position);
+  InventoryPosition add(@NotNull @Valid String name, @NotNull @Valid String description);
 
   InventoryPosition update(@NotNull @Valid UUID id, @NotNull @Valid InventoryPosition position);
 

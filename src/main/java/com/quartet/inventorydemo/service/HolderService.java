@@ -21,9 +21,10 @@ public interface HolderService {
 
   Holder getStorageHolder();
 
-  Holder add(@NotNull @Valid Holder holder);
+  Holder add(@NotNull @Valid String description, @NotNull @Valid String name);
 
-  Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder);
+  Holder update(
+      @NotNull @Valid UUID uuid, @NotNull @Valid String description, @NotNull @Valid String name);
 
   void remove(@NotNull @Valid UUID uuid);
 

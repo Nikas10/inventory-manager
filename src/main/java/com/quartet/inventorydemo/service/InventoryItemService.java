@@ -41,18 +41,14 @@ public interface InventoryItemService {
       @Positive @Valid Integer amountToMove);
 
   InventoryItem packBundlesInStorage(
-      @NotNull @Valid UUID bundleInventoryPositionId,
-      @Positive @Valid Integer amountOfBundles);
+      @NotNull @Valid UUID bundleInventoryPositionId, @Positive @Valid Integer amountOfBundles);
 
   InventoryItem unpackBundlesInStorage(
-      @NotNull @Valid UUID bundleInventoryPositionId,
-      @Positive @Valid Integer amountOfBundles);
+      @NotNull @Valid UUID bundleInventoryPositionId, @Positive @Valid Integer amountOfBundles);
 
   InventoryItem addToStorage(
-      @NotNull @Valid UUID inventoryPositionId,
-      @Positive @Valid Integer amount);
+      @NotNull @Valid UUID inventoryPositionId, @Positive @Valid Integer amount);
 
   InventoryItem removeFromStorage(
-      @NotNull @Valid UUID inventoryPositionId,
-      @Positive @Valid Integer amount);
+      @NotNull @Valid UUID inventoryPositionId, @Positive @Valid Integer amount);
 }

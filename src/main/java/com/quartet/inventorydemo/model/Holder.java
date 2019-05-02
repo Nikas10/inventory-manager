@@ -80,12 +80,13 @@ public class Holder extends History {
   @ApiModelProperty(hidden = true)
   @OneToMany(mappedBy = "holder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  private Set<InventoryItem> inventoryItems;  //ALWAYS check if it is empty before delete. Otherwise items will be lost
+  private Set<InventoryItem>
+      inventoryItems; // ALWAYS check if it is empty before delete. Otherwise items will be lost
 
   @ApiModelProperty(hidden = true)
   @OneToMany(mappedBy = "holder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  private Set<Requisition> requisitions;  //All requisitions will be lost, if you delete holder
+  private Set<Requisition> requisitions; // All requisitions will be lost, if you delete holder
 
   private Holder() {
   }

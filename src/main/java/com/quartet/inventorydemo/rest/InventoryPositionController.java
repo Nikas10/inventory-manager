@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.RequirementValue;
@@ -47,8 +48,11 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(value = "", method = RequestMethod.POST)
-  public ResponseEntity<?> create(@RequestBody InventoryPosition position) {
-    InventoryPosition newPosition = positionService.add(position);
+  public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
+    String description = positionDTO.getDescription();
+    String name = positionDTO.getName();
+
+    InventoryPosition newPosition = positionService.add(name, description);
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
@@ -106,10 +110,9 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(value = "{positionID}/requirements", method = RequestMethod.GET)
-  public ResponseEntity<?> getRequirements(
-      @PathVariable("positionID") String stringPositionID) {
+  public ResponseEntity<?> getRequirements(@PathVariable("positionID") String stringPositionID) {
     UUID positionID = UUID.fromString(stringPositionID);
-    return new ResponseEntity<>(requirementValueService.getRequirementsValues(positionID),
-        HttpStatus.OK);
+    return new ResponseEntity<>(
+        requirementValueService.getRequirementsValues(positionID), HttpStatus.OK);
   }
 }

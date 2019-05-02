@@ -24,8 +24,7 @@ public interface RequirementValueService {
       @NotNull @Valid UUID requirementID,
       @NotNull String requirementValue);
 
-  Collection<RequirementValue> getRequirementsValues(
-      @NotNull @Valid UUID positionID);
+  Collection<RequirementValue> getRequirementsValues(@NotNull @Valid UUID positionID);
 
   void remove(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID);
 }
