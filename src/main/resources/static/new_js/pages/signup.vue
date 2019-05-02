@@ -18,7 +18,7 @@
           </b-form-group>
 
           <b-form-group label="Password:">
-            <b-form-input id="pass" v-model="form.pass" required placeholder="Password"></b-form-input>
+            <b-form-input id="password" v-model="form.password" required placeholder="Password"></b-form-input>
           </b-form-group>
 
           <b-form-group label="First Name:">
@@ -55,7 +55,7 @@ module.exports = {
       form: {
         email: "",
         login: "",
-        pass: "",
+        password: "",
         firstName: "",
         middleName: "",
         lastName: ""
