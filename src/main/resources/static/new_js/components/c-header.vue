@@ -52,8 +52,7 @@ module.exports = {
   },
   methods: {
     onLogOut() {
-      this.storage.user = null;
-      this.$root.unsetToken();
+      this.$root.logout();
 
       // TODO Добавить перенаправление на стартовую страницу
     }

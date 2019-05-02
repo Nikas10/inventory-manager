@@ -36,7 +36,7 @@ module.exports = {
   },
   mounted() {
     // Clone
-    if(storage.user != null) {
+    if (storage.user != null) {
       this.form = JSON.parse(JSON.stringify(storage.user));
     }
   }
