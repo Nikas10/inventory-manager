@@ -1,15 +1,23 @@
 <template>
   <c-default-page>
     <b-container>
-      <b-card title="Profile">
-        <b-form>
+      <b-card title="Sign In">
+        <b-form @submit="onSubmit">
           <b-form-group label="Login:">
             <b-form-input id="login" v-model="form.login" required placeholder="Login"></b-form-input>
           </b-form-group>
 
-          <b-form-group label="Email:">
-            <b-form-input id="login" v-model="form.email" required placeholder="Email"></b-form-input>
+          <b-form-group label="Password:">
+            <b-form-input
+              id="password"
+              v-model="form.password"
+              type="password"
+              required
+              placeholder="Password"
+            ></b-form-input>
           </b-form-group>
+
+          <b-button type="submit" variant="primary">Submit</b-button>
         </b-form>
       </b-card>
     </b-container>
@@ -25,19 +33,16 @@ module.exports = {
     return {
       storage: storage,
       form: {
-        email: "",
         login: "",
-        password: "",
-        firstName: "",
-        middleName: "",
-        lastName: ""
+        password: ""
       }
     };
   },
-  mounted() {
-    // Clone
-    if (storage.user != null) {
-      this.form = JSON.parse(JSON.stringify(storage.user));
+  methods: {
+    onSubmit(evt) {
+      this.$root.auth(this.form.login, this.form.password);
+
+      evt.preventDefault();
     }
   }
 };
