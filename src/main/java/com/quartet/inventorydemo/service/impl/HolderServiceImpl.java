@@ -106,7 +106,9 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
         holderOptional.orElseThrow(
             () -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
     Set<InventoryItem> inventoryItems = holder.getInventoryItems();
-
+    if (holder.equals(getStorageHolder())) {
+      throw new DeletionNotSupportedException("can not delete storage");
+    }
     if (!inventoryItems.isEmpty()) {
       throw new DeletionNotSupportedException("can not delete holder, while it holds any items");
     }

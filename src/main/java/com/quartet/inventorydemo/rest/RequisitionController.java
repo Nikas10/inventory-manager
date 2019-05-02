@@ -31,6 +31,7 @@ public class RequisitionController {
     this.requisitionProcessService = requisitionProcessService;
   }
 
+  // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "", method = RequestMethod.POST)
   public ResponseEntity<?> createReuisition(@RequestBody Requisition requisition) {
     Requisition newRequisition = requisitionService.add(requisition);

@@ -18,4 +18,6 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
   Optional<Role> findByName(String name);
 
   Set<Role> findByIdIn(Iterable<UUID> ids);
+
+  Set<Role> findByHolders_Id(UUID holderId);
 }

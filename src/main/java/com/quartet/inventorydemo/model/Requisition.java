@@ -49,7 +49,7 @@ public class Requisition extends History {
   private UUID id;
 
   @ApiModelProperty(hidden = true)
-  @NotNull(message = "Account should be not null")
+  @NotNull(message = "Account must be not null")
   @JoinColumn(name = "account_id")
   @ManyToOne(optional = false)
   private Account account;
@@ -61,6 +61,12 @@ public class Requisition extends History {
   @JoinColumn(name = "assignedto_account_id")
   @ManyToOne(optional = true)
   private Account assignedtoAccount;
+
+  @ApiModelProperty(hidden = true)
+  @NotNull(message = "Holder must be not null")
+  @JoinColumn(name = "holder_id")
+  @ManyToOne(optional = false)
+  private Holder holder;
 
   @ApiModelProperty(position = 2, required = true, notes = "Creation date")
   @NotNull(message = "Status must be not null")
