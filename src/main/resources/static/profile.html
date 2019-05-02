@@ -21,6 +21,8 @@
 
     <script src="new_js/libs/vue-router.min.js"></script>
     <script src="new_js/libs/http-vue-loader.js"></script>
+
+    <script src="js/custom/common.js"></script>
 </head>
 
 <body>
@@ -30,16 +32,83 @@
 
     <script src="new_js/router.js"></script>
 
-    <script>
-        Vue.prototype.$server = axios.create({
-            baseURL: 'http://localhost:8080/api',
-        })
+<script>
+// TODO Переработать вход/выход пользователя, возможно вынести в подсистему
 
-        window.app = new Vue({
-            router,
-            el: '#app',
-        })
-    </script>
+var baseURL = "http://127.0.0.1:8080/";
+var clientId = "web";
+var clientSecret = "inventory";
+
+Vue.prototype.$server = axios.create({
+  baseURL: baseURL + "api"
+});
+
+const storage = {
+  user: null
+};
+
+window.app = new Vue({
+  router,
+  el: "#app",
+  data: {
+    storage: storage
+  },
+  methods: {
+    setToken(token) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    },
+    unsetToken() {
+      delete axios.defaults.headers.common["Authorization"];
+    },
+    loadUser() {
+      var self = this;
+      this.$server.get("/account").then(function(response) {
+        self.storage.user = {
+          login: response.data.login,
+          email: response.data.email
+        };
+        // TODO Добавить перенаправление на другую страницу
+      });
+    },
+    auth(login, password) {
+      var self = this;
+      return axios
+        .post(
+          baseURL +
+            "oauth/token?client_id=" +
+            clientId +
+            "&client_secret=" +
+            clientSecret +
+            "&grant_type=password&username=" +
+            login +
+            "&password=" +
+            password
+        )
+        .then(function(response) {
+          var token = response.data;
+
+          setCookie("auth", token.access_token, token.expires_in);
+
+          self.setToken(token.access_token);
+
+          self.loadUser();
+        });
+    },
+    logout() {
+      this.storage.user = null;
+      this.unsetToken();
+      eraseCookie("auth");
+    }
+  },
+  mounted() {
+    var token = getCookie("auth");
+    if (token != null) {
+      this.setToken(token);
+      this.loadUser();
+    }
+  }
+});
+</script>
 </body>
 
 </html>
