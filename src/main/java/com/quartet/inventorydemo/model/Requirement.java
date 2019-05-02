@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.quartet.inventorydemo.util.IdNotNull;
 import com.quartet.inventorydemo.util.IdNull;
 import io.swagger.annotations.ApiModel;
@@ -50,6 +51,7 @@ public class Requirement extends History {
 
   @ApiModelProperty(hidden = true)
   @OneToMany(mappedBy = "requirement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<RequirementValue> requirementValues;
 
   private Requirement() {

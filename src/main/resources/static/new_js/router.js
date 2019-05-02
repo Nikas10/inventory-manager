@@ -26,14 +26,19 @@ const router = new VueRouter({
             component: httpVueLoader('new_js/pages/requests.vue'),
         },
         {
-            name: 'signup',
-            path: '/signup',
-            component: httpVueLoader('new_js/pages/signup.vue'),
+          name: 'signin',
+          path: '/signin',
+          component: httpVueLoader('new_js/pages/signin.vue'),
         },
+      {
+        name: 'signup',
+        path: '/signup',
+        component: httpVueLoader('new_js/pages/signup.vue'),
+      },
         {
             name: 'start',
             path: '/',
             component: httpVueLoader('new_js/pages/start.vue'),
         },
     ]
-})
+});

@@ -9,6 +9,7 @@ import com.quartet.inventorydemo.repository.InventoryPositionRepository;
 import com.quartet.inventorydemo.repository.RequirementRepository;
 import com.quartet.inventorydemo.repository.RequirementValueRepository;
 import com.quartet.inventorydemo.service.RequirementValueService;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   public RequirementValue add(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull @Valid RequirementValue requirementValue) {
+      @NotNull String requirementValue) {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
@@ -65,7 +66,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
 
     RequirementValue newRequirementValue =
         new RequirementValue(
-            optionalRequirement.get(), optionalPosition.get(), requirementValue.getValue());
+            optionalRequirement.get(), optionalPosition.get(), requirementValue);
     return requirementValueRepo.saveAndFlush(newRequirementValue);
   }
 
@@ -73,7 +74,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   public RequirementValue update(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull @Valid RequirementValue requirementValue) {
+      @NotNull String requirementValue) {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
@@ -94,10 +95,14 @@ public class RequirementValueServiceImpl implements RequirementValueService {
                     + " for position with id: "
                     + positionID
                     + " not found."));
+    RequirementValue toChange = requirementValueOptional.get();
+    toChange.setValue(requirementValue);
+    return requirementValueRepo.saveAndFlush(toChange);
+  }
 
-    return requirementValueRepo.saveAndFlush(
-        new RequirementValue(
-            optionalRequirement.get(), optionalPosition.get(), requirementValue.getValue()));
+  @Override
+  public Collection<RequirementValue> getRequirementsValues(@NotNull @Valid UUID positionID) {
+    return requirementValueRepo.findAllByInventoryPosition_Id(positionID);
   }
 
   @Override

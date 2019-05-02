@@ -69,7 +69,7 @@ public class InventoryPositionController {
   public ResponseEntity<?> createRequirementValue(
       @PathVariable("positionID") String stringPositionID,
       @PathVariable("requirementID") String stringRequirementID,
-      @RequestBody RequirementValue requirementValue) {
+      @PathVariable("value") String requirementValue) {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
     RequirementValue newProperty =
@@ -84,7 +84,7 @@ public class InventoryPositionController {
   public ResponseEntity<?> updateRequirementValue(
       @PathVariable("positionID") String stringPositionID,
       @PathVariable("requirementID") String stringRequirementID,
-      @RequestBody RequirementValue value) {
+      @PathVariable("value") String value) {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
 
@@ -103,5 +103,13 @@ public class InventoryPositionController {
     requirementValueService.remove(positionID, requirementID);
 
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "{positionID}/requirements", method = RequestMethod.GET)
+  public ResponseEntity<?> getRequirements(
+      @PathVariable("positionID") String stringPositionID) {
+    UUID positionID = UUID.fromString(stringPositionID);
+    return new ResponseEntity<>(requirementValueService.getRequirementsValues(positionID),
+        HttpStatus.OK);
   }
 }
