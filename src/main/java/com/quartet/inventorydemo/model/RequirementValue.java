@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 public class RequirementValue extends History implements Serializable {
 
   @EmbeddedId
-  private RequirementValueId requirementValueId;
+  private RequirementValueId requirementValueId = new RequirementValueId();
 
   @ApiModelProperty(hidden = true)
   @NotNull(message = "Requirement must be not null")

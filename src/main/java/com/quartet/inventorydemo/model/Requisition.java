@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.quartet.inventorydemo.util.DateIsAfterProvidedDate;
 import com.quartet.inventorydemo.util.IdNotNull;
 import com.quartet.inventorydemo.util.IdNull;
@@ -85,6 +86,7 @@ public class Requisition extends History {
 
   @ApiModelProperty(position = 6, required = true, notes = "Required positions")
   @OneToMany(mappedBy = "requisition", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Requisition_InventoryPosition> requisitionInventoryPositions;
 
   private Requisition() {

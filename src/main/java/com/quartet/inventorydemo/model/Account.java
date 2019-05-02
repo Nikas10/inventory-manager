@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.quartet.inventorydemo.util.IdNotNull;
 import com.quartet.inventorydemo.util.IdNull;
 import io.swagger.annotations.ApiModel;
@@ -96,6 +97,7 @@ public class Account extends History implements Serializable {
       joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false),
       inverseJoinColumns =
       @JoinColumn(name = "holder_id", referencedColumnName = "id", nullable = false))
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Holder> holders;
 
   @ApiModelProperty(hidden = true)
@@ -103,6 +105,7 @@ public class Account extends History implements Serializable {
       mappedBy = "account",
       fetch = FetchType.LAZY,
       cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Requisition> requisitions;
 
   private Account() {

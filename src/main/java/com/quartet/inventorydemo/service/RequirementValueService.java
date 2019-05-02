@@ -17,12 +17,15 @@ public interface RequirementValueService {
   RequirementValue add(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull @Valid RequirementValue requirementValue);
+      @NotNull String requirementValue);
 
   RequirementValue update(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull @Valid RequirementValue requirementValue);
+      @NotNull String requirementValue);
+
+  Collection<RequirementValue> getRequirementsValues(
+      @NotNull @Valid UUID positionID);
 
   void remove(@NotNull @Valid UUID positionID, @NotNull @Valid UUID requirementID);
 }

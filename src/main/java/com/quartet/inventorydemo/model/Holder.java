@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.quartet.inventorydemo.util.IdNotNull;
 import com.quartet.inventorydemo.util.IdNull;
 import io.swagger.annotations.ApiModel;
@@ -65,6 +66,7 @@ public class Holder extends History {
       joinColumns = @JoinColumn(name = "holder_id", referencedColumnName = "id", nullable = false),
       inverseJoinColumns =
       @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false))
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Role> roles;
 
   @ApiModelProperty(hidden = true)
@@ -72,10 +74,12 @@ public class Holder extends History {
       mappedBy = "holders",
       fetch = FetchType.LAZY,
       cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Account> accounts;
 
   @ApiModelProperty(hidden = true)
   @OneToMany(mappedBy = "holder", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<InventoryItem> inventoryItems;
 
   private Holder() {
