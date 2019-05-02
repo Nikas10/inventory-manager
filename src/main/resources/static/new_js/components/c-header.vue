@@ -9,14 +9,18 @@
         <b-nav-item v-for="page in pages" v-bind:key="page.id" v-bind:to="page.link">{{page.title}}</b-nav-item>
       </b-navbar-nav>
 
-      <b-navbar-nav class="ml-auto">
+      <b-navbar-nav class="ml-auto" v-if="storage.user">
         <b-nav-item-dropdown right>
           <template slot="button-content">
-            <em>USERNAME</em>
+            <em>{{storage.user.name}}</em>
           </template>
           <b-dropdown-item to="profile">Profile</b-dropdown-item>
-          <b-dropdown-item href="#">Log Out</b-dropdown-item>
+          <b-dropdown-item @click="onLogOut">Log Out</b-dropdown-item>
         </b-nav-item-dropdown>
+      </b-navbar-nav>
+
+      <b-navbar-nav class="ml-auto" v-else>
+        <b-nav-item to="signin">Sign In</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -26,6 +30,7 @@
 module.exports = {
   data: function() {
     return {
+      storage: storage,
       pages: [
         {
           id: 0,
@@ -44,6 +49,14 @@ module.exports = {
         }
       ]
     };
+  },
+  methods: {
+    onLogOut() {
+      this.storage.user = null;
+      this.$root.unsetToken();
+
+      // TODO Добавить перенаправление на стартовую страницу
+    }
   }
 };
 </script>

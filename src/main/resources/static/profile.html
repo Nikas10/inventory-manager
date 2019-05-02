@@ -21,6 +21,8 @@
 
     <script src="new_js/libs/vue-router.min.js"></script>
     <script src="new_js/libs/http-vue-loader.js"></script>
+
+    <script src="js/custom/common.js"></script>
 </head>
 
 <body>
@@ -30,16 +32,48 @@
 
     <script src="new_js/router.js"></script>
 
-    <script>
-        Vue.prototype.$server = axios.create({
-            baseURL: 'http://localhost:8080/api',
-        })
+<script>
+var baseURL = "http://127.0.0.1:8080/";
+var clientId = "web";
+var clientSecret = "inventory";
 
-        window.app = new Vue({
-            router,
-            el: '#app',
-        })
-    </script>
+Vue.prototype.$server = axios.create({
+  baseURL: baseURL + "api"
+});
+
+const storage = {
+  user: null
+};
+
+window.app = new Vue({
+  router,
+  el: "#app",
+  data: {
+    storage: storage
+  },
+  methods: {
+    setToken(token) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    },
+    unsetToken() {
+      delete axios.defaults.headers.common["Authorization"];
+    },
+    auth(login, password) {
+      return axios.post(
+        baseURL +
+          "oauth/token?client_id=" +
+          clientId +
+          "&client_secret=" +
+          clientSecret +
+          "&grant_type=password&username=" +
+          login +
+          "&password=" +
+          password
+      );
+    }
+  }
+});
+</script>
 </body>
 
 </html>

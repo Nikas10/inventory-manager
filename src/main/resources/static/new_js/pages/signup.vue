@@ -52,6 +52,7 @@ module.exports = {
   },
   data: function() {
     return {
+      storage: storage,
       form: {
         email: "",
         login: "",
