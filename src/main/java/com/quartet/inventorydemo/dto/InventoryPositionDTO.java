@@ -10,7 +10,8 @@ public class InventoryPositionDTO {
     this.description = description;
   }
 
-  private InventoryPositionDTO() {}
+  private InventoryPositionDTO() {
+  }
 
   public String getName() {
     return name;

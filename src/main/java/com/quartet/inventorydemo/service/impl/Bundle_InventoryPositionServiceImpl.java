@@ -19,8 +19,7 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
 
   @Autowired
   public Bundle_InventoryPositionServiceImpl(
-      @Qualifier("Bundle_InventoryPositionRepository")
-          final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
+      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
     this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
   }
 

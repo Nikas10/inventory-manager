@@ -4,7 +4,8 @@ public class RequirementDTO {
 
   private String name;
 
-  private RequirementDTO() {}
+  private RequirementDTO() {
+  }
 
   public String getName() {
     return name;

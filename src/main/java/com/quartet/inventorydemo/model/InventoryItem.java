@@ -22,7 +22,8 @@ import javax.validation.constraints.Positive;
 @Table(name = "quartet_inventory_item", schema = "public")
 public class InventoryItem extends History implements Serializable {
 
-  @EmbeddedId private InventoryItemId inventoryItemId;
+  @EmbeddedId
+  private InventoryItemId inventoryItemId;
 
   @ApiModelProperty(hidden = true)
   @JoinColumn(name = "holder_id")
@@ -46,7 +47,8 @@ public class InventoryItem extends History implements Serializable {
   @Column(name = "amount", nullable = false)
   private Integer amount;
 
-  private InventoryItem() {}
+  private InventoryItem() {
+  }
 
   public InventoryItem(
       @NotNull Holder holder,

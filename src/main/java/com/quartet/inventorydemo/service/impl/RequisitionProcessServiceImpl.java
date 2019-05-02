@@ -28,7 +28,8 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
   private static final String VALUE_REJECT = "REJECT";
   private static final String VALUE_REQUIRE_CLARIFICATION = "REQUIRE_CLARIFICATION";
 
-  @Autowired private RuntimeService runtimeService;
+  @Autowired
+  private RuntimeService runtimeService;
 
   @Override
   public void create(Requisition requisition) {
@@ -93,7 +94,8 @@ public final class RequisitionProcessServiceImpl implements RequisitionProcessSe
   }
 
   @Override
-  public void delete(@NotNull @Valid Requisition requisition) {}
+  public void delete(@NotNull @Valid Requisition requisition) {
+  }
 
   private ProcessInstance getProcessFor(Requisition requisition) {
     String businessKey = requisition.getId().toString();

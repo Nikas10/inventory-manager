@@ -12,7 +12,8 @@ public class Bundle_InventoryPositionId implements Serializable {
   private UUID inventoryPositionId;
   private UUID bundleId;
 
-  private Bundle_InventoryPositionId() {}
+  private Bundle_InventoryPositionId() {
+  }
 
   public Bundle_InventoryPositionId(@NotNull UUID inventoryPosition, @NotNull UUID bundlePosition) {
     this.inventoryPositionId = inventoryPosition;

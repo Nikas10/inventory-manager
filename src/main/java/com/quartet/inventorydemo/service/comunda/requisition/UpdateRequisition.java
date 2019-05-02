@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 @Component("UpdateRequisition")
 public final class UpdateRequisition {
 
-  @Autowired private RequisitionService requisitionService;
+  @Autowired
+  private RequisitionService requisitionService;
 
   public void setStatus(DelegateExecution execution, String status) {
     String idString = execution.getProcessBusinessKey();

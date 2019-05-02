@@ -39,9 +39,9 @@ public class Role extends History {
       name = "pg-uuid",
       strategy = "uuid2",
       parameters =
-          @org.hibernate.annotations.Parameter(
-              name = "uuid_gen_strategy_class",
-              value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
+      @org.hibernate.annotations.Parameter(
+          name = "uuid_gen_strategy_class",
+          value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
   @Column(name = "id", nullable = false, updatable = false, unique = true)
   private UUID id;
 
@@ -63,10 +63,10 @@ public class Role extends History {
       name = "quartet_inventory_position__quartet_role",
       joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false),
       inverseJoinColumns =
-          @JoinColumn(
-              name = "inventory_position_id",
-              referencedColumnName = "id",
-              nullable = false))
+      @JoinColumn(
+          name = "inventory_position_id",
+          referencedColumnName = "id",
+          nullable = false))
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<InventoryPosition> inventoryPositions;
 
@@ -78,7 +78,8 @@ public class Role extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Holder> holders;
 
-  private Role() {}
+  private Role() {
+  }
 
   public Role(
       @NotBlank(message = "Name must be not empty") String name,

@@ -42,8 +42,7 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
       @Qualifier("InventoryPositionRepository") final InventoryPositionRepository positionRepo,
       @Qualifier("InventoryItemRepository") final InventoryItemRepository inventoryItemRepo,
       @Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepo,
-      @Qualifier("Bundle_InventoryPositionRepository")
-          final Bundle_InventoryPositionRepository Bundle_InventoryPositionRepo) {
+      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository Bundle_InventoryPositionRepo) {
     this.positionRepo = positionRepo;
     this.inventoryItemRepo = inventoryItemRepo;
     this.inventoryHolderRepo = inventoryHolderRepo;

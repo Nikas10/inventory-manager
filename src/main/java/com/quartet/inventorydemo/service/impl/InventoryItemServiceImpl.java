@@ -46,5 +46,6 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
   @Validated(IdNotNull.class)
   @Override
-  public void remove(@NotNull @Valid InventoryItem item) {}
+  public void remove(@NotNull @Valid InventoryItem item) {
+  }
 }
