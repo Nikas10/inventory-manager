@@ -52,7 +52,8 @@ module.exports = {
 
           self.$server.get("/account").then(function(response) {
             self.storage.user = {
-              name: response.data.login
+              login: response.data.login,
+              email: response.data.email,
             };
             // TODO Добавить перенаправление на другую страницу
           });

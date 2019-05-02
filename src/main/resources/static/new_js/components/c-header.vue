@@ -12,7 +12,7 @@
       <b-navbar-nav class="ml-auto" v-if="storage.user">
         <b-nav-item-dropdown right>
           <template slot="button-content">
-            <em>{{storage.user.name}}</em>
+            <em>{{storage.user.login}}</em>
           </template>
           <b-dropdown-item to="profile">Profile</b-dropdown-item>
           <b-dropdown-item @click="onLogOut">Log Out</b-dropdown-item>
