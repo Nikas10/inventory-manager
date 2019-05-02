@@ -34,8 +34,7 @@ public class AccountController {
   @Qualifier("AccountService")
   private AccountService accountService;
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   /**
    * General Account get method for admin or worker
@@ -84,9 +83,7 @@ public class AccountController {
     return new ResponseEntity<>(accountOptional.get(), HttpStatus.OK);
   }
 
-  /**
-   * User register method Admin Accounts is not available to register here
-   */
+  /** User register method Admin Accounts is not available to register here */
   @RequestMapping(value = "", method = RequestMethod.POST)
   public ResponseEntity<?> registerNewAccount(@RequestBody Account account) {
     // acc manage logic:

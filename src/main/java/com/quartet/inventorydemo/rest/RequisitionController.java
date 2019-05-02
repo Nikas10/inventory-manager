@@ -30,7 +30,8 @@ public class RequisitionController {
   @Autowired
   public RequisitionController(
       @Qualifier("RequisitionService") final RequisitionService requisitionService,
-      @Qualifier("RequisitionProcessService") final RequisitionProcessService requisitionProcessService,
+      @Qualifier("RequisitionProcessService")
+          final RequisitionProcessService requisitionProcessService,
       @Qualifier("AccountService") final AccountService accountService) {
     this.requisitionService = requisitionService;
     this.requisitionProcessService = requisitionProcessService;

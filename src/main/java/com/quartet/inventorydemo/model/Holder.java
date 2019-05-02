@@ -41,9 +41,9 @@ public class Holder extends History {
       name = "pg-uuid",
       strategy = "uuid2",
       parameters =
-      @org.hibernate.annotations.Parameter(
-          name = "uuid_gen_strategy_class",
-          value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
+          @org.hibernate.annotations.Parameter(
+              name = "uuid_gen_strategy_class",
+              value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
   @Column(name = "id", nullable = false, updatable = false, unique = true)
   private UUID id;
 
@@ -65,7 +65,7 @@ public class Holder extends History {
       name = "quartet_holder__quartet_role",
       joinColumns = @JoinColumn(name = "holder_id", referencedColumnName = "id", nullable = false),
       inverseJoinColumns =
-      @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false))
+          @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false))
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Role> roles;
 
@@ -88,8 +88,7 @@ public class Holder extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Requisition> requisitions; // All requisitions will be lost, if you delete holder
 
-  private Holder() {
-  }
+  private Holder() {}
 
   public Holder(
       @NotBlank(message = "Name must be not empty") String name,

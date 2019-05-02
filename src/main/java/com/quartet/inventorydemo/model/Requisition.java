@@ -43,9 +43,9 @@ public class Requisition extends History {
       name = "pg-uuid",
       strategy = "uuid2",
       parameters =
-      @org.hibernate.annotations.Parameter(
-          name = "uuid_gen_strategy_class",
-          value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
+          @org.hibernate.annotations.Parameter(
+              name = "uuid_gen_strategy_class",
+              value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
   @Column(name = "id", nullable = false, updatable = false, unique = true)
   private UUID id;
 
@@ -94,15 +94,14 @@ public class Requisition extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Requisition_InventoryPosition> requisitionInventoryPositions;
 
-  private Requisition() {
-  }
+  private Requisition() {}
 
   public Requisition(
       @NotNull(message = "Account must be not null") Account account,
       Account assignedtoAccount,
       @NotNull(message = "Status must be not null") String status,
       @NotNull(message = "Creation date can not be null")
-      @PastOrPresent(message = "Provide correct date. It can not be future then now")
+          @PastOrPresent(message = "Provide correct date. It can not be future then now")
           Date creationDate,
       @NotNull(message = "Due date can not be null") Date dueDate,
       @NotNull(message = "Description can not be null") String description) {
@@ -118,7 +117,7 @@ public class Requisition extends History {
       @NotNull(message = "Account must be not null") Account account,
       @NotNull(message = "Status must be not null") String status,
       @NotNull(message = "Creation date can not be null")
-      @PastOrPresent(message = "Provide correct date. It can not be future then now")
+          @PastOrPresent(message = "Provide correct date. It can not be future then now")
           Date creationDate,
       @NotNull(message = "Due date can not be null") Date dueDate,
       @NotNull(message = "Description can not be null") String description) {
@@ -187,7 +186,7 @@ public class Requisition extends History {
 
   public void setCreationDate(
       @NotNull(message = "Creation date can not be null")
-      @PastOrPresent(message = "Provide correct date. It can not be future then now")
+          @PastOrPresent(message = "Provide correct date. It can not be future then now")
           Date creationDate) {
     this.creationDate = creationDate;
   }

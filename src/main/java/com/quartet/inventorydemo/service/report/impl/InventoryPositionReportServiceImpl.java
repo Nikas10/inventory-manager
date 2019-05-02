@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 @Service("InventoryPositionReportService")
 public class InventoryPositionReportServiceImpl implements InventoryPositionReportService {
 
-  @Autowired
-  private InventoryPositionService inventoryPositionService;
+  @Autowired private InventoryPositionService inventoryPositionService;
 
   @Override
   public List<Map<String, Object>> report() {

@@ -37,7 +37,8 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
   @Autowired
   public HolderServiceImpl(
-      @Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepository,
+      @Qualifier("InventoryHolderRepository")
+          final InventoryHolderRepository inventoryHolderRepository,
       @Qualifier("RoleService") final RoleService roleService) {
     this.inventoryHolderRepository = inventoryHolderRepository;
     this.roleService = roleService;

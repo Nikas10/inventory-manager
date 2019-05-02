@@ -19,8 +19,7 @@ public class RequisitionDTO {
     this.description = description;
   }
 
-  private RequisitionDTO() {
-  }
+  private RequisitionDTO() {}
 
   public String getLogin() {
     return login;

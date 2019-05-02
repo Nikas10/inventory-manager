@@ -11,10 +11,8 @@ import java.util.UUID;
 public class CreateAndDeleteLinksForm {
 
   private static UUIDStringValidator validator = new UUIDStringValidator();
-  @JsonIgnore
-  private final Set<UUID> addIds = new HashSet<>();
-  @JsonIgnore
-  private final Set<UUID> removeIds = new HashSet<>();
+  @JsonIgnore private final Set<UUID> addIds = new HashSet<>();
+  @JsonIgnore private final Set<UUID> removeIds = new HashSet<>();
   private List<String> add; // for adding associations by id
   private List<String> remove; // for removing associations by id
 

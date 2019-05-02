@@ -30,7 +30,8 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   private final RequirementRepository requirementRepo;
 
   RequirementValueServiceImpl(
-      @Qualifier("RequirementValueRepository") final RequirementValueRepository requirementValueRepo,
+      @Qualifier("RequirementValueRepository")
+          final RequirementValueRepository requirementValueRepo,
       @Qualifier("InventoryPositionRepository") final InventoryPositionRepository positionRepo,
       @Qualifier("RequirementRepository") final RequirementRepository requirementRepo) {
     this.requirementValueRepo = requirementValueRepo;

@@ -5,8 +5,7 @@ public class HolderDTO {
   private String name;
   private String description;
 
-  private HolderDTO() {
-  }
+  private HolderDTO() {}
 
   public String getName() {
     return name;

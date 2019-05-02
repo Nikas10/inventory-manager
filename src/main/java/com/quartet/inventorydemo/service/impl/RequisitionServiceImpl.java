@@ -71,6 +71,5 @@ public class RequisitionServiceImpl implements RequisitionService {
   }
 
   @Override
-  public void remove(@NotNull @Valid Requisition requisition) {
-  }
+  public void remove(@NotNull @Valid Requisition requisition) {}
 }
