@@ -33,6 +33,8 @@
     <script src="new_js/router.js"></script>
 
 <script>
+// TODO Переработать вход/выход пользователя, возможно вынести в подсистему
+
 var baseURL = "http://127.0.0.1:8080/";
 var clientId = "web";
 var clientSecret = "inventory";
@@ -58,18 +60,51 @@ window.app = new Vue({
     unsetToken() {
       delete axios.defaults.headers.common["Authorization"];
     },
+    loadUser() {
+      var self = this;
+      this.$server.get("/account").then(function(response) {
+        self.storage.user = {
+          login: response.data.login,
+          email: response.data.email
+        };
+        // TODO Добавить перенаправление на другую страницу
+      });
+    },
     auth(login, password) {
-      return axios.post(
-        baseURL +
-          "oauth/token?client_id=" +
-          clientId +
-          "&client_secret=" +
-          clientSecret +
-          "&grant_type=password&username=" +
-          login +
-          "&password=" +
-          password
-      );
+      var self = this;
+      return axios
+        .post(
+          baseURL +
+            "oauth/token?client_id=" +
+            clientId +
+            "&client_secret=" +
+            clientSecret +
+            "&grant_type=password&username=" +
+            login +
+            "&password=" +
+            password
+        )
+        .then(function(response) {
+          var token = response.data;
+
+          setCookie("auth", token.access_token, token.expires_in);
+
+          self.setToken(token.access_token);
+
+          self.loadUser();
+        });
+    },
+    logout() {
+      this.storage.user = null;
+      this.unsetToken();
+      eraseCookie("auth");
+    }
+  },
+  mounted() {
+    var token = getCookie("auth");
+    if (token != null) {
+      this.setToken(token);
+      this.loadUser();
     }
   }
 });
