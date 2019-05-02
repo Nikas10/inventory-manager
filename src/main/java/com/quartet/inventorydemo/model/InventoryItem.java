@@ -22,18 +22,15 @@ import javax.validation.constraints.Positive;
 @Table(name = "quartet_inventory_item", schema = "public")
 public class InventoryItem extends History implements Serializable {
 
-  @EmbeddedId
-  private InventoryItemId inventoryItemId;
+  @EmbeddedId private InventoryItemId inventoryItemId;
 
   @ApiModelProperty(hidden = true)
-  @NotNull(message = "Holder must be not null")
   @JoinColumn(name = "holder_id")
   @MapsId("holderId")
   @ManyToOne(optional = false)
   private Holder holder;
 
   @ApiModelProperty(hidden = true)
-  @NotNull(message = "Inventory position must be not null")
   @JoinColumn(name = "inventory_position_id")
   @MapsId("inventoryPositionId")
   @ManyToOne(optional = false)
@@ -49,8 +46,7 @@ public class InventoryItem extends History implements Serializable {
   @Column(name = "amount", nullable = false)
   private Integer amount;
 
-  private InventoryItem() {
-  }
+  private InventoryItem() {}
 
   public InventoryItem(
       @NotNull Holder holder,

@@ -1,8 +1,12 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.repository.RequisitionRepository;
+import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.RequisitionService;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,11 +23,14 @@ import org.springframework.validation.annotation.Validated;
 public class RequisitionServiceImpl implements RequisitionService {
 
   private final RequisitionRepository requisitionRepository;
+  private final AccountService accountService;
 
   @Autowired
   public RequisitionServiceImpl(
-      @Qualifier("RequisitionRepository") final RequisitionRepository requisitionRepository) {
+      @Qualifier("RequisitionRepository") final RequisitionRepository requisitionRepository,
+      @Qualifier("AccountService") final AccountService accountService) {
     this.requisitionRepository = requisitionRepository;
+    this.accountService = accountService;
   }
 
   @Override
@@ -37,8 +44,27 @@ public class RequisitionServiceImpl implements RequisitionService {
   }
 
   @Override
-  public Requisition add(@NotNull @Valid Requisition requisition) {
-    return requisitionRepository.saveAndFlush(requisition);
+  public Requisition add(@NotNull @Valid String login,
+                         @NotNull @Valid Date creationDate,
+                         @NotNull @Valid String description,
+                         @NotNull @Valid Date dueDate,
+                         @NotNull @Valid String status)
+  {
+
+    Optional<Account> optionalAccount = accountService.getByLogin(login);
+
+    Requisition requisitionToAdd =
+        new Requisition(
+            optionalAccount.orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "Account with login: " + login + " not found")),
+            status,
+            creationDate,
+            dueDate,
+            description);
+
+    return requisitionRepository.saveAndFlush(requisitionToAdd);
   }
 
   @Override
@@ -47,6 +73,5 @@ public class RequisitionServiceImpl implements RequisitionService {
   }
 
   @Override
-  public void remove(@NotNull @Valid Requisition requisition) {
-  }
+  public void remove(@NotNull @Valid Requisition requisition) {}
 }

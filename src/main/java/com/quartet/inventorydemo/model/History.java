@@ -30,6 +30,5 @@ public abstract class History {
   @LastModifiedBy
   private String modifiedBy;
 
-  @Version
-  private Integer version;
+  @Version private Integer version;
 }

@@ -39,7 +39,8 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
   @Autowired
   public HolderServiceImpl(
-      @Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepository,
+      @Qualifier("InventoryHolderRepository")
+          final InventoryHolderRepository inventoryHolderRepository,
       @Qualifier("RoleService") final RoleService roleService) {
     this.inventoryHolderRepository = inventoryHolderRepository;
     this.roleService = roleService;
@@ -71,31 +72,32 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
       return storage;
     }
     Optional<Holder> storageOptional = getByHolderName(STORAGE_NAME);
-    return storageOptional.orElseGet(() -> add(new Holder(STORAGE_NAME, STORAGE_DESCRIPTION)));
+    return storageOptional.orElseGet(() -> add(STORAGE_DESCRIPTION, STORAGE_NAME));
   }
 
   @Override
-  public Holder add(@NotNull @Valid Holder holder) {
-    if (isExists(holder)) {
-      throw new ResourceAlreadyExistsException("holder with same name already exists");
-    }
-    Holder newHolder = new Holder(holder.getName(), holder.getDescription());
+  public Holder add(@NotNull @Valid String description, @NotNull @Valid String name) {
+    Optional<Holder> optionalHolder = getByHolderName(name);
+
+    optionalHolder
+        .ifPresent(current -> {throw  new ResourceNotFoundException("Holder with name: " + name + " already exists.");});
+    Holder newHolder = new Holder(name, description);
     return inventoryHolderRepository.saveAndFlush(newHolder);
   }
 
   @Override
-  public Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid Holder holder) {
+  public Holder update(@NotNull @Valid UUID uuid, @NotNull @Valid String description, @NotNull @Valid String name) {
     Optional<Holder> holderOptional = getByHolderID(uuid);
-    if (isExists(holder)) {
-      throw new ResourceAlreadyExistsException("holder with same name already exists");
-    }
+
     Holder holderToModified =
         holderOptional.orElseThrow(
             () -> new ResourceNotFoundException("Holder with id: " + uuid + " not found"));
     if (holderToModified.equals(getStorageHolder())) {
       throw new UpdateNotSupportedException("Can not modify storage");
     }
-    BeanUtils.copyProperties(holder, holderToModified, "id", "roles", "accounts", "inventoryItems");
+
+    holderToModified.setDescription(description);
+    holderToModified.setName(name);
     return inventoryHolderRepository.saveAndFlush(holderToModified);
   }
 

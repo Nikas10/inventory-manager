@@ -38,9 +38,9 @@ public class InventoryPosition extends History {
       name = "pg-uuid",
       strategy = "uuid2",
       parameters =
-      @org.hibernate.annotations.Parameter(
-          name = "uuid_gen_strategy_class",
-          value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
+          @org.hibernate.annotations.Parameter(
+              name = "uuid_gen_strategy_class",
+              value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
   @Column(name = "id", nullable = false, updatable = false, unique = true)
   private UUID id;
 
@@ -56,9 +56,9 @@ public class InventoryPosition extends History {
 
   @ApiModelProperty(hidden = true)
   @ManyToMany(
-          mappedBy = "inventoryPositions",
-          fetch = FetchType.LAZY,
-          cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+      mappedBy = "inventoryPositions",
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Role> roles;
 
@@ -82,8 +82,7 @@ public class InventoryPosition extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<RequirementValue> requirementValues;
 
-  private InventoryPosition() {
-  }
+  private InventoryPosition() {}
 
   public InventoryPosition(
       @NotBlank(message = "Name must be not empty") String name,

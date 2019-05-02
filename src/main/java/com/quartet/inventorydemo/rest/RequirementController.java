@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.RequirementDTO;
 import com.quartet.inventorydemo.model.Requirement;
 import com.quartet.inventorydemo.service.RequirementService;
 import java.util.UUID;
@@ -39,4 +40,15 @@ public class RequirementController {
 
     return new ResponseEntity(HttpStatus.OK);
   }
+
+  @RequestMapping(value = "{id}", method = RequestMethod.PATCH)
+  public ResponseEntity<?> updateRequirement(@PathVariable("id") String stringId,
+                                             @RequestBody RequirementDTO requirementDTO) {
+    UUID id = UUID.fromString(stringId);
+    String name = requirementDTO.getName();
+    requirementService.update(id, name);
+
+    return new ResponseEntity(HttpStatus.OK);
+  }
+
 }

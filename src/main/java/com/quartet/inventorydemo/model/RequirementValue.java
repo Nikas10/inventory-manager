@@ -21,8 +21,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "quartet_requirement_value", schema = "public")
 public class RequirementValue extends History implements Serializable {
 
-  @EmbeddedId
-  private RequirementValueId requirementValueId = new RequirementValueId();
+  @EmbeddedId private RequirementValueId requirementValueId = new RequirementValueId();
 
   @ApiModelProperty(hidden = true)
   @NotNull(message = "Requirement must be not null")
@@ -43,8 +42,7 @@ public class RequirementValue extends History implements Serializable {
   @Column(name = "value", nullable = false)
   private String value;
 
-  private RequirementValue() {
-  }
+  private RequirementValue() {}
 
   public RequirementValue(
       @NotNull(message = "Requirement must be not null") Requirement requirement,

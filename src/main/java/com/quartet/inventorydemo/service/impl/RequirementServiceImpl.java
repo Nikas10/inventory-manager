@@ -59,19 +59,15 @@ public class RequirementServiceImpl implements RequirementService {
   }
 
   @Override
-  public Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid Requirement requirement) {
-    Optional<Requirement> holderOptional = getByRequirementID(id);
-    if (isExists(requirement)) {
-      throw new ResourceAlreadyExistsException(
-          "Requirement with same name already exists. Can not make changes.");
-    }
+  public Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid String name) {
+    Optional<Requirement> optionalRequirement = getByRequirementID(id);
 
     Requirement requirementToModify =
-        holderOptional.orElseThrow(
+        optionalRequirement.orElseThrow(
             () -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
 
-    BeanUtils.copyProperties(requirement, requirementToModify, "id", "requirementValues");
-    return requirementRepo.saveAndFlush(requirement);
+    requirementToModify.setName(name);
+    return requirementRepo.saveAndFlush(requirementToModify);
   }
 
   @Override

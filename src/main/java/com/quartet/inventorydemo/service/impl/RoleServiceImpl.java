@@ -32,7 +32,8 @@ public class RoleServiceImpl implements RoleService {
   @Autowired
   public RoleServiceImpl(
       @Qualifier("RoleRepository") final RoleRepository roleRepository,
-      @Qualifier("InventoryPositionService") final InventoryPositionService inventoryPositionService) {
+      @Qualifier("InventoryPositionService")
+          final InventoryPositionService inventoryPositionService) {
     this.roleRepository = roleRepository;
     this.inventoryPositionService = inventoryPositionService;
   }

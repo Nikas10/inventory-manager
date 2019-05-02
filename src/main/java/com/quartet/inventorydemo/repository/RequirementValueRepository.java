@@ -2,7 +2,6 @@ package com.quartet.inventorydemo.repository;
 
 import com.quartet.inventorydemo.model.RequirementValue;
 import com.quartet.inventorydemo.model.id.RequirementValueId;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,7 +15,5 @@ public interface RequirementValueRepository
   Optional<RequirementValue> findByRequirement_IdAndInventoryPosition_Id(
       UUID requirementId, UUID inventoryPositionId);
 
-  Collection<RequirementValue> findAllByInventoryPosition_Id(
-      UUID inventoryPositionId
-  );
+  Collection<RequirementValue> findAllByInventoryPosition_Id(UUID inventoryPositionId);
 }

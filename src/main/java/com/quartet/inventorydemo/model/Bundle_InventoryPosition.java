@@ -20,8 +20,7 @@ import javax.validation.constraints.Positive;
 @Table(name = "quartet_bundle_position__quartet_inventory_position", schema = "public")
 public class Bundle_InventoryPosition extends History implements Serializable {
 
-  @EmbeddedId
-  private Bundle_InventoryPositionId bundle_inventoryPositionId;
+  @EmbeddedId private Bundle_InventoryPositionId bundle_inventoryPositionId;
 
   @NotNull(message = "Inventory position can not be null")
   @JoinColumn(name = "inventory_position_id", nullable = false)
@@ -43,8 +42,7 @@ public class Bundle_InventoryPosition extends History implements Serializable {
   @Column(name = "amount", nullable = false)
   private Integer amount;
 
-  private Bundle_InventoryPosition() {
-  }
+  private Bundle_InventoryPosition() {}
 
   public Bundle_InventoryPosition(
       @NotNull(message = "Inventory position can not be null") InventoryPosition inventoryPosition,

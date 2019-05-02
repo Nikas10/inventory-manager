@@ -28,8 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class WelcomeController {
 
-  @Autowired
-  InventoryPositionReportService inventoryPositionReportService;
+  @Autowired InventoryPositionReportService inventoryPositionReportService;
 
   // inject via application.properties
   @Value("${welcome.message}")

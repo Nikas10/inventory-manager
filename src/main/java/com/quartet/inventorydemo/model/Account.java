@@ -44,9 +44,9 @@ public class Account extends History implements Serializable {
       name = "pg-uuid",
       strategy = "uuid2",
       parameters =
-      @org.hibernate.annotations.Parameter(
-          name = "uuid_gen_strategy_class",
-          value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
+          @org.hibernate.annotations.Parameter(
+              name = "uuid_gen_strategy_class",
+              value = "com.quartet.inventorydemo.model.id.PostgreSQLUUIDGenerationStrategy"))
   @Column(name = "id", nullable = false, updatable = false, unique = true)
   private UUID id;
 
@@ -96,7 +96,7 @@ public class Account extends History implements Serializable {
       name = "quartet_account__quartet_holder",
       joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false),
       inverseJoinColumns =
-      @JoinColumn(name = "holder_id", referencedColumnName = "id", nullable = false))
+          @JoinColumn(name = "holder_id", referencedColumnName = "id", nullable = false))
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Holder> holders;
 
@@ -108,8 +108,7 @@ public class Account extends History implements Serializable {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Requisition> requisitions;
 
-  private Account() {
-  }
+  private Account() {}
 
   public Account(
       @NotBlank(message = "First name must be not empty") String firstName,
@@ -118,9 +117,9 @@ public class Account extends History implements Serializable {
       @NotBlank(message = "Login must be not empty") String login,
       @NotBlank(message = "Password must be not empty") String password,
       @Pattern(
-          regexp = "(^user$|^staff$|^admin$)",
-          flags = Pattern.Flag.CASE_INSENSITIVE,
-          message = "Role must be one of: user, staff or admin")
+              regexp = "(^user$|^staff$|^admin$)",
+              flags = Pattern.Flag.CASE_INSENSITIVE,
+              message = "Role must be one of: user, staff or admin")
           String role,
       @Email(message = "Email must be valid") String email) {
     this.firstName = firstName;
@@ -207,9 +206,9 @@ public class Account extends History implements Serializable {
 
   public void setRole(
       @Pattern(
-          regexp = "(user|staff|admin)",
-          flags = Pattern.Flag.CASE_INSENSITIVE,
-          message = "Role must be one of: user, staff or admin")
+              regexp = "(user|staff|admin)",
+              flags = Pattern.Flag.CASE_INSENSITIVE,
+              message = "Role must be one of: user, staff or admin")
           String role) {
     this.role = role;
   }

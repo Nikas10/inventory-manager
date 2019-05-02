@@ -9,7 +9,6 @@ import com.quartet.inventorydemo.repository.InventoryPositionRepository;
 import com.quartet.inventorydemo.repository.RequirementRepository;
 import com.quartet.inventorydemo.repository.RequirementValueRepository;
 import com.quartet.inventorydemo.service.RequirementValueService;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,8 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   private final RequirementRepository requirementRepo;
 
   RequirementValueServiceImpl(
-      @Qualifier("RequirementValueRepository") final RequirementValueRepository requirementValueRepo,
+      @Qualifier("RequirementValueRepository")
+          final RequirementValueRepository requirementValueRepo,
       @Qualifier("InventoryPositionRepository") final InventoryPositionRepository positionRepo,
       @Qualifier("RequirementRepository") final RequirementRepository requirementRepo) {
     this.requirementValueRepo = requirementValueRepo;
@@ -66,8 +66,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
         });
 
     RequirementValue newRequirementValue =
-        new RequirementValue(
-            optionalRequirement.get(), optionalPosition.get(), requirementValue);
+        new RequirementValue(optionalRequirement.get(), optionalPosition.get(), requirementValue);
     return requirementValueRepo.saveAndFlush(newRequirementValue);
   }
 

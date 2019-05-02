@@ -21,8 +21,7 @@ import javax.validation.constraints.Positive;
 @Table(name = "quartet_requisition__quartet_inventory_position", schema = "public")
 public class Requisition_InventoryPosition extends History implements Serializable {
 
-  @EmbeddedId
-  private Requisition_InventoryPositionId requisition_inventoryPositionId;
+  @EmbeddedId private Requisition_InventoryPositionId requisition_inventoryPositionId;
 
   @ApiModelProperty(hidden = true)
   @NotNull(message = "Inventory position must be not null")
@@ -43,8 +42,7 @@ public class Requisition_InventoryPosition extends History implements Serializab
   @Column(name = "amount", nullable = false)
   private Integer amount;
 
-  private Requisition_InventoryPosition() {
-  }
+  private Requisition_InventoryPosition() {}
 
   public Requisition_InventoryPosition(
       @NotNull(message = "Inventory position must be not null") InventoryPosition inventoryPosition,

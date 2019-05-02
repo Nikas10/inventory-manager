@@ -12,8 +12,7 @@ public class RequirementValueId implements Serializable {
   private UUID requirementId;
   private UUID inventoryPositionId;
 
-  public RequirementValueId() {
-  }
+  public RequirementValueId() {}
 
   public RequirementValueId(@NotNull UUID requirementId, @NotNull UUID inventoryPositionId) {
     this.requirementId = requirementId;

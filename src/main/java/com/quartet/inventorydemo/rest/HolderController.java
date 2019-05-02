@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
+import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
@@ -58,17 +59,22 @@ public class HolderController {
 
   // @PreAuthorize("hasAuthority('STAFF')")
   @RequestMapping(value = "", method = RequestMethod.POST)
-  public ResponseEntity<?> createInventoryHolder(@RequestBody Holder holder) {
-    Holder newHolder = holderService.add(holder);
+  public ResponseEntity<?> createInventoryHolder(@RequestBody HolderDTO holderDTO) {
+    String description = holderDTO.getDescription();
+    String name = holderDTO.getName();
+    Holder newHolder = holderService.add(description, name);
     return new ResponseEntity<>(newHolder, HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
   @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
   public ResponseEntity<?> updateInventoryHolder(
-      @PathVariable("uuid") @UUIDString @Valid String stringUuid, @RequestBody Holder holder) {
+      @PathVariable("uuid") @UUIDString @Valid String stringUuid, @RequestBody HolderDTO holderDTO) {
+    String description = holderDTO.getDescription();
+    String name = holderDTO.getName();
     UUID uuid = UUID.fromString(stringUuid);
-    Holder updatedHolder = holderService.update(uuid, holder);
+
+    Holder updatedHolder = holderService.update(uuid, description, name);
     return new ResponseEntity<>(updatedHolder, HttpStatus.OK);
   }
 
@@ -149,7 +155,7 @@ public class HolderController {
 
     // TODO item functional
 
-    Holder update = holderService.update(uuid, holderWithInventoryItems);
+    Holder update = holderService.update(uuid, holderWithInventoryItems.getDescription(), holderWithInventoryItems.getName());
     return Response.createResponse(update);
   }
 }
