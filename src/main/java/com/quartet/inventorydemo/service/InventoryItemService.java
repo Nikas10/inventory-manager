@@ -16,15 +16,15 @@ public interface InventoryItemService {
   Optional<InventoryItem> getByInventoryPositionIdAndHolderId(
       @NotNull @Valid UUID inventoryPositionId, @NotNull @Valid UUID holderId);
 
-  InventoryItem add(
-      @NotNull @Valid UUID inventoryPositionId,
-      @NotNull @Valid UUID holderId,
-      @Positive @Valid Integer amount);
+  InventoryItem add(@NotNull @Valid String holderName,
+      @NotNull @Valid String positionName,
+      @NotNull @Valid String status,
+      @NotNull @Valid Integer amount);
 
-  InventoryItem update(
-      @NotNull @Valid UUID inventoryPositionId,
-      @NotNull @Valid UUID holderId,
-      @Positive @Valid Integer amount);
+  InventoryItem update(@NotNull @Valid String holderName,
+      @NotNull @Valid String positionName,
+      @NotNull @Valid String status,
+      @NotNull @Valid Integer amount);
 
   void remove(@NotNull @Valid UUID inventoryPositionId, @NotNull @Valid UUID holderId);
 
@@ -43,6 +43,7 @@ public interface InventoryItemService {
 
   InventoryItem packBundlesInStorage(
       @NotNull @Valid UUID bundleInventoryPositionId, @Positive @Valid Integer amountOfBundles);
+
 
   Set<InventoryItem> unpackBundlesInStorage(
       @NotNull @Valid UUID bundleInventoryPositionId, @Positive @Valid Integer amountOfBundles);

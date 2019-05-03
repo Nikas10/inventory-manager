@@ -2,6 +2,7 @@ package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.exception.NotBundleException;
 import com.quartet.inventorydemo.exception.NotEnoughItemsException;
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.Holder;
@@ -57,15 +58,62 @@ public class InventoryItemServiceImpl implements InventoryItemService {
   }
 
   @Override
-  public InventoryItem add(@NotNull @Valid UUID inventoryPositionId, @NotNull @Valid UUID holderId,
-      @Positive @Valid Integer amount) {
-    return null;
+  public InventoryItem add(@NotNull @Valid String holderName,
+      @NotNull @Valid String positionName,
+      @NotNull @Valid String status,
+      @NotNull @Valid Integer amount) {
+
+    Optional<Holder> optionalHolder = holderService.getByHolderName(holderName);
+    Optional<InventoryPosition> optionalPosition = inventoryPositionService.getByName(positionName);
+
+    Holder holder = optionalHolder.orElseThrow(
+        () -> new ResourceNotFoundException("Holder with name: " + holderName + " not found."));
+    InventoryPosition position = optionalPosition.orElseThrow(
+        () -> new ResourceNotFoundException("Position with name: " + positionName + " not found."));
+
+    Optional<InventoryItem> optionalItem = inventoryItemRepository
+        .findByInventoryPosition_IdAndHolder_Id(position.getId(), holder.getId());
+
+    optionalItem.ifPresent(optItem -> {
+          throw new ResourceAlreadyExistsException("Item with position id: "
+              + position.getId()
+              + " and holderId: "
+              + holder.getId()
+              + " already exists.");
+        }
+    );
+
+    return inventoryItemRepository
+        .saveAndFlush(new InventoryItem(holder, position, status, amount));
   }
 
   @Override
-  public InventoryItem update(@NotNull @Valid UUID inventoryPositionId,
-      @NotNull @Valid UUID holderId, @Positive @Valid Integer amount) {
-    return null;
+  public InventoryItem update(@NotNull @Valid String holderName,
+      @NotNull @Valid String positionName,
+      @NotNull @Valid String status,
+      @NotNull @Valid Integer amount) {
+    Optional<Holder> optionalHolder = holderService.getByHolderName(holderName);
+    Optional<InventoryPosition> optionalPosition = inventoryPositionService.getByName(positionName);
+
+    Holder holder = optionalHolder.orElseThrow(
+        () -> new ResourceNotFoundException("Holder with name: " + holderName + " not found."));
+    InventoryPosition position = optionalPosition.orElseThrow(
+        () -> new ResourceNotFoundException("Position with name: " + positionName + " not found."));
+
+    Optional<InventoryItem> optionalItem = inventoryItemRepository
+        .findByInventoryPosition_IdAndHolder_Id(position.getId(), holder.getId());
+
+    optionalItem.orElseThrow(() -> {
+          throw new ResourceAlreadyExistsException("Item with position id: "
+              + position.getId()
+              + " and holderId: "
+              + holder.getId()
+              + " does not exist.");
+        }
+    );
+
+    return inventoryItemRepository
+        .saveAndFlush(new InventoryItem(holder, position, status, amount));
   }
 
   @Override
