@@ -54,15 +54,15 @@ public class RequirementValueServiceImpl implements RequirementValueService {
 
     Optional<RequirementValue> requirementValueOptional =
         requirementValueRepo.findByRequirement_IdAndInventoryPosition_Id(requirementID, positionID);
-    requirementValueOptional.ifPresent(
-        s -> {
-          throw new ResourceAlreadyExistsException(
-              "Requirement with id:"
-                  + requirementID
-                  + " for position with id: "
-                  + positionID
-                  + "already exists.");
-        });
+
+    if (requirementValueOptional.isPresent()) {
+      throw new ResourceAlreadyExistsException(
+          "Requirement with id:"
+              + requirementID
+              + " for position with id: "
+              + positionID
+              + "already exists.");
+    }
 
     RequirementValue newRequirementValue =
         new RequirementValue(optionalRequirement.get(), optionalPosition.get(), requirementValue);

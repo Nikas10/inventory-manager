@@ -72,10 +72,10 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   public Holder add(@NotNull @Valid String description, @NotNull @Valid String name) {
     Optional<Holder> optionalHolder = getByHolderName(name);
 
-    optionalHolder.ifPresent(
-        current -> {
-          throw new ResourceNotFoundException("Holder with name: " + name + " already exists.");
-        });
+    if (optionalHolder.isPresent()) {
+      throw new ResourceNotFoundException("Holder with name: " + name + " already exists.");
+    }
+
     Holder newHolder = new Holder(name, description);
     return inventoryHolderRepository.saveAndFlush(newHolder);
   }
