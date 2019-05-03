@@ -33,7 +33,6 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   private final String STORAGE_DESCRIPTION = "DEFAULT STORAGE THAT CONTAINS INVENTORY ITEMS";
   private final InventoryHolderRepository inventoryHolderRepository;
   private final RoleService roleService;
-  private Holder storage;
 
   @Autowired
   public HolderServiceImpl(
@@ -65,9 +64,6 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
   @Override
   public Holder getStorageHolder() {
-    if (storage != null) {
-      return storage;
-    }
     Optional<Holder> storageOptional = getByHolderName(STORAGE_NAME);
     return storageOptional.orElseGet(() -> add(STORAGE_DESCRIPTION, STORAGE_NAME));
   }
@@ -156,6 +152,5 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    this.storage = getStorageHolder();
   }
 }
