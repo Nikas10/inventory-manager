@@ -98,14 +98,9 @@ public class InventoryItemServiceImpl implements InventoryItemService {
     Optional<InventoryItem> optionalItem = inventoryItemRepository
         .findByInventoryPosition_IdAndHolder_Id(position.getId(), holder.getId());
 
-    optionalItem.orElseThrow(() -> {
-          throw new ResourceAlreadyExistsException("Item with position id: "
-              + position.getId()
-              + " and holderId: "
-              + holder.getId()
-              + " does not exist.");
-        }
-    );
+    optionalItem.orElseThrow(() -> new ResourceAlreadyExistsException(
+        "Item with position id: " + position.getId() + " and holderId: " + holder.getId()
+            + " does not exist."));
 
     return inventoryItemRepository
         .saveAndFlush(new InventoryItem(holder, position, status, amount));
