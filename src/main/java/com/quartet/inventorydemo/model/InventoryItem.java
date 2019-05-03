@@ -28,12 +28,14 @@ public class InventoryItem extends History implements Serializable {
   @ApiModelProperty(hidden = true)
   @JoinColumn(name = "holder_id")
   @MapsId("holderId")
+  @NotNull(message = "Holder can not be null")
   @ManyToOne(optional = false)
   private Holder holder;
 
   @ApiModelProperty(hidden = true)
   @JoinColumn(name = "inventory_position_id")
   @MapsId("inventoryPositionId")
+  @NotNull(message = "Inventory position can not be null")
   @ManyToOne(optional = false)
   private InventoryPosition inventoryPosition;
 

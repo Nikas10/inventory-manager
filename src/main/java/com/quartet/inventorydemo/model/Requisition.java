@@ -50,6 +50,7 @@ public class Requisition extends History {
   private UUID id;
 
   @ApiModelProperty(hidden = true)
+  @NotNull(message = "Account must be not null")
   @JoinColumn(name = "account_id")
   @ManyToOne(optional = false)
   private Account account;
@@ -59,6 +60,7 @@ public class Requisition extends History {
       required = false,
       notes = "Performer to whom this requisition is assign to")
   @JoinColumn(name = "assignedto_account_id")
+  @NotNull(message = "Assigned to account can not be null")
   @ManyToOne(optional = true)
   private Account assignedtoAccount;
 
