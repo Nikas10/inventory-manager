@@ -7,9 +7,12 @@ import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RoleRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RoleService;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -114,6 +117,22 @@ public class RoleServiceImpl implements RoleService {
     inventoryPositions.removeAll(inventoryPositionService.getByPositionIDs(inventoryPositionIds));
 
     return roleRepository.saveAndFlush(roleWithInventoryPositions);
+  }
+
+  @Override
+  public Set<UUID> getNotAllowedInventoryPositionIds(
+      @NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> inventoryPositionIds) {
+    Set<Role> rolesByHolderId =
+        roleRepository.findByHolders_Id(holderId); // can delegate to holder service
+    Set<UUID> allowedIds =
+        rolesByHolderId.stream()
+            .map(Role::getInventoryPositions)
+            .flatMap(Collection::stream)
+            .map(InventoryPosition::getId)
+            .collect(Collectors.toSet());
+    HashSet<UUID> idsToBeRestricted = new HashSet<>(inventoryPositionIds);
+    idsToBeRestricted.removeAll(allowedIds);
+    return idsToBeRestricted;
   }
 
   private boolean isExists(@NotNull @Valid Role role) {

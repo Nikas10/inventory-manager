@@ -11,7 +11,6 @@ import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -59,19 +58,15 @@ public class RequirementServiceImpl implements RequirementService {
   }
 
   @Override
-  public Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid Requirement requirement) {
-    Optional<Requirement> holderOptional = getByRequirementID(id);
-    if (isExists(requirement)) {
-      throw new ResourceAlreadyExistsException(
-          "Requirement with same name already exists. Can not make changes.");
-    }
+  public Requirement update(@NotBlank @Valid UUID id, @NotNull @Valid String name) {
+    Optional<Requirement> optionalRequirement = getByRequirementID(id);
 
     Requirement requirementToModify =
-        holderOptional.orElseThrow(
+        optionalRequirement.orElseThrow(
             () -> new ResourceNotFoundException("Requirement with id: " + id + " not found"));
 
-    BeanUtils.copyProperties(requirement, requirementToModify, "id", "requirementValues");
-    return requirementRepo.saveAndFlush(requirement);
+    requirementToModify.setName(name);
+    return requirementRepo.saveAndFlush(requirementToModify);
   }
 
   @Override

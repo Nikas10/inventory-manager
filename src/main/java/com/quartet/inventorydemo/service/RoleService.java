@@ -30,4 +30,7 @@ public interface RoleService {
 
   Role removeInventoryPositions(
       @NotNull @Valid UUID roleId, @NotNull @Valid Set<UUID> inventoryPositionIds);
+
+  Set<UUID> getNotAllowedInventoryPositionIds(
+      @NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> inventoryPositionIds);
 }

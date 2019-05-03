@@ -2,7 +2,8 @@ package com.quartet.inventorydemo.exception;
 
 public class UpdateNotSupportedException extends RuntimeException {
 
-  public UpdateNotSupportedException() {}
+  public UpdateNotSupportedException() {
+  }
 
   public UpdateNotSupportedException(String message) {
     super(message);

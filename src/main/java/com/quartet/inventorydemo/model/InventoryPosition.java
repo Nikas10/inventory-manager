@@ -56,9 +56,9 @@ public class InventoryPosition extends History {
 
   @ApiModelProperty(hidden = true)
   @ManyToMany(
-          mappedBy = "inventoryPositions",
-          fetch = FetchType.LAZY,
-          cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+      mappedBy = "inventoryPositions",
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Role> roles;
 

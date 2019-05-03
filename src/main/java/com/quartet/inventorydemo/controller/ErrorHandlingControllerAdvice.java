@@ -3,6 +3,8 @@ package com.quartet.inventorydemo.controller;
 import com.quartet.inventorydemo.dto.ValidationErrorResponse;
 import com.quartet.inventorydemo.dto.Violation;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.exception.NotBundleException;
+import com.quartet.inventorydemo.exception.NotEnoughItemsException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
@@ -75,10 +77,11 @@ public class ErrorHandlingControllerAdvice {
     return e.getMessage();
   }
 
-  @ExceptionHandler(ResourceAlreadyExistsException.class)
+  @ExceptionHandler({ResourceAlreadyExistsException.class, NotBundleException.class,
+      NotEnoughItemsException.class})
   @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
   @ResponseBody
-  String onResourceExistance(ResourceAlreadyExistsException e) {
+  String onResourceExistance(RuntimeException e) {
     return e.getMessage();
   }
 }

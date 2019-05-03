@@ -132,7 +132,7 @@ function createUserNavbarElement(userdata) {
     var ad = document.createElement("a");
     var tad = document.createTextNode('Profile');
     ad.setAttribute('class', 'dropdown-item');
-    ad.setAttribute('href', 'profile.html');
+  ad.setAttribute('href', 'profile.html');
     ad.appendChild(tad);
     d.appendChild(ad);
     //divider

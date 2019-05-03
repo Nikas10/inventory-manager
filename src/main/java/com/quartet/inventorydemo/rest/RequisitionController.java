@@ -1,9 +1,12 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.model.Requisition;
+import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +25,30 @@ public class RequisitionController {
 
   private final RequisitionService requisitionService;
   private final RequisitionProcessService requisitionProcessService;
+  private final AccountService accountService;
 
   @Autowired
   public RequisitionController(
       @Qualifier("RequisitionService") final RequisitionService requisitionService,
-      @Qualifier("RequisitionProcessService") final RequisitionProcessService requisitionProcessService) {
+      @Qualifier("RequisitionProcessService") final RequisitionProcessService requisitionProcessService,
+      @Qualifier("AccountService") final AccountService accountService) {
     this.requisitionService = requisitionService;
     this.requisitionProcessService = requisitionProcessService;
+    this.accountService = accountService;
   }
 
+  // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "", method = RequestMethod.POST)
-  public ResponseEntity<?> createReuisition(@RequestBody Requisition requisition) {
-    Requisition newRequisition = requisitionService.add(requisition);
+  public ResponseEntity<?> createReuisition(@RequestBody RequisitionDTO requisitionDTO) {
+
+    String login = requisitionDTO.getLogin();
+    Date creationDate = requisitionDTO.getCreationDate();
+    String description = requisitionDTO.getDescription();
+    Date dueDate = requisitionDTO.getDueDate();
+    String status = requisitionDTO.getStatus();
+
+    Requisition newRequisition =
+        requisitionService.add(login, creationDate, description, dueDate, status);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
@@ -46,13 +61,13 @@ public class RequisitionController {
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
   public ResponseEntity<?> update(
-      @PathVariable("id") UUID id, @RequestBody Requisition requisition) {
+      @PathVariable("id") UUID id, @RequestBody RequisitionDTO requisitionDTO) {
     Optional<Requisition> original = requisitionService.getById(id);
 
     original.ifPresent(
         currentRequisition -> {
           String oldStatus = currentRequisition.getStatus();
-          String newStatus = requisition.getStatus();
+          String newStatus = requisitionDTO.getStatus();
 
           if (!oldStatus.equalsIgnoreCase(newStatus)) {
             switch (newStatus.toUpperCase()) {
