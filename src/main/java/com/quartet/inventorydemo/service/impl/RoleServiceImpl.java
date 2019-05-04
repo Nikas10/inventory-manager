@@ -99,8 +99,15 @@ public class RoleServiceImpl implements RoleService {
         rolerOptional.orElseThrow(
             () -> new ResourceNotFoundException("Role with id: " + roleId + " not found"));
 
-    Set<InventoryPosition> inventoryPositions = roleWithInventoryPositions.getInventoryPositions();
-    inventoryPositions.addAll(inventoryPositionService.getByPositionIDs(inventoryPositionIds));
+    Collection<InventoryPosition> positionsToAdd = inventoryPositionService.getByPositionIDs(inventoryPositionIds);
+    Set<InventoryPosition> rolePositions = roleWithInventoryPositions.getInventoryPositions();
+
+    if (positionsToAdd.isEmpty()) {
+      throw new ResourceNotFoundException("No positions with specified ids.");
+    }
+    checkPositionsPresence(rolePositions, positionsToAdd);
+
+    rolePositions.addAll(positionsToAdd);
 
     return roleRepository.saveAndFlush(roleWithInventoryPositions);
   }
@@ -144,5 +151,13 @@ public class RoleServiceImpl implements RoleService {
     Optional<Role> alreadyExists = roleRepository.findOne(roleExample);
 
     return alreadyExists.isPresent();
+  }
+
+  private void checkPositionsPresence(Set<InventoryPosition> rolePositions, Collection<InventoryPosition> positionsToAdd) {
+    for (InventoryPosition currentPosition: positionsToAdd) {
+      if(rolePositions.contains(currentPosition)) {
+        throw new ResourceAlreadyExistsException("Position with id: " + currentPosition.getId() + " already exists for selected role.");
+      }
+    }
   }
 }

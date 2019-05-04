@@ -126,7 +126,7 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
     Collection<Role> rolesToAdd = roleService.getByRoleIDs(roleIds);
 
     if (rolesToAdd.isEmpty()) {
-      throw new ResourceAlreadyExistsException("No roles with specified ids.");
+      throw new ResourceNotFoundException("No roles with specified ids.");
     }
     checkRolePresence(holderRoles, rolesToAdd);
 
