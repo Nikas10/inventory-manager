@@ -161,6 +161,7 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    getStorageHolder();
   }
 
   private void checkRolePresence(Set<Role> holderRoles, Collection<Role> rolesToAdd) {
