@@ -50,6 +50,7 @@ public class Requisition extends History {
   private UUID id;
 
   @ApiModelProperty(hidden = true)
+  @NotNull(message = "Account must be not null")
   @JoinColumn(name = "account_id")
   @ManyToOne(optional = false)
   private Account account;
@@ -59,6 +60,7 @@ public class Requisition extends History {
       required = false,
       notes = "Performer to whom this requisition is assign to")
   @JoinColumn(name = "assignedto_account_id")
+  //@NotNull(message = "Assigned to account can not be null") Null for testing time
   @ManyToOne(optional = true)
   private Account assignedtoAccount;
 
@@ -128,6 +130,24 @@ public class Requisition extends History {
     this.creationDate = creationDate;
     this.dueDate = dueDate;
     this.description = description;
+  }
+
+  public Requisition(
+      @NotNull(message = "Account must be not null") Account account,
+      @NotNull(message = "Status must be not null") String status,
+      @NotNull(message = "Creation date can not be null")
+      @PastOrPresent(message = "Provide correct date. It can not be future then now")
+          Date creationDate,
+      @NotNull(message = "Due date can not be null") Date dueDate,
+      @NotNull(message = "Description can not be null") String description,
+      @NotNull(message = "Holder can not be null") Holder holder) {
+    this.account = account;
+    this.assignedtoAccount = null;
+    this.status = status;
+    this.creationDate = creationDate;
+    this.dueDate = dueDate;
+    this.description = description;
+    this.holder = holder;
   }
 
   @Override

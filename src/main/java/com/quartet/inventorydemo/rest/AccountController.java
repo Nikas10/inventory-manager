@@ -158,6 +158,7 @@ public class AccountController {
     if (!removeByIds.isEmpty()) {
       result = accountService.removeHolders(login, removeByIds);
     }
+
     if (result == null) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

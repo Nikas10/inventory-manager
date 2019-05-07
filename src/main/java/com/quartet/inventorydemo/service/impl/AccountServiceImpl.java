@@ -7,6 +7,7 @@ import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.repository.AccountRepository;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -118,8 +119,16 @@ public class AccountServiceImpl implements AccountService {
         accountOptional.orElseThrow(
             () -> new ResourceNotFoundException("Account with login: " + login + " not found"));
 
-    Set<Holder> currentHolders = accountWithHolders.getHolders();
-    currentHolders.addAll(holderService.getByHolderIDs(holderIds));
+
+    Set<Holder> accountHolders = accountWithHolders.getHolders();
+    Collection<Holder> holdersToAdd = holderService.getByHolderIDs(holderIds);
+
+    if (holdersToAdd.isEmpty()) {
+        throw new ResourceNotFoundException("No holders with specified ids.");
+    }
+    checkHolderExistence(accountHolders, holdersToAdd);
+
+    accountHolders.addAll(holdersToAdd);
 
     return accountRepository.saveAndFlush(accountWithHolders);
   }
@@ -155,5 +164,13 @@ public class AccountServiceImpl implements AccountService {
     Optional<Account> alreadyExists = accountRepository.findOne(accountExample);
 
     return alreadyExists.isPresent();
+  }
+
+  private void checkHolderExistence(Set<Holder> accountHolders, Collection<Holder> holdersToAdd) {
+    for (Holder currentHolder: holdersToAdd) {
+      if (accountHolders.contains(currentHolder)) {
+        throw new ResourceAlreadyExistsException("Holder with id: " + currentHolder.getId() + " already exists at specified account.");
+      }
+    }
   }
 }

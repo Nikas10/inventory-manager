@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.Holder;
@@ -9,6 +10,7 @@ import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.RoleService;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -72,10 +74,10 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   public Holder add(@NotNull @Valid String description, @NotNull @Valid String name) {
     Optional<Holder> optionalHolder = getByHolderName(name);
 
-    optionalHolder.ifPresent(
-        current -> {
-          throw new ResourceNotFoundException("Holder with name: " + name + " already exists.");
-        });
+    if (optionalHolder.isPresent()) {
+      throw new ResourceNotFoundException("Holder with name: " + name + " already exists.");
+    }
+
     Holder newHolder = new Holder(name, description);
     return inventoryHolderRepository.saveAndFlush(newHolder);
   }
@@ -120,8 +122,15 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
         holderOptional.orElseThrow(
             () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
 
-    Set<Role> currentRoles = holderWithRoles.getRoles();
-    currentRoles.addAll(roleService.getByRoleIDs(roleIds));
+    Set<Role> holderRoles = holderWithRoles.getRoles();
+    Collection<Role> rolesToAdd = roleService.getByRoleIDs(roleIds);
+
+    if (rolesToAdd.isEmpty()) {
+      throw new ResourceNotFoundException("No roles with specified ids.");
+    }
+    checkRolePresence(holderRoles, rolesToAdd);
+
+    holderRoles.addAll(rolesToAdd);
 
     return inventoryHolderRepository.saveAndFlush(holderWithRoles);
   }
@@ -152,5 +161,13 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
+  }
+
+  private void checkRolePresence(Set<Role> holderRoles, Collection<Role> rolesToAdd) {
+    for (Role currentRole: rolesToAdd) {
+      if(holderRoles.contains(currentRole)) {
+        throw new ResourceAlreadyExistsException("Role with id: " + currentRole.getId() + " already exists for selected holder.");
+      }
+    }
   }
 }

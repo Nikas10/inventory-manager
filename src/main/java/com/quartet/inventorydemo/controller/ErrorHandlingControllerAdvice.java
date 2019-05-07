@@ -6,6 +6,7 @@ import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.NotBundleException;
 import com.quartet.inventorydemo.exception.NotEnoughItemsException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
+import com.quartet.inventorydemo.exception.ResourceNotAvailableException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import java.util.NoSuchElementException;
@@ -82,6 +83,13 @@ public class ErrorHandlingControllerAdvice {
   @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
   @ResponseBody
   String onResourceExistance(RuntimeException e) {
+    return e.getMessage();
+  }
+
+  @ExceptionHandler({ResourceNotAvailableException.class})
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  String onAvailabilityViolation(RuntimeException e) {
     return e.getMessage();
   }
 }

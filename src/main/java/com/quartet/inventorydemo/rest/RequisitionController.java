@@ -7,6 +7,7 @@ import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,11 @@ public class RequisitionController {
     String description = requisitionDTO.getDescription();
     Date dueDate = requisitionDTO.getDueDate();
     String status = requisitionDTO.getStatus();
+    String stringHolderUUID = requisitionDTO.getStringHolderUUID();
+    List<String> stringInventoryPositionUUIDs = requisitionDTO.getStringInventoryPositionUUIDs();
 
     Requisition newRequisition =
-        requisitionService.add(login, creationDate, description, dueDate, status);
+        requisitionService.add(login, creationDate, description, dueDate, status, stringHolderUUID, stringInventoryPositionUUIDs);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
