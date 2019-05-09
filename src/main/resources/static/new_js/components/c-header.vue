@@ -1,5 +1,6 @@
 <template>
   <b-navbar class="c-header" toggleable="lg" type="light" variant="light">
+    {{userLogin}} | {{storage}}
     <b-navbar-brand to="start">Inventory Mananager</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -9,10 +10,10 @@
         <b-nav-item v-for="page in pages" v-bind:key="page.id" v-bind:to="page.link">{{page.title}}</b-nav-item>
       </b-navbar-nav>
 
-      <b-navbar-nav class="ml-auto" v-if="storage.user">
+      <b-navbar-nav class="ml-auto" v-if="storage && storage.user">
         <b-nav-item-dropdown right>
           <template slot="button-content">
-            <em>{{storage.user.login}}</em>
+            <em>{{userLogin}}</em>
           </template>
           <b-dropdown-item to="profile">Profile</b-dropdown-item>
           <b-dropdown-item @click="onLogOut">Log Out</b-dropdown-item>
@@ -28,9 +29,11 @@
 
 <script>
 module.exports = {
+  props: ["storage"],
+
   data: function() {
     return {
-      storage: storage,
+      userLogin: "",
       pages: [
         {
           id: 0,
@@ -50,11 +53,29 @@ module.exports = {
       ]
     };
   },
-  methods: {
-    onLogOut() {
-      this.$root.logout();
 
+  methods: {
+    onLogOut: function() {
+      this.$root.logout();
       // TODO Добавить перенаправление на стартовую страницу
+    },
+    loadHeaderComponent: function() {
+      console.log(this.storage);
+      // Clone
+      if (this.storage && this.storage.user && this.storage.user.login) {
+        this.userLogin = this.storage.user.login;
+      } else {
+        this.userLogin = "";
+      }
+    }
+  },
+  mounted() {
+    this.loadHeaderComponent()
+  },
+
+  watch: {
+    'storage.user': function(a, b) {
+      this.loadHeaderComponent()
     }
   }
 };

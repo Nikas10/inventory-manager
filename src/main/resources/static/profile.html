@@ -27,7 +27,7 @@
 
 <body>
 <div id="app">
-  <router-view/>
+  <router-view :storage="storage"></router-view>
 </div>
 
 <script src="new_js/router.js"></script>
@@ -43,15 +43,15 @@
     baseURL: baseURL + "api"
   });
 
-  const storage = {
-    user: null
-  };
-
   window.app = new Vue({
     router,
     el: "#app",
-    data: {
-      storage: storage
+    data: function () {
+      return {
+        storage: {
+          user: null
+        }
+      };
     },
     methods: {
       setToken(token) {
@@ -62,13 +62,19 @@
       },
       loadUser() {
         var self = this;
-        this.$server.get("/account").then(function (response) {
+        var promiseLoadUser = this.$server
+        .get("/account")
+        .then(function (response) {
           self.storage.user = {
             login: response.data.login,
-            email: response.data.email
+            email: response.data.email,
+            firstName: response.data.firstName,
+            middleName: response.data.middleName,
+            lastName: response.data.lastName
           };
           // TODO Добавить перенаправление на другую страницу
         });
+        return promiseLoadUser;
       },
       auth(login, password) {
         var self = this;
@@ -86,8 +92,9 @@
         )
         .then(function (response) {
           var token = response.data;
+          localStorage.token = JSON.stringify(token);
 
-          setCookie("auth", token.access_token, token.expires_in);
+          //setCookie("auth", token.access_token, token.expires_in);
 
           self.setToken(token.access_token);
 
@@ -97,13 +104,16 @@
       logout() {
         this.storage.user = null;
         this.unsetToken();
-        eraseCookie("auth");
+        localStorage.removeItem("token");
+        //eraseCookie("auth");
       }
     },
     mounted() {
-      var token = getCookie("auth");
-      if (token != null) {
-        this.setToken(token);
+      let tokenString = localStorage.getItem("token");
+      if (tokenString) {
+        let token = JSON.parse(tokenString);
+        console.log(token);
+        this.setToken(token.access_token);
         this.loadUser();
       }
     }

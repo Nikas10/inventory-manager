@@ -1,5 +1,5 @@
 <template>
-  <c-default-page>
+  <c-default-page :storage="storage">
     <b-container>
       <b-card title="Sign In">
         <b-form @submit="onSubmit">
@@ -29,9 +29,9 @@ module.exports = {
   components: {
     "c-default-page": httpVueLoader("new_js/components/c-default-page.vue")
   },
+  props: ["storage"],
   data: function() {
     return {
-      storage: storage,
       form: {
         login: "",
         password: ""
