@@ -9,8 +9,8 @@
 <script>
 module.exports = {
   components: {
-    "c-header": httpVueLoader("new_js/components/c-header.vue"),
-    "c-footer": httpVueLoader("new_js/components/c-footer.vue")
+    "c-header": httpVueLoader("js/components/c-header.vue"),
+    "c-footer": httpVueLoader("js/components/c-footer.vue")
   },
   props: ["storage"]
 };

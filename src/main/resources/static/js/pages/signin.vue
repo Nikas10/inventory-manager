@@ -27,7 +27,7 @@
 <script>
 module.exports = {
   components: {
-    "c-default-page": httpVueLoader("new_js/components/c-default-page.vue")
+    "c-default-page": httpVueLoader("js/components/c-default-page.vue")
   },
   props: ["storage"],
   data: function() {
