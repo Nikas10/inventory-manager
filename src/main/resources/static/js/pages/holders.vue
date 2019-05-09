@@ -1,5 +1,8 @@
 <template>
-  <c-default-page :storage="storage"></c-default-page>
+  <c-default-page :storage="storage">
+      <b-button to="/holders/123">holder 123</b-button>
+      <b-button to="/holders/new" variant="primary">new holder</b-button>
+  </c-default-page>
 </template>
 
 <script>

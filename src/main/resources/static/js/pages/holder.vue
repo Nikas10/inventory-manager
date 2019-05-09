@@ -1,5 +1,5 @@
 <template>
-  <c-default-page :storage="storage"></c-default-page>
+  <c-default-page :storage="storage">{{$route.params.id}}</c-default-page>
 </template>
 
 <script>
