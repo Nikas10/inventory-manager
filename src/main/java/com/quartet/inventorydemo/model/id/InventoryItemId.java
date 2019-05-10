@@ -12,7 +12,7 @@ public class InventoryItemId implements Serializable {
   private UUID holderId;
   private UUID inventoryPositionId;
 
-  private InventoryItemId() {
+  public InventoryItemId() {
   }
 
   public InventoryItemId(@NotNull UUID holderId, @NotNull UUID inventoryPositionId) {
