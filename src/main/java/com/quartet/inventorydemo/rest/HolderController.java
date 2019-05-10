@@ -178,7 +178,7 @@ public class HolderController {
     return new ResponseEntity<>(specifiedHolders, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/allHolders", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAllHolders() {
     return new ResponseEntity<>(holderService.getAll(), HttpStatus.OK);
   }

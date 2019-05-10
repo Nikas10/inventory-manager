@@ -46,11 +46,6 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
   }
 
-  /*@Autowired
-  public void setInventoryItemService(InventoryItemService inventoryItemService) {
-    this.inventoryItemService = inventoryItemService;
-  }*/
-
   @Override
   public List<InventoryPosition> getAll() {
     return positionRepo.findAll();
@@ -146,36 +141,6 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     }
 
     positionRepo.delete(position);
-    /*
-    Set<Bundle_InventoryPosition> bundleInventoryPositions = position.getBundleInventoryPositions();
-    List<InventoryItem> allItems = new ArrayList<>();
-    Holder stockHolder = inventoryHolderRepo.findByName("stock").get();
-
-    for (Bundle_InventoryPosition partOfBundle : bundleInventoryPositions) {
-      Integer amount = partOfBundle.getAmount();
-      InventoryPosition partOfInventoryPosition = partOfBundle.getInventoryPosition();
-      Set<InventoryItem> currentPositionItems = partOfInventoryPosition.getInventoryItems();
-      boolean existsInStorage = false;
-      for (InventoryItem inventoryItem : currentPositionItems) {
-        Holder inventoryHolder = inventoryItem.getHolder();
-        if (stockHolder.equals(inventoryHolder)) {
-          existsInStorage = true;
-          inventoryItem.setAmount(amount + inventoryItem.getAmount());
-          break;
-        }
-      }
-      if (!existsInStorage) {
-
-        InventoryItem inventoryItem =
-            new InventoryItem(stockHolder, partOfInventoryPosition, "On stock", amount);
-        // repo inventory item save this shit
-        allItems.add(inventoryItem);
-      }
-    }
-    inventoryItemService.saveAll(allItems);
-    positionRepo.delete(
-        position); // если нет каскадного удаления, то удалить отдельно inventory item и хуйню
-    */
   }
 
   private boolean isExists(@NotNull @Valid InventoryPosition position) {

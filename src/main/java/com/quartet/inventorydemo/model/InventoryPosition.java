@@ -130,7 +130,6 @@ public class InventoryPosition extends History {
   }
 
   public boolean isBundle() {
-
     if (getBundleInventoryPositions() != null) {
       return getBundleInventoryPositions().stream().anyMatch(x -> x.getBundlePosition().equals(this));
     } else return false;

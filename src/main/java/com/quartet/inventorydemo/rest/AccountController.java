@@ -208,18 +208,7 @@ public class AccountController {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
-  @RequestMapping(value = "/accountIds", method = RequestMethod.GET)
-  public ResponseEntity<?> getAccountList(
-      @RequestParam List<String> stringUUIDs) {
-    Set<UUID> uuids = new HashSet<>();
-    for (String currentID: stringUUIDs) {
-      uuids.add(UUID.fromString(currentID));
-    }
-    Collection<Account> specifiedAccounts = accountService.getByAccountIDs(uuids);
-    return new ResponseEntity<>(specifiedAccounts, HttpStatus.OK);
-  }
-
-  @RequestMapping(value = "/allAccounts", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAllAccounts() {
     return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
   }
