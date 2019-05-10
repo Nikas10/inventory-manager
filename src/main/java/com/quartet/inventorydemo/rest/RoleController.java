@@ -8,6 +8,7 @@ import com.quartet.inventorydemo.util.UUIDString;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,6 +41,12 @@ public class RoleController {
     roleOptional.orElseThrow(
         () -> new ResourceNotFoundException("Role with id: " + uuid + "not found"));
     return new ResponseEntity<>(roleOptional.get(), HttpStatus.OK);
+  }
+
+  // @PreAuthorize("hasAuthority('STAFF')")
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseEntity<?> getRoles() {
+    return new ResponseEntity<>(roleService.getAll(), HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")

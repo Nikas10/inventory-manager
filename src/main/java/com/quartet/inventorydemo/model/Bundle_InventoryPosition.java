@@ -21,7 +21,7 @@ import javax.validation.constraints.Positive;
 public class Bundle_InventoryPosition extends History implements Serializable {
 
   @EmbeddedId
-  private Bundle_InventoryPositionId bundle_inventoryPositionId;
+  private Bundle_InventoryPositionId bundle_inventoryPositionId = new Bundle_InventoryPositionId();
 
   @NotNull(message = "Inventory position can not be null")
   @JoinColumn(name = "inventory_position_id", nullable = false)
