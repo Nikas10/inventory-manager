@@ -65,7 +65,7 @@ public class AccountController {
    * @return ResponceEntity containing user Account Entity
    */
   @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/me", method = RequestMethod.GET)
   public ResponseEntity<?> getAccount(@NotNull @Valid Principal principal) {
     Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
     accountOptional.orElseThrow(
@@ -93,7 +93,7 @@ public class AccountController {
   /**
    * User register method Admin Accounts is not available to register here
    */
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/me", method = RequestMethod.POST)
   public ResponseEntity<?> registerNewAccount(@RequestBody Account account) {
     // acc manage logic:
     account.setRole("user");
@@ -208,7 +208,7 @@ public class AccountController {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
-  @RequestMapping(value = "/", method = RequestMethod.GET)
+  @RequestMapping(value = "", method = RequestMethod.GET)
   public ResponseEntity<?> getAllAccounts() {
     return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
   }
