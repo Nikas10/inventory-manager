@@ -15,7 +15,7 @@
           <template slot="button-content">
             <em>{{userLogin}}</em>
           </template>
-          <b-dropdown-item to="profile">Profile</b-dropdown-item>
+          <b-dropdown-item :to="profilePath">Profile</b-dropdown-item>
           <b-dropdown-item @click="onLogOut">Log Out</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -53,7 +53,11 @@ module.exports = {
       ]
     };
   },
-
+  computed: {
+    profilePath: function() {
+      return "/users/" + this.userLogin;
+    }
+  },
   methods: {
     onLogOut: function() {
       this.$root.logout();
@@ -70,12 +74,11 @@ module.exports = {
     }
   },
   mounted() {
-    this.loadHeaderComponent()
+    this.loadHeaderComponent();
   },
-
   watch: {
-    'storage.user': function(a, b) {
-      this.loadHeaderComponent()
+    "storage.user": function(a, b) {
+      this.loadHeaderComponent();
     }
   }
 };

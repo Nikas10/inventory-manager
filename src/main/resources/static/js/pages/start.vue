@@ -50,42 +50,36 @@ module.exports = {
         },
         {
           id: 3,
-          title: "Profile",
-          access: "User",
-          link: "/profile"
-        },
-        {
-          id: 4,
           title: "Requirements",
           access: "Staff",
           link: "/requirements/"
         },
         {
-          id: 5,
+          id: 4,
           title: "Requisitions",
           access: "User",
           link: "/requisitions/"
         },
         {
-          id: 6,
+          id: 5,
           title: "Roles",
           access: "User",
           link: "/roles/"
         },
         {
-          id: 7,
+          id: 6,
           title: "Signin",
           access: "User",
           link: "/signin"
         },
         {
-          id: 8,
+          id: 7,
           title: "Signup",
           access: "User",
           link: "/Signup"
         },
         {
-          id: 9,
+          id: 8,
           title: "Users",
           access: "Staff",
           link: "/users/"
