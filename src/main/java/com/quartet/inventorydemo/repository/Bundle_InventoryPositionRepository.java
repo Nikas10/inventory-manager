@@ -15,4 +15,6 @@ public interface Bundle_InventoryPositionRepository
       InventoryPosition inventoryPosition, InventoryPosition bundlePosition);
 
   List<Bundle_InventoryPosition> findByInventoryPosition(InventoryPosition inventoryPosition);
+
+  List<Bundle_InventoryPosition> findByBundlePosition(InventoryPosition inventoryPosition);
 }
