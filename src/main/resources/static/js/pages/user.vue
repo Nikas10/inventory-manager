@@ -45,6 +45,12 @@
           <b-button v-if="changesAllowed" v-on:click="saveUser">Save Changes</b-button>
         </b-form>
       </b-card>
+      <h2>Holders</h2>
+      <b-table small :items="holders" :fields="fields">
+        <template slot="name" slot-scope="data">
+          <b-link :to="'/holders/' + data.item.id">{{data.value}}</b-link>
+        </template>
+      </b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -64,7 +70,18 @@ module.exports = {
         firstName: "",
         middleName: "",
         lastName: ""
-      }
+      },
+      fields: {
+        name: {
+          label: "Name",
+          sortable: true
+        },
+        description: {
+          label: "Description",
+          sortable: true
+        }
+      },
+      holders: []
     };
   },
   computed: {
@@ -80,7 +97,8 @@ module.exports = {
   },
   methods: {
     loadUser: function(username) {
-      var self = this;
+      const self = this;
+
       this.$server
         .get("/account/" + this.$route.params.id)
         .then(function(response) {
@@ -93,6 +111,12 @@ module.exports = {
               alert("TODO User not found");
             }
           }
+        });
+
+      this.$server
+        .get("/account/" + this.$route.params.id + "/holder/")
+        .then(function(response) {
+          self.holders = response.data;
         });
     },
     saveUser: function() {
