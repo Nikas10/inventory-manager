@@ -93,7 +93,7 @@ public class AccountController {
   /**
    * User register method Admin Accounts is not available to register here
    */
-  @RequestMapping(value = "/me", method = RequestMethod.POST)
+  @RequestMapping(value = "", method = RequestMethod.POST)
   public ResponseEntity<?> registerNewAccount(@RequestBody Account account) {
     // acc manage logic:
     account.setRole("user");
