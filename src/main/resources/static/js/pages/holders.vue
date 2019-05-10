@@ -1,7 +1,13 @@
 <template>
   <c-default-page :storage="storage">
-      <b-button to="/holders/123">holder 123</b-button>
-      <b-button to="/holders/new" variant="primary">new holder</b-button>
+    <b-container>
+      <h1>Holders</h1>
+      <b-table small :items="holders" :fields="fields">
+        <template slot="name" slot-scope="data">
+          <b-link :to="'/holders/' + data.item.id">{{data.value}}</b-link>
+        </template>
+      </b-table>
+    </b-container>
   </c-default-page>
 </template>
 
@@ -12,7 +18,30 @@ module.exports = {
   },
   props: ["storage"],
   data: function() {
-    return {};
+    return {
+      fields: {
+        name: {
+          label: "Name",
+          sortable: true
+        },
+        description: {
+          label: "Description",
+          sortable: true
+        }
+      },
+      holders: []
+    };
+  },
+  methods: {
+    loadHolders: function() {
+      const self = this;
+      this.$server.get("/holder/").then(function(response) {
+        self.holders = response.data;
+      });
+    }
+  },
+  mounted: function() {
+    this.loadHolders();
   }
 };
 </script>

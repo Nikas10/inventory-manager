@@ -45,6 +45,12 @@
           <b-button v-if="changesAllowed" v-on:click="saveUser">Save Changes</b-button>
         </b-form>
       </b-card>
+      <h2>Holders</h2>
+      <b-table small :items="holders" :fields="fields">
+        <template slot="name" slot-scope="data">
+          <b-link :to="'/holders/' + data.item.id">{{data.value}}</b-link>
+        </template>
+      </b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -63,8 +69,20 @@ module.exports = {
         password: "",
         firstName: "",
         middleName: "",
-        lastName: ""
-      }
+        lastName: "",
+        role: ""
+      },
+      fields: {
+        name: {
+          label: "Name",
+          sortable: true
+        },
+        description: {
+          label: "Description",
+          sortable: true
+        }
+      },
+      holders: []
     };
   },
   computed: {
@@ -80,7 +98,8 @@ module.exports = {
   },
   methods: {
     loadUser: function(username) {
-      var self = this;
+      const self = this;
+
       this.$server
         .get("/account/" + this.$route.params.id)
         .then(function(response) {
@@ -94,9 +113,26 @@ module.exports = {
             }
           }
         });
+
+      this.$server
+        .get("/account/" + this.$route.params.id + "/holder/")
+        .then(function(response) {
+          self.holders = response.data;
+        });
     },
     saveUser: function() {
-      alert("TODO Пока нет обработчика на сервере");
+      const self = this;
+
+      this.$server
+        .patch("/account/" + this.$route.params.id, {
+          email: this.form.email,
+          firstName: this.form.firstName,
+          lastName: this.form.lastName,
+          middleName: this.form.middleName,
+          password: this.form.password,
+          role: this.form.role
+        })
+        .then(function(response) {});
     }
   },
   mounted: function() {

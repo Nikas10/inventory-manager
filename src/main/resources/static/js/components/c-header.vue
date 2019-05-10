@@ -1,6 +1,6 @@
 <template>
   <b-navbar class="c-header" toggleable="lg" type="light" variant="light">
-    <b-navbar-brand to="start">Inventory Mananager</b-navbar-brand>
+    <b-navbar-brand to="/start">Inventory Mananager</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
