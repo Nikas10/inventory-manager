@@ -31,11 +31,6 @@ const router = new VueRouter({
             component: httpVueLoader('js/pages/items.vue'),
         },
         {
-            name: 'profile',
-            path: '/profile',
-            component: httpVueLoader('js/pages/profile.vue'),
-        },
-        {
             name: 'requirements',
             path: '/requirements/',
             component: httpVueLoader('js/pages/requirements.vue'),
