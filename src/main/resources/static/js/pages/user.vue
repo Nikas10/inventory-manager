@@ -69,7 +69,8 @@ module.exports = {
         password: "",
         firstName: "",
         middleName: "",
-        lastName: ""
+        lastName: "",
+        role: ""
       },
       fields: {
         name: {
@@ -120,7 +121,18 @@ module.exports = {
         });
     },
     saveUser: function() {
-      alert("TODO Пока нет обработчика на сервере");
+      const self = this;
+
+      this.$server
+        .patch("/account/" + this.$route.params.id, {
+          email: this.form.email,
+          firstName: this.form.firstName,
+          lastName: this.form.lastName,
+          middleName: this.form.middleName,
+          password: this.form.password,
+          role: this.form.role
+        })
+        .then(function(response) {});
     }
   },
   mounted: function() {
