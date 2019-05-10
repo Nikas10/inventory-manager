@@ -4,6 +4,11 @@ import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,7 +29,7 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
   }
 
   @Override
-  public int getAmount(InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
+  public Integer getAmount(InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
     Bundle_InventoryPosition inventoryPositionContents =
         bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(
             bundle, partOfInventoryPosition);
@@ -34,7 +39,7 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
 
   @Override
   public Bundle_InventoryPosition update(
-      InventoryPosition inventoryPosition, InventoryPosition bundlePosition, int value) {
+      InventoryPosition inventoryPosition, InventoryPosition bundlePosition, Integer value) {
     Bundle_InventoryPosition inventoryPositionContents =
         bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(
             inventoryPosition, bundlePosition);
@@ -47,5 +52,14 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
     }
 
     return bundle_InventoryPositionRepo.saveAndFlush(inventoryPositionContents);
+  }
+
+  @Override
+  public List<UUID> getBundleFirstLevelContents(@NotNull @Valid InventoryPosition bundle) {
+    return bundle_InventoryPositionRepo.findByBundlePosition(bundle)
+        .parallelStream()
+        .map(Bundle_InventoryPosition::getInventoryPosition)
+        .map(InventoryPosition::getId)
+        .collect(Collectors.toList());
   }
 }
