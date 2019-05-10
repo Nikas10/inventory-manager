@@ -1,10 +1,15 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.service.AccountService;
+import com.quartet.inventorydemo.util.UUIDString;
 import java.security.Principal;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -59,7 +65,7 @@ public class AccountController {
    * @return ResponceEntity containing user Account Entity
    */
   @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/me", method = RequestMethod.GET)
   public ResponseEntity<?> getAccount(@NotNull @Valid Principal principal) {
     Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
     accountOptional.orElseThrow(
@@ -186,5 +192,24 @@ public class AccountController {
                 new ResourceNotFoundException(
                     "Account with login: " + principal.getName() + " not found"));
     return new ResponseEntity<>(accountWithRequisitions.getRequisitions(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{login}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> deleteAccount(
+      @PathVariable("login") @Valid String login) {
+    accountService.remove(login);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @RequestMapping(value = "/{login}", method = RequestMethod.PATCH)
+  public ResponseEntity<?> updateAccount(
+      @PathVariable("login") @Valid String login, @RequestBody AccountDTO accountDTO) {
+    accountService.update(login, accountDTO);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseEntity<?> getAllAccounts() {
+    return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
   }
 }

@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.model.Account;
 import java.util.Collection;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public interface AccountService {
 
   Account add(@NotNull @Valid Account acc);
 
-  Account update(@NotBlank @Valid String login, @NotNull @Valid Account acc);
+  Account update(@NotBlank @Valid String login, @NotNull @Valid AccountDTO acccountDTO);
 
   void remove(@NotBlank @Valid String login);
 
