@@ -47,6 +47,15 @@ public class InventoryPositionController {
     return new ResponseEntity<>(optionalPosition.get(), HttpStatus.OK);
   }
 
+  @RequestMapping(value = "/isbundle/{uuid}", method = RequestMethod.GET)
+  public ResponseEntity<?> isBundle(@PathVariable("uuid") String stringUuid) {
+    UUID id = UUID.fromString(stringUuid);
+    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(id);
+    optionalPosition.orElseThrow(
+        () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
+    return new ResponseEntity<>(optionalPosition.get().isBundle(), HttpStatus.OK);
+  }
+
   @RequestMapping(value = "", method = RequestMethod.POST)
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
     String description = positionDTO.getDescription();

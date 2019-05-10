@@ -128,4 +128,8 @@ public class InventoryPosition extends History {
   public Set<Bundle_InventoryPosition> getBundleInventoryPositions() {
     return bundleInventoryPositions;
   }
+
+  public boolean isBundle() {
+    return getBundleInventoryPositions().stream().anyMatch(x -> x.getBundlePosition().equals(this));
+  }
 }
