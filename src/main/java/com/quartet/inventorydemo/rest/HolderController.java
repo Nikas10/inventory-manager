@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.rest;
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.service.AccountService;
@@ -10,6 +11,9 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.util.Response;
 import com.quartet.inventorydemo.util.UUIDString;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -160,5 +165,21 @@ public class HolderController {
         holderService.update(
             uuid, holderWithInventoryItems.getDescription(), holderWithInventoryItems.getName());
     return Response.createResponse(update);
+  }
+
+  @RequestMapping(value = "/holderIds", method = RequestMethod.GET)
+  public ResponseEntity<?> getHoldersList(
+      @RequestParam List<String> stringUUIDs) {
+    Set<UUID> uuids = new HashSet<>();
+    for (String currentID: stringUUIDs) {
+      uuids.add(UUID.fromString(currentID));
+    }
+    Collection<Holder> specifiedHolders = holderService.getByHolderIDs(uuids);
+    return new ResponseEntity<>(specifiedHolders, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/allHolders", method = RequestMethod.GET)
+  public ResponseEntity<?> getAllHolders() {
+    return new ResponseEntity<>(holderService.getAll(), HttpStatus.OK);
   }
 }
