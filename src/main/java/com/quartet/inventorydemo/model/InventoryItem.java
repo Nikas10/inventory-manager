@@ -23,7 +23,7 @@ import javax.validation.constraints.Positive;
 public class InventoryItem extends History implements Serializable {
 
   @EmbeddedId
-  private InventoryItemId inventoryItemId = new InventoryItemId();
+  private InventoryItemId inventoryItemId;
 
   @ApiModelProperty(hidden = true)
   @JoinColumn(name = "holder_id")
