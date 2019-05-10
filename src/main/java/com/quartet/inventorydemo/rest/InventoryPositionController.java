@@ -11,7 +11,9 @@ import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.service.RequirementValueService;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -51,6 +53,11 @@ public class InventoryPositionController {
     optionalPosition.orElseThrow(
         () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
     return new ResponseEntity<>(optionalPosition.get(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseEntity<?> getAll() {
+    return new ResponseEntity<>(positionService.getAll(), HttpStatus.OK);
   }
 
   @RequestMapping(value = "/isbundle/{uuid}", method = RequestMethod.GET)
