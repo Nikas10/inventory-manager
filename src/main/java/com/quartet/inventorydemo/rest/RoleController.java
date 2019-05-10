@@ -46,11 +46,7 @@ public class RoleController {
   // @PreAuthorize("hasAuthority('STAFF')")
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ResponseEntity<?> getRoles() {
-    Set<UUID> role = roleService.getAll()
-        .parallelStream()
-        .map(Role::getId)
-        .collect(Collectors.toSet());
-    return new ResponseEntity<>(role, HttpStatus.OK);
+    return new ResponseEntity<>(roleService.getAll(), HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
