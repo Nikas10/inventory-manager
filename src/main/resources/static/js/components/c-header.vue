@@ -20,7 +20,7 @@
       </b-navbar-nav>
 
       <b-navbar-nav class="ml-auto" v-else>
-        <b-nav-item to="signin">Sign In</b-nav-item>
+        <b-nav-item to="/signin">Sign In</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
