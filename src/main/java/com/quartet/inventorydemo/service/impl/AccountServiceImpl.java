@@ -91,12 +91,35 @@ public class AccountServiceImpl implements AccountService {
         accountOptional.orElseThrow(
             () -> new ResourceNotFoundException("Account with login: " + login + " not found"));
 
-    accountToModify.setEmail(accountDTO.getEmail());
-    accountToModify.setFirstName(accountDTO.getFirstName());
-    accountToModify.setLastName(accountDTO.getLastName());
-    accountToModify.setMiddleName(accountDTO.getMiddleName());
-    accountToModify.setPassword(accountDTO.getPassword());
-    accountToModify.setRole(accountDTO.getRole());
+    if ((accountDTO.getEmail() != null) &&
+        (!accountDTO.getEmail().equals(""))) {
+      accountToModify.setEmail(accountDTO.getEmail());
+    }
+
+    if ((accountDTO.getFirstName() != null) &&
+        (!accountDTO.getFirstName().equals(""))) {
+      accountToModify.setFirstName(accountDTO.getFirstName());
+    }
+
+    if ((accountDTO.getLastName() != null) &&
+        (!accountDTO.getLastName().equals(""))) {
+      accountToModify.setLastName(accountDTO.getLastName());
+    }
+
+    if ((accountDTO.getMiddleName() != null) &&
+        (!accountDTO.getMiddleName().equals(""))) {
+      accountToModify.setMiddleName(accountDTO.getMiddleName());
+    }
+
+    if ((accountDTO.getPassword() != null) &&
+        (!accountDTO.getPassword().equals(""))) {
+      accountToModify.setPassword(accountDTO.getPassword());
+    }
+
+    if ((accountDTO.getRole() != null) &&
+        (!accountDTO.getRole().equals(""))) {
+      accountToModify.setRole(accountDTO.getRole());
+    }
 
     return accountRepository.saveAndFlush(accountToModify);
   }

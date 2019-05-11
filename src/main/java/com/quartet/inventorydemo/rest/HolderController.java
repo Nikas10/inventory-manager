@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/holder")
+@RequestMapping("api/holders")
 @Validated
 public class HolderController {
 
@@ -63,7 +63,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> createInventoryHolder(@RequestBody HolderDTO holderDTO) {
     String description = holderDTO.getDescription();
     String name = holderDTO.getName();
@@ -94,7 +94,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/role", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/roles/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToRoles(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -105,7 +105,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/role", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}/roles/", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateInventoryHolderLinksToRoles(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -126,7 +126,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/account", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/accounts/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToAccounts(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -137,7 +137,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/item", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/items/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToHoldedItems(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -148,7 +148,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/item", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}/items/", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateInventoryHolderLinksToHoldedItems(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -165,17 +165,6 @@ public class HolderController {
         holderService.update(
             uuid, holderWithInventoryItems.getDescription(), holderWithInventoryItems.getName());
     return Response.createResponse(update);
-  }
-
-  @RequestMapping(value = "/holderIds", method = RequestMethod.GET)
-  public ResponseEntity<?> getHoldersList(
-      @RequestParam List<String> stringUUIDs) {
-    Set<UUID> uuids = new HashSet<>();
-    for (String currentID: stringUUIDs) {
-      uuids.add(UUID.fromString(currentID));
-    }
-    Collection<Holder> specifiedHolders = holderService.getByHolderIDs(uuids);
-    return new ResponseEntity<>(specifiedHolders, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)

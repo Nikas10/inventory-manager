@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/requirement")
+@RequestMapping("api/requirements")
 public class RequirementController {
 
   private RequirementService requirementService;
@@ -30,19 +30,19 @@ public class RequirementController {
     this.requirementService = requirementService;
   }
 
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> createRequirement(@RequestBody Requirement requirement) {
     Requirement newRequirement = requirementService.add(requirement);
 
     return new ResponseEntity<>(newRequirement, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAllRequirements() {
     return new ResponseEntity<>(requirementService.getAll(), HttpStatus.OK);
   }
 
-  @RequestMapping(value = "{id}", method = RequestMethod.GET)
+  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
   public ResponseEntity<?> getRequirement(@PathVariable("id") String stringId) {
     Optional<Requirement> newRequirement = requirementService
         .getByRequirementID(UUID.fromString(stringId));
@@ -53,7 +53,7 @@ public class RequirementController {
     }
   }
 
-  @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteRequirement(@PathVariable("id") String stringId) {
     UUID id = UUID.fromString(stringId);
     requirementService.remove(id);
@@ -61,7 +61,7 @@ public class RequirementController {
     return new ResponseEntity(HttpStatus.OK);
   }
 
-  @RequestMapping(value = "{id}", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRequirement(
       @PathVariable("id") String stringId, @RequestBody RequirementDTO requirementDTO) {
     UUID id = UUID.fromString(stringId);

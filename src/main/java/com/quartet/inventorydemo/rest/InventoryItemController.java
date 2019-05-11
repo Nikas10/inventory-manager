@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/inventory")
+@RequestMapping("api/inventoryItems")
 @Validated
 public class InventoryItemController {
 
@@ -51,7 +51,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{holder}/{uuid}", method = RequestMethod.GET)
+  @RequestMapping(value = "/positionId/{uuid}/holderId/{holder}", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryItemByHolder(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId) {
@@ -65,7 +65,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{holder}", method = RequestMethod.GET)
+  @RequestMapping(value = "/holderId/{holder}", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryItemsByHolder(
       @PathVariable("holder") @UUIDString @Valid String holderId) {
     UUID uuid = UUID.fromString(holderId);
@@ -81,7 +81,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/storage/{uuid}/{amount}", method = RequestMethod.POST)
+  @RequestMapping(value = "/storage/positionId/{uuid}/amount/{amount}", method = RequestMethod.POST)
   public ResponseEntity<?> addInventoryItemToStorage(
       @PathVariable("uuid") @UUIDString @Valid String positionId,
       @PathVariable("amount") Integer amount) {
@@ -91,7 +91,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/storage/{uuid}/{amount}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/storage/positionId/{uuid}/amount/{amount}", method = RequestMethod.DELETE)
   public ResponseEntity<?> removeInventoryItemFromStorage(
       @PathVariable("uuid") @UUIDString @Valid String positionId,
       @PathVariable("amount") Integer amount) {
@@ -101,7 +101,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{holder}/{uuid}/{amount}", method = RequestMethod.PUT)
+  @RequestMapping(value = "positionId/{uuid}/holderId/{holder}/amount/{amount}", method = RequestMethod.PUT)
   public ResponseEntity<?> moveInventoryItemToStorage(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId,
@@ -113,7 +113,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/storage/{holder}/{uuid}/{amount}", method = RequestMethod.PUT)
+  @RequestMapping(value = "storage/positionId/{uuid}/holderId/{holder}/amount/{amount}", method = RequestMethod.PUT)
   public ResponseEntity<?> moveInventoryItemFromStorage(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId,
