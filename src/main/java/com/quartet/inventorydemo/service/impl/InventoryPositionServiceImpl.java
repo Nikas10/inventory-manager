@@ -3,15 +3,14 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
-import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
-import com.quartet.inventorydemo.repository.InventoryItemRepository;
 import com.quartet.inventorydemo.repository.InventoryPositionRepository;
+import com.quartet.inventorydemo.service.HolderService;
+import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -33,20 +33,17 @@ import org.springframework.validation.annotation.Validated;
 public class InventoryPositionServiceImpl implements InventoryPositionService {
 
   private final InventoryPositionRepository positionRepo;
-  private final InventoryItemRepository inventoryItemRepo;
-  private final InventoryHolderRepository inventoryHolderRepo;
-  private final Bundle_InventoryPositionRepository Bundle_InventoryPositionRepo;
+  private final InventoryItemService inventoryItemService;
+  private final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
 
   @Autowired
   public InventoryPositionServiceImpl(
       @Qualifier("InventoryPositionRepository") final InventoryPositionRepository positionRepo,
-      @Qualifier("InventoryItemRepository") final InventoryItemRepository inventoryItemRepo,
-      @Qualifier("InventoryHolderRepository") final InventoryHolderRepository inventoryHolderRepo,
-      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository Bundle_InventoryPositionRepo) {
+      @Lazy @Qualifier("InventoryItemService") final InventoryItemService inventoryItemService,
+      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
     this.positionRepo = positionRepo;
-    this.inventoryItemRepo = inventoryItemRepo;
-    this.inventoryHolderRepo = inventoryHolderRepo;
-    this.Bundle_InventoryPositionRepo = Bundle_InventoryPositionRepo;
+    this.inventoryItemService = inventoryItemService;
+    this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
   }
 
   @Override
@@ -119,10 +116,10 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     Optional<InventoryPosition> itemsWithSelectedPosition = positionRepo.findById(position.getId());
 
     List<Bundle_InventoryPosition> bundlesWithThisPosition =
-        Bundle_InventoryPositionRepo.findByInventoryPosition(position);
+        bundle_InventoryPositionRepo.findByInventoryPosition(position);
 
     for (Bundle_InventoryPosition bundle : bundlesWithThisPosition) {
-      Bundle_InventoryPositionRepo.delete(bundle);
+      bundle_InventoryPositionRepo.delete(bundle);
     }
 
     if (itemsWithSelectedPosition == null) {
@@ -133,33 +130,17 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
 
   private void removeBundle(InventoryPosition position) {
     // check if everyone in storage else throw exception
-    Set<Bundle_InventoryPosition> bundleInventoryPositions = position.getBundleInventoryPositions();
-    List<InventoryItem> allItems = new ArrayList<>();
-    Holder stockHolder = inventoryHolderRepo.findByName("stock").get();
-    for (Bundle_InventoryPosition partOfBundle : bundleInventoryPositions) {
-      Integer amount = partOfBundle.getAmount();
-      InventoryPosition partOfInventoryPosition = partOfBundle.getInventoryPosition();
-      Set<InventoryItem> currentPositionItems = partOfInventoryPosition.getInventoryItems();
-      boolean existsInStorage = false;
-      for (InventoryItem inventoryItem : currentPositionItems) {
-        Holder inventoryHolder = inventoryItem.getHolder();
-        if (stockHolder.equals(inventoryHolder)) {
-          existsInStorage = true;
-          inventoryItem.setAmount(amount + inventoryItem.getAmount());
-          break;
-        }
-      }
-      if (!existsInStorage) {
 
-        InventoryItem inventoryItem =
-            new InventoryItem(stockHolder, partOfInventoryPosition, "On stock", amount);
-        // repo inventory item save this shit
-        allItems.add(inventoryItem);
-      }
+    Optional<InventoryItem> optionalBundleItem = inventoryItemService.getByInventoryPositionIdInStorage(position.getId());
+    InventoryItem bundleItem = optionalBundleItem.orElseThrow(() -> new ResourceNotFoundException("Bundle with id: "
+        + position.getId() + " does not exist as item."));
+    inventoryItemService.unpackBundlesInStorage(position.getId(), bundleItem.getAmount());
+
+    for (Bundle_InventoryPosition currentRecord: position.getBundleInventoryPositions()) {
+      bundle_InventoryPositionRepo.delete(currentRecord);
     }
-    inventoryItemRepo.saveAll(allItems);
-    positionRepo.delete(
-        position); // если нет каскадного удаления, то удалить отдельно inventory item и хуйню
+
+    positionRepo.delete(position);
   }
 
   private boolean isExists(@NotNull @Valid InventoryPosition position) {

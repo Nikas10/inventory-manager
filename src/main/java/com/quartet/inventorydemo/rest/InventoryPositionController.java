@@ -2,13 +2,18 @@ package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.RequirementValue;
+import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.service.RequirementValueService;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -26,13 +31,16 @@ public class InventoryPositionController {
   private InventoryPositionService positionService;
   private RequirementValueService requirementValueService;
   private RequirementService requirementService;
+  private Bundle_InventoryPositionService bundle_inventoryPositionService;
 
   @Autowired
   public InventoryPositionController(
       @Qualifier("InventoryPositionService") final InventoryPositionService positionService,
       @Qualifier("RequirementService") final RequirementService requirementService,
-      @Qualifier("RequirementValueService") final RequirementValueService requirementValueService) {
-
+      @Qualifier("RequirementValueService") final RequirementValueService requirementValueService,
+      @Qualifier("Bundle_InventoryPositionService")
+      final Bundle_InventoryPositionService bundle_inventoryPositionService) {
+    this.bundle_inventoryPositionService = bundle_inventoryPositionService;
     this.positionService = positionService;
     this.requirementService = requirementService;
     this.requirementValueService = requirementValueService;
@@ -45,6 +53,20 @@ public class InventoryPositionController {
     optionalPosition.orElseThrow(
         () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
     return new ResponseEntity<>(optionalPosition.get(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "", method = RequestMethod.GET)
+  public ResponseEntity<?> getAll() {
+    return new ResponseEntity<>(positionService.getAll(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/isbundle/{uuid}", method = RequestMethod.GET)
+  public ResponseEntity<?> isBundle(@PathVariable("uuid") String stringUuid) {
+    UUID id = UUID.fromString(stringUuid);
+    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(id);
+    optionalPosition.orElseThrow(
+        () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
+    return new ResponseEntity<>(optionalPosition.get().isBundle(), HttpStatus.OK);
   }
 
   @RequestMapping(value = "", method = RequestMethod.POST)
@@ -115,4 +137,57 @@ public class InventoryPositionController {
     return new ResponseEntity<>(
         requirementValueService.getRequirementsValues(positionID), HttpStatus.OK);
   }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}/{partId}/{value}",
+      method = RequestMethod.POST)
+  public ResponseEntity<?> updateOrCreateBundle(
+      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("partId") String stringRequirementID,
+      @PathVariable("value") Integer value) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    UUID partId = UUID.fromString(stringRequirementID);
+    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
+    Optional<InventoryPosition> partOfBundle = positionService.getByPositionID(partId);
+    if (!bundle.isPresent() || !partOfBundle.isPresent()) {
+      throw new ResourceNotFoundException("Requested bundle or position are not found!");
+    } else {
+      Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(partOfBundle.get(), bundle.get(), value);
+      return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+    }
+  }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}/{partId}",
+      method = RequestMethod.GET)
+  public ResponseEntity<?> getBundleValue(
+      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("partId") String stringRequirementID) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    UUID partId = UUID.fromString(stringRequirementID);
+    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
+    Optional<InventoryPosition> partOfBundle = positionService.getByPositionID(partId);
+    if (!bundle.isPresent() || !partOfBundle.isPresent()) {
+      throw new ResourceNotFoundException("Requested bundle or position are not found!");
+    } else {
+      Integer bundlePartAmount = bundle_inventoryPositionService.getAmount(bundle.get(), partOfBundle.get());
+      return new ResponseEntity<>(bundlePartAmount, HttpStatus.OK);
+    }
+  }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}",
+      method = RequestMethod.GET)
+  public ResponseEntity<?> getBundleFirstLevelContents (
+      @PathVariable("bundleId") String stringPositionID) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
+    if (!bundle.isPresent()) {
+      throw new ResourceNotFoundException("Requested bundle is not found!");
+    } else {
+      List<UUID> result = bundle_inventoryPositionService.getBundleFirstLevelContents(bundle.get());
+      return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+  }
+
 }
