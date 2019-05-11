@@ -57,11 +57,7 @@ public class InventoryPositionController {
 
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ResponseEntity<?> getAll() {
-    Set<UUID> positionList = positionService.getAll()
-        .parallelStream()
-        .map(InventoryPosition::getId)
-        .collect(Collectors.toSet());
-    return new ResponseEntity<>(positionList, HttpStatus.OK);
+    return new ResponseEntity<>(positionService.getAll(), HttpStatus.OK);
   }
 
   @RequestMapping(value = "/isbundle/{uuid}", method = RequestMethod.GET)

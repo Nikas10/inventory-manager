@@ -39,11 +39,7 @@ public class RequirementController {
 
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ResponseEntity<?> getAllRequirements() {
-    Set<UUID> result = requirementService.getAll()
-        .parallelStream()
-        .map(Requirement::getId)
-        .collect(Collectors.toSet());
-    return new ResponseEntity<>(result, HttpStatus.OK);
+    return new ResponseEntity<>(requirementService.getAll(), HttpStatus.OK);
   }
 
   @RequestMapping(value = "{id}", method = RequestMethod.GET)
