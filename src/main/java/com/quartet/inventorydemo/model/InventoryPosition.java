@@ -83,7 +83,7 @@ public class InventoryPosition extends History {
   private Set<RequirementValue> requirementValues;
 
   @ApiModelProperty(position = 3, notes = "Bundle Indicator")
-  @NotNull(message = "Description must be not null")
+  @NotNull(message = "Indicator must be not null")
   @Column(name = "bundle", nullable = false)
   private Boolean bundle;
 
