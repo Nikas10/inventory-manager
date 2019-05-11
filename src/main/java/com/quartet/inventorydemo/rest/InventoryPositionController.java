@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import static java.util.Objects.isNull;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
@@ -11,9 +12,7 @@ import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.service.RequirementValueService;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -82,8 +81,24 @@ public class InventoryPositionController {
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
     String description = positionDTO.getDescription();
     String name = positionDTO.getName();
-
     InventoryPosition newPosition = positionService.add(name, description);
+    return new ResponseEntity<>(newPosition, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
+  public ResponseEntity<?> update(@PathVariable("uuid") String stringUuid,
+      @RequestBody InventoryPositionDTO positionDTO) {
+    UUID id = UUID.fromString(stringUuid);
+    InventoryPosition updatedPosition;
+    if (!isNull(positionDTO.getBundle())) {
+      updatedPosition = positionService.setBundle(id, positionDTO.getBundle());
+    } else {
+      updatedPosition = positionService.getByPositionID(id).orElseThrow(
+          () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
+    }
+    updatedPosition.setDescription(positionDTO.getDescription());
+    updatedPosition.setName(positionDTO.getName());
+    InventoryPosition newPosition = positionService.update(id, updatedPosition);
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
