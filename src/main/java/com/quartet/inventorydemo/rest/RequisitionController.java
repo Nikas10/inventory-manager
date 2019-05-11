@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/requisition")
+@RequestMapping("api/requisitions")
 public class RequisitionController {
 
   private final RequisitionService requisitionService;
@@ -39,7 +39,7 @@ public class RequisitionController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> createReuisition(@RequestBody RequisitionDTO requisitionDTO) {
 
     String login = requisitionDTO.getLogin();
@@ -56,7 +56,7 @@ public class RequisitionController {
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAll() {
     Collection<Requisition> requisitions = requisitionService.getAll();
     return new ResponseEntity<>(requisitions, HttpStatus.OK);

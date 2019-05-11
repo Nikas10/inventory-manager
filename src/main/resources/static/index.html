@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8"/>
+
+  <link href="css/libs/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+  <link href="css/libs/bootstrap-vue.min.css" rel="stylesheet" type="text/css"/>
+
+  <!--Release-->
+  <!--
+      <script src="js/libs/vue.min.js"></script>
+      <script src="js/libs/bootstrap-vue.min.js"></script>
+      <script src="js/libs/axios.min.js"></script>
+  -->
+
+  <!--Debug-->
+  <script src="js/libs/vue.js"></script>
+  <script src="js/libs/bootstrap-vue.js"></script>
+  <script src="js/libs/axios.js"></script>
+
+  <script src="js/libs/vue-router.min.js"></script>
+  <script src="js/libs/http-vue-loader.js"></script>
+</head>
+
+<body>
+<div id="app">
+  <router-view :storage="storage"></router-view>
+</div>
+
+<script src="js/router.js"></script>
+
+<script>
+// TODO Переработать вход/выход пользователя, возможно вынести в подсистему
+
+var baseURL = "http://127.0.0.1:8080/";
+var clientId = "web";
+var clientSecret = "inventory";
+
+Vue.prototype.$server = axios.create({
+  baseURL: baseURL + "api"
+});
+
+window.app = new Vue({
+  router,
+  el: "#app",
+  data: function() {
+    return {
+      storage: {
+        user: null,
+        pages: [
+          {
+            id: 0,
+            title: "About",
+            access: "User",
+            link: "/about"
+          },
+          {
+            id: 1,
+            title: "Holders",
+            access: "Staff",
+            link: "/holders/"
+          },
+          {
+            id: 2,
+            title: "Items",
+            access: "User",
+            link: "/items/"
+          },
+          {
+            id: 3,
+            title: "Requirements",
+            access: "Staff",
+            link: "/requirements/"
+          },
+          {
+            id: 4,
+            title: "Requisitions",
+            access: "User",
+            link: "/requisitions/"
+          },
+          {
+            id: 5,
+            title: "Roles",
+            access: "User",
+            link: "/roles/"
+          },
+          {
+            id: 6,
+            title: "Signin",
+            access: "User",
+            link: "/signin"
+          },
+          {
+            id: 7,
+            title: "Signup",
+            access: "User",
+            link: "/Signup"
+          },
+          {
+            id: 8,
+            title: "Users",
+            access: "Staff",
+            link: "/users/"
+          }
+        ]
+      }
+    };
+  },
+  methods: {
+    setToken(token) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+    },
+    unsetToken() {
+      delete axios.defaults.headers.common["Authorization"];
+    },
+    loadUser() {
+      var self = this;
+      var promiseLoadUser = this.$server
+        .get("/accounts/me")
+        .then(function(response) {
+          self.storage.user = {
+            login: response.data.login,
+            email: response.data.email,
+            firstName: response.data.firstName,
+            middleName: response.data.middleName,
+            lastName: response.data.lastName,
+            role: response.data.role
+          };
+          // TODO Добавить перенаправление на другую страницу
+        });
+      return promiseLoadUser;
+    },
+    auth(login, password) {
+      var self = this;
+      return axios
+        .post(
+          baseURL +
+            "oauth/token?client_id=" +
+            clientId +
+            "&client_secret=" +
+            clientSecret +
+            "&grant_type=password&username=" +
+            login +
+            "&password=" +
+            password
+        )
+        .then(function(response) {
+          var token = response.data;
+          localStorage.token = JSON.stringify(token);
+
+          //setCookie("auth", token.access_token, token.expires_in);
+
+          self.setToken(token.access_token);
+
+          self.loadUser();
+        });
+    },
+    logout() {
+      this.storage.user = null;
+      this.unsetToken();
+      localStorage.removeItem("token");
+      //eraseCookie("auth");
+    }
+  },
+  mounted() {
+    let tokenString = localStorage.getItem("token");
+    if (tokenString) {
+      let token = JSON.parse(tokenString);
+      console.log(token);
+      this.setToken(token.access_token);
+      this.loadUser();
+    }
+  }
+});
+</script>
+</body>
+
+</html>

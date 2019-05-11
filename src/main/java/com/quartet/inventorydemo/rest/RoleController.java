@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/role")
+@RequestMapping("api/roles")
 @Validated
 public class RoleController {
 
@@ -44,13 +44,13 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getRoles() {
     return new ResponseEntity<>(roleService.getAll(), HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> createRole(@RequestBody Role role) {
     Role newRole = roleService.add(role);
     return new ResponseEntity<>(newRole, HttpStatus.OK);
@@ -74,7 +74,7 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/holder", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/holders/", method = RequestMethod.GET)
   public ResponseEntity<?> getRoleLinksToInventoryHolders(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -86,7 +86,7 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/position", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/positions/", method = RequestMethod.GET)
   public ResponseEntity<?> getRoleLinksToInventoryPosition(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -98,7 +98,7 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/position", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}/positions/", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRoleLinksToInventoryPosition(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {

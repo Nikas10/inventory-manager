@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
@@ -83,21 +84,43 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public Account update(@NotBlank @Valid String login, @NotNull @Valid Account account) {
+  public Account update(@NotBlank @Valid String login, @NotNull @Valid AccountDTO accountDTO) {
     // getting existing resource
     Optional<Account> accountOptional = getByLogin(login);
     Account accountToModify =
         accountOptional.orElseThrow(
             () -> new ResourceNotFoundException("Account with login: " + login + " not found"));
 
-    // checking if changes may lead to unnecessary exceptions
-    if (isExists(account)) {
-      throw new ResourceAlreadyExistsException(
-          "Account with same login or email already exists. Can not make changes");
+    if ((accountDTO.getEmail() != null) &&
+        (!accountDTO.getEmail().equals(""))) {
+      accountToModify.setEmail(accountDTO.getEmail());
     }
 
-    // changing
-    BeanUtils.copyProperties(account, accountToModify, "id", "holders", "requisitions");
+    if ((accountDTO.getFirstName() != null) &&
+        (!accountDTO.getFirstName().equals(""))) {
+      accountToModify.setFirstName(accountDTO.getFirstName());
+    }
+
+    if ((accountDTO.getLastName() != null) &&
+        (!accountDTO.getLastName().equals(""))) {
+      accountToModify.setLastName(accountDTO.getLastName());
+    }
+
+    if ((accountDTO.getMiddleName() != null) &&
+        (!accountDTO.getMiddleName().equals(""))) {
+      accountToModify.setMiddleName(accountDTO.getMiddleName());
+    }
+
+    if ((accountDTO.getPassword() != null) &&
+        (!accountDTO.getPassword().equals(""))) {
+      accountToModify.setPassword(accountDTO.getPassword());
+    }
+
+    if ((accountDTO.getRole() != null) &&
+        (!accountDTO.getRole().equals(""))) {
+      accountToModify.setRole(accountDTO.getRole());
+    }
+
     return accountRepository.saveAndFlush(accountToModify);
   }
 

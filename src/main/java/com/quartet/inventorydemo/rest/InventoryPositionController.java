@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/position")
+@RequestMapping("api/positions")
 public class InventoryPositionController {
 
   private InventoryPositionService positionService;
@@ -54,7 +54,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(optionalPosition.get(), HttpStatus.OK);
   }
 
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAll() {
     return new ResponseEntity<>(positionService.getAll(), HttpStatus.OK);
   }
@@ -77,7 +77,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
     String description = positionDTO.getDescription();
     String name = positionDTO.getName();
@@ -85,7 +85,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "{uuid}", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
   public ResponseEntity<?> update(@PathVariable("uuid") String stringUuid,
       @RequestBody InventoryPositionDTO positionDTO) {
     UUID id = UUID.fromString(stringUuid);
@@ -102,7 +102,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "{uuid}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
   public ResponseEntity<?> delete(@PathVariable("uuid") String stringUuid) {
     UUID id = UUID.fromString(stringUuid);
     Optional<InventoryPosition> byPositionID = positionService.getByPositionID(id);
@@ -114,7 +114,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "{positionID}/requirement/{requirementID}/{value}",
+      value = "/{positionId}/requirements/{requirementId}/requirement_value/{value}",
       method = RequestMethod.POST)
   public ResponseEntity<?> createRequirementValue(
       @PathVariable("positionID") String stringPositionID,
@@ -129,7 +129,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "{positionID}/requirement/{requirementID}/{value}",
+      value = "/{positionId}/requirements/{requirementId}/requirement_value/{value}",
       method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRequirementValue(
       @PathVariable("positionID") String stringPositionID,
@@ -143,7 +143,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(newProperty, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "{positionID}/requirement/{requirementID}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/{positionId}/requirements/{requirementId}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteRequirementValue(
       @PathVariable("positionID") String stringPositionID,
       @PathVariable("requirementID") String stringRequirementID) {
@@ -155,7 +155,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @RequestMapping(value = "{positionID}/requirements", method = RequestMethod.GET)
+  @RequestMapping(value = "/{positionId}/requirements/", method = RequestMethod.GET)
   public ResponseEntity<?> getRequirements(@PathVariable("positionID") String stringPositionID) {
     UUID positionID = UUID.fromString(stringPositionID);
     return new ResponseEntity<>(
@@ -163,7 +163,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/{partId}/{value}",
+      value = "bundles/{bundleId}/parts/{partId}/value/{value}",
       method = RequestMethod.POST)
   public ResponseEntity<?> updateOrCreateBundle(
       @PathVariable("bundleId") String stringPositionID,
@@ -182,7 +182,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/{partId}",
+      value = "bundles/{bundleId}/parts/{partId}/value",
       method = RequestMethod.GET)
   public ResponseEntity<?> getBundleValue(
       @PathVariable("bundleId") String stringPositionID,
@@ -200,7 +200,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}",
+      value = "bundles/{bundleId}/parts/",
       method = RequestMethod.GET)
   public ResponseEntity<?> getBundleFirstLevelContents (
       @PathVariable("bundleId") String stringPositionID) {

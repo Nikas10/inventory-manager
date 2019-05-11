@@ -1,10 +1,15 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.service.AccountService;
+import com.quartet.inventorydemo.util.UUIDString;
 import java.security.Principal;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -23,10 +28,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/account")
+@RequestMapping("api/accounts")
 @Validated
 public class AccountController {
 
@@ -59,7 +65,7 @@ public class AccountController {
    * @return ResponceEntity containing user Account Entity
    */
   @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @RequestMapping(value = "/me", method = RequestMethod.GET)
   public ResponseEntity<?> getAccount(@NotNull @Valid Principal principal) {
     Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
     accountOptional.orElseThrow(
@@ -76,7 +82,7 @@ public class AccountController {
    * @return user's account
    */
   @PreAuthorize("hasAuthority('ADMIN')")
-  @RequestMapping(value = "find_user/mail/{mail}", method = RequestMethod.GET)
+  @RequestMapping(value = "/mail/{mail}", method = RequestMethod.GET)
   public ResponseEntity<?> getAccountByMail(@PathVariable("mail") @Email @Valid String email) {
     Optional<Account> accountOptional = accountService.getByEmail(email);
     accountOptional.orElseThrow(
@@ -87,7 +93,7 @@ public class AccountController {
   /**
    * User register method Admin Accounts is not available to register here
    */
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/user", method = RequestMethod.POST)
   public ResponseEntity<?> registerNewAccount(@RequestBody Account account) {
     // acc manage logic:
     account.setRole("user");
@@ -99,7 +105,7 @@ public class AccountController {
   /**
    * Admin register method Admin Accounts are available to register here
    */
-  @RequestMapping(value = "/admin/register", method = RequestMethod.POST)
+  @RequestMapping(value = "/admin", method = RequestMethod.POST)
   public ResponseEntity<?> registerAdmin(@RequestBody Account account) {
     // acc manage logic:
     account.setRole("admin");
@@ -112,7 +118,7 @@ public class AccountController {
    * Staff register method Staff Accounts are available to register here
    */
   @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/staff/register", method = RequestMethod.POST)
+  @RequestMapping(value = "/staff", method = RequestMethod.POST)
   public ResponseEntity<?> registerStaff(@RequestBody Account account) {
     // acc manage logic:
     account.setRole("staff");
@@ -122,7 +128,7 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holder", method = RequestMethod.GET)
+  @RequestMapping(value = "/{login}/holders/", method = RequestMethod.GET)
   public ResponseEntity<?> getAccountLinksToHolders(
       @PathVariable("login") @NotBlank @Valid String login) {
     Optional<Account> accountOptional = accountService.getByLogin(login);
@@ -133,7 +139,7 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/holder", method = RequestMethod.GET)
+  @RequestMapping(value = "/me/holders/", method = RequestMethod.GET)
   public ResponseEntity<?> getAccountLinksToHolders(@NotNull @Valid Principal principal) {
     Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
     Account accountWithHolders =
@@ -145,7 +151,7 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holder", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{login}/holders/", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateInventoryHolderLinksToAccounts(
       @PathVariable("login") @NotBlank @Valid String login,
       @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -166,7 +172,7 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/requisition", method = RequestMethod.GET)
+  @RequestMapping(value = "/{login}/requisitions/", method = RequestMethod.GET)
   public ResponseEntity<?> getAccountLinksToRequisitions(
       @PathVariable("login") @NotBlank @Valid String login) {
     Optional<Account> accountOptional = accountService.getByLogin(login);
@@ -177,7 +183,7 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/requisition", method = RequestMethod.GET)
+  @RequestMapping(value = "/me/requisitions/", method = RequestMethod.GET)
   public ResponseEntity<?> getAccountLinksToRequisitions(@NotNull @Valid Principal principal) {
     Optional<Account> accountOptional = accountService.getByLogin(principal.getName());
     Account accountWithRequisitions =
@@ -186,5 +192,27 @@ public class AccountController {
                 new ResourceNotFoundException(
                     "Account with login: " + principal.getName() + " not found"));
     return new ResponseEntity<>(accountWithRequisitions.getRequisitions(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{login}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> deleteAccount(
+      @PathVariable("login") @Valid String login) {
+    accountService.remove(login);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @RequestMapping(value = "/{login}", method = RequestMethod.PATCH)
+  public ResponseEntity<?> updateAccount(
+      @PathVariable("login") @Valid String login, @RequestBody AccountDTO accountDTO) {
+    if (accountDTO.getPassword() != null) {
+      accountDTO.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+    }
+    accountService.update(login, accountDTO);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @RequestMapping(value = "/", method = RequestMethod.GET)
+  public ResponseEntity<?> getAllAccounts() {
+    return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
   }
 }

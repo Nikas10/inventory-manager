@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.rest;
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.service.AccountService;
@@ -10,6 +11,9 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.util.Response;
 import com.quartet.inventorydemo.util.UUIDString;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -23,10 +27,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/holder")
+@RequestMapping("api/holders")
 @Validated
 public class HolderController {
 
@@ -58,7 +63,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "", method = RequestMethod.POST)
+  @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> createInventoryHolder(@RequestBody HolderDTO holderDTO) {
     String description = holderDTO.getDescription();
     String name = holderDTO.getName();
@@ -89,7 +94,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/role", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/roles/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToRoles(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -100,7 +105,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/role", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}/roles/", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateInventoryHolderLinksToRoles(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -121,7 +126,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/account", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/accounts/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToAccounts(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -132,7 +137,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/{uuid}/item", method = RequestMethod.GET)
+  @RequestMapping(value = "/{uuid}/items/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToHoldedItems(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
     UUID uuid = UUID.fromString(stringUuid);
@@ -143,7 +148,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/item", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}/items/", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateInventoryHolderLinksToHoldedItems(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
@@ -160,5 +165,10 @@ public class HolderController {
         holderService.update(
             uuid, holderWithInventoryItems.getDescription(), holderWithInventoryItems.getName());
     return Response.createResponse(update);
+  }
+
+  @RequestMapping(value = "/", method = RequestMethod.GET)
+  public ResponseEntity<?> getAllHolders() {
+    return new ResponseEntity<>(holderService.getAll(), HttpStatus.OK);
   }
 }
