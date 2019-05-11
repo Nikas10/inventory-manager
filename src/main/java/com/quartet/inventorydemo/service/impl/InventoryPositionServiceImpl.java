@@ -112,6 +112,20 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     }
   }
 
+  @Override
+  public InventoryPosition setBundle(@NotNull @Valid UUID id, @NotNull @Valid Boolean value) {
+    InventoryPosition position = getByPositionID(id).orElseThrow(
+      () -> new ResourceNotFoundException("Position with id: " + id + " not found"));
+    if (position.isBundle() && !value) {
+      if (position.getBundleInventoryPositions().isEmpty())
+        position.setBundle(value);
+      else throw new IllegalStateException("Bundle has assigned items!");
+    } else {
+      position.setBundle(value);
+    }
+    return position;
+  }
+
   private void removeInventoryPosition(InventoryPosition position) {
     Optional<InventoryPosition> itemsWithSelectedPosition = positionRepo.findById(position.getId());
 

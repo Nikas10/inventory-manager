@@ -1,10 +1,13 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
+import com.quartet.inventorydemo.service.InventoryPositionService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -21,11 +24,14 @@ import org.springframework.validation.annotation.Validated;
 public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPositionService {
 
   private final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
+  private final InventoryPositionService positionService;
 
   @Autowired
   public Bundle_InventoryPositionServiceImpl(
-      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo) {
+      @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo,
+      @Qualifier("InventoryPositionService") final InventoryPositionService positionService) {
     this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
+    this.positionService = positionService;
   }
 
   @Override
@@ -55,11 +61,13 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
   }
 
   @Override
-  public List<UUID> getBundleFirstLevelContents(@NotNull @Valid InventoryPosition bundle) {
-    return bundle_InventoryPositionRepo.findByBundlePosition(bundle)
+  public List<InventoryPosition> getBundleFirstLevelContents(@NotNull @Valid UUID bundleId) {
+    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
+    InventoryPosition result = bundle.orElseThrow(
+        () -> new ResourceNotFoundException("Requested bundle is not found!"));
+    return result.getBundleInventoryPositions()
         .parallelStream()
         .map(Bundle_InventoryPosition::getInventoryPosition)
-        .map(InventoryPosition::getId)
         .collect(Collectors.toList());
   }
 }
