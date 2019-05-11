@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import java.util.Collection;
 import java.util.Optional;
@@ -19,9 +20,9 @@ public interface InventoryPositionService {
 
   Collection<InventoryPosition> getByPositionIDs(@NotNull @Valid Set<UUID> positionIDs);
 
-  InventoryPosition add(@NotNull @Valid String name, @NotNull @Valid String description);
+  InventoryPosition add(@NotBlank @Valid String name, @NotNull @Valid String description, boolean isBundle);
 
-  InventoryPosition update(@NotNull @Valid UUID id, @NotNull @Valid InventoryPosition position);
+  InventoryPosition update(@NotNull @Valid UUID id, @NotNull @Valid InventoryPositionDTO positionDTO);
 
   void remove(@NotNull @Valid UUID id);
 

@@ -191,7 +191,7 @@ public class InventoryItemServiceImpl implements InventoryItemService {
         bundleInventoryPositionId);
     Set<Bundle_InventoryPosition> partsOfBundleInventoryPosition = bundleInventoryPosition
         .getBundleInventoryPositions();
-    if (partsOfBundleInventoryPosition.isEmpty()) {
+    if (!bundleInventoryPosition.isBundle()) {
       throw new NotBundleException("Trying to pack not a bundle inventory position");
     }
 
@@ -253,7 +253,7 @@ public class InventoryItemServiceImpl implements InventoryItemService {
         bundleInventoryPositionId);
     Set<Bundle_InventoryPosition> partsOfBundleInventoryPosition = bundleInventoryPosition
         .getBundleInventoryPositions();
-    if (partsOfBundleInventoryPosition.isEmpty()) {
+    if (!bundleInventoryPosition.isBundle()) {
       throw new NotBundleException("Trying to unpack not a bundle inventory position");
     }
     InventoryItem bundleInStorageToUnpack = getByInventoryPositionIdInStorage(

@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
@@ -67,7 +68,7 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
   }
 
   @Override
-  public InventoryPosition add(@NotNull @Valid String name, @NotNull @Valid String description) {
+  public InventoryPosition add(@NotBlank @Valid String name, @NotNull @Valid String description, boolean isBundle) {
 
     Optional<InventoryPosition> optionalPosition = getByName(name);
 
@@ -75,25 +76,45 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
       throw new ResourceAlreadyExistsException("Position with name: " + name + " already exists");
     }
 
-    InventoryPosition newPosition = new InventoryPosition(name, description);
+    InventoryPosition newPosition = new InventoryPosition(name, description, isBundle);
     return positionRepo.saveAndFlush(newPosition);
   }
 
   @Override
   public InventoryPosition update(
-      @NotNull @Valid UUID id, @NotNull @Valid InventoryPosition position) {
-    Optional<InventoryPosition> holderOptional = getByPositionID(id);
-    if (isExists(position)) {
-      throw new ResourceAlreadyExistsException(
-          "Position with same name already exists. Can not make changes.");
-    }
+      @NotNull @Valid UUID id, @NotNull @Valid InventoryPositionDTO positionDTO) {
+    Optional<InventoryPosition> optionalPosition = getByPositionID(id);
 
     InventoryPosition positionToModify =
-        holderOptional.orElseThrow(
+        optionalPosition.orElseThrow(
             () -> new ResourceNotFoundException("Position with id: " + id + " not found"));
 
-    BeanUtils.copyProperties(position, positionToModify, "id", "requirementValues");
-    return positionRepo.saveAndFlush(position);
+    if ((!"".equals(positionDTO.getDescription())) &&
+        (positionDTO.getDescription() != null)) {
+      positionToModify.setDescription(positionDTO.getDescription());
+    }
+
+    if ((!"".equals(positionDTO.getName())) &&
+        (positionDTO.getName() != null)) {
+      positionToModify.setName(positionDTO.getName());
+    }
+
+    if ((!"".equals(positionDTO.getIsBundle())) &&
+        (positionDTO.getIsBundle() != null)) {
+      switch (positionDTO.getIsBundle()) {
+        case "true":
+          positionToModify.setBundle(true);
+          break;
+        case "false":
+          positionToModify.setBundle(false);
+          break;
+        default:
+          break;
+      }
+
+    }
+
+    return positionRepo.saveAndFlush(positionToModify);
   }
 
   @Override
@@ -149,10 +170,6 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
     InventoryItem bundleItem = optionalBundleItem.orElseThrow(() -> new ResourceNotFoundException("Bundle with id: "
         + position.getId() + " does not exist as item."));
     inventoryItemService.unpackBundlesInStorage(position.getId(), bundleItem.getAmount());
-
-    for (Bundle_InventoryPosition currentRecord: position.getBundleInventoryPositions()) {
-      bundle_InventoryPositionRepo.delete(currentRecord);
-    }
 
     positionRepo.delete(position);
   }
