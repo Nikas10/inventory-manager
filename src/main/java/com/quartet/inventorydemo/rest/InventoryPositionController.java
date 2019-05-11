@@ -82,8 +82,18 @@ public class InventoryPositionController {
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
     String description = positionDTO.getDescription();
     String name = positionDTO.getName();
-
     InventoryPosition newPosition = positionService.add(name, description);
+    return new ResponseEntity<>(newPosition, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "{uuid}", method = RequestMethod.PATCH)
+  public ResponseEntity<?> update(@PathVariable("uuid") String stringUuid,
+      @RequestBody InventoryPositionDTO positionDTO) {
+    UUID id = UUID.fromString(stringUuid);
+    InventoryPosition updatedPosition = positionService.setBundle(id, positionDTO.getBundle());
+    updatedPosition.setDescription(positionDTO.getDescription());
+    updatedPosition.setName(positionDTO.getName());
+    InventoryPosition newPosition = positionService.update(id, updatedPosition);
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
