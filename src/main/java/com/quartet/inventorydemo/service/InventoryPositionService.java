@@ -24,4 +24,6 @@ public interface InventoryPositionService {
   InventoryPosition update(@NotNull @Valid UUID id, @NotNull @Valid InventoryPosition position);
 
   void remove(@NotNull @Valid UUID id);
+
+  InventoryPosition setBundle(@NotNull @Valid UUID id, @NotNull Boolean value);
 }

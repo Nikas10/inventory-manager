@@ -86,7 +86,7 @@ public class ErrorHandlingControllerAdvice {
     return e.getMessage();
   }
 
-  @ExceptionHandler({ResourceNotAvailableException.class})
+  @ExceptionHandler({ResourceNotAvailableException.class, IllegalStateException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
   String onAvailabilityViolation(RuntimeException e) {

@@ -140,12 +140,6 @@ public class InventoryPosition extends History {
   }
 
   public void setBundle(Boolean bundle) {
-    if (this.bundle.equals(true) && bundle.equals(false)) {
-      if (getBundleInventoryPositions().isEmpty())
-        this.bundle = bundle;
-      else throw new IllegalStateException("Bundle has assigned items!");
-    } else {
-      this.bundle = bundle;
-    }
+    this.bundle = bundle;
   }
 }

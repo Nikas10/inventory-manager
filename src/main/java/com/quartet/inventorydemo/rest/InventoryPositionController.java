@@ -73,11 +73,8 @@ public class InventoryPositionController {
   public ResponseEntity<?> setBundle(@PathVariable("uuid") String stringUuid,
       @PathVariable("value") Boolean value) {
     UUID id = UUID.fromString(stringUuid);
-    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(id);
-    InventoryPosition newPosition = optionalPosition.orElseThrow(
-        () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
-    newPosition.setBundle(value);
-    positionService.update(id, newPosition);
+    InventoryPosition updatedPosition = positionService.setBundle(id, value);
+    positionService.update(id, updatedPosition);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
