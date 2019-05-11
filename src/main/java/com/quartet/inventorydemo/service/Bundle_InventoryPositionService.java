@@ -18,7 +18,7 @@ public interface Bundle_InventoryPositionService {
       @NotNull @Valid InventoryPosition partOfInventoryPosition,
       @NotNull @Valid Integer value);
 
-  List<UUID> getBundleFirstLevelContents(
-      @NotNull @Valid InventoryPosition bundle
+  List<InventoryPosition> getBundleFirstLevelContents(
+      @NotNull @Valid UUID bundle
   );
 }

@@ -68,9 +68,21 @@ public class InventoryPositionController {
   public ResponseEntity<?> isBundle(@PathVariable("uuid") String stringUuid) {
     UUID id = UUID.fromString(stringUuid);
     Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(id);
-    optionalPosition.orElseThrow(
+    InventoryPosition result = optionalPosition.orElseThrow(
         () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
-    return new ResponseEntity<>(optionalPosition.get().isBundle(), HttpStatus.OK);
+    return new ResponseEntity<>(result.isBundle(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/setbundle/{uuid}/{value}", method = RequestMethod.POST)
+  public ResponseEntity<?> setBundle(@PathVariable("uuid") String stringUuid,
+      @PathVariable("value") Boolean value) {
+    UUID id = UUID.fromString(stringUuid);
+    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(id);
+    InventoryPosition newPosition = optionalPosition.orElseThrow(
+        () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
+    newPosition.setBundle(value);
+    positionService.update(id, newPosition);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @RequestMapping(value = "", method = RequestMethod.POST)
@@ -185,13 +197,8 @@ public class InventoryPositionController {
   public ResponseEntity<?> getBundleFirstLevelContents (
       @PathVariable("bundleId") String stringPositionID) {
     UUID bundleId = UUID.fromString(stringPositionID);
-    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
-    if (!bundle.isPresent()) {
-      throw new ResourceNotFoundException("Requested bundle is not found!");
-    } else {
-      List<UUID> result = bundle_inventoryPositionService.getBundleFirstLevelContents(bundle.get());
-      return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    List<InventoryPosition> result = bundle_inventoryPositionService.getBundleFirstLevelContents(bundleId);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
 }
