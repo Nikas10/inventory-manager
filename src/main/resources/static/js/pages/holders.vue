@@ -35,7 +35,7 @@ module.exports = {
   methods: {
     loadHolders: function() {
       const self = this;
-      this.$server.get("/holder/").then(function(response) {
+      this.$server.get("/holders/").then(function(response) {
         self.holders = response.data;
       });
     }

@@ -65,7 +65,7 @@ module.exports = {
   },
   methods: {
     onSubmit(evt) {
-      this.$server.post("/account", this.form).then(function() {
+      this.$server.post("/accounts", this.form).then(function() {
         // TODO Добавить обработку ошибок.
         // TODO Добавить сообщение об успешной регистрации.
       });

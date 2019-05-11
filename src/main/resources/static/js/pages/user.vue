@@ -101,7 +101,7 @@ module.exports = {
       const self = this;
 
       this.$server
-        .get("/account/" + this.$route.params.id)
+        .get("/accounts/" + this.$route.params.id)
         .then(function(response) {
           self.form = { ...self.form, ...response.data };
         })
@@ -115,7 +115,7 @@ module.exports = {
         });
 
       this.$server
-        .get("/account/" + this.$route.params.id + "/holder/")
+        .get("/accounts/" + this.$route.params.id + "/holders/")
         .then(function(response) {
           self.holders = response.data;
         });
@@ -124,7 +124,7 @@ module.exports = {
       const self = this;
 
       this.$server
-        .patch("/account/" + this.$route.params.id, {
+        .patch("/accounts/" + this.$route.params.id, {
           email: this.form.email,
           firstName: this.form.firstName,
           lastName: this.form.lastName,

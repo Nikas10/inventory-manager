@@ -117,7 +117,7 @@ window.app = new Vue({
     loadUser() {
       var self = this;
       var promiseLoadUser = this.$server
-        .get("/account/me")
+        .get("/accounts/me")
         .then(function(response) {
           self.storage.user = {
             login: response.data.login,

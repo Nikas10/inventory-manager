@@ -39,7 +39,7 @@ module.exports = {
   methods: {
     loadUsers: function() {
       const self = this;
-      this.$server.get("/account/").then(function(response) {
+      this.$server.get("/accounts/").then(function(response) {
         self.users = response.data;
       });
     }
