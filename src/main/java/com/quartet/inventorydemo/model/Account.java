@@ -56,7 +56,7 @@ public class Account extends History implements Serializable {
   private String firstName;
 
   @ApiModelProperty(position = 2, notes = "Middle name")
-  @NotNull
+  @NotBlank(message = "Middle name must be not empty")
   @Column(name = "middle_name", nullable = false)
   private String middleName = "";
 

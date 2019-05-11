@@ -204,6 +204,9 @@ public class AccountController {
   @RequestMapping(value = "/{login}", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateAccount(
       @PathVariable("login") @Valid String login, @RequestBody AccountDTO accountDTO) {
+    if (accountDTO.getPassword() != null) {
+      accountDTO.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+    }
     accountService.update(login, accountDTO);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
