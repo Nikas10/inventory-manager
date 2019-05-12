@@ -4,7 +4,7 @@ public class InventoryPositionDTO {
 
   private String name;
   private String description;
-  private Boolean bundle = false;
+  private Boolean bundle;
 
   InventoryPositionDTO(String name, String description, Boolean bundle) {
     this.name = name;
