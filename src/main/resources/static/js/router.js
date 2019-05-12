@@ -21,14 +21,14 @@ const router = new VueRouter({
             component: httpVueLoader('js/pages/holders.vue'),
         },
         {
-            name: 'item',
-            path: '/items/:id',
-            component: httpVueLoader('js/pages/item.vue'),
+            name: 'position',
+            path: '/positions/:id',
+            component: httpVueLoader('js/pages/position.vue'),
         },
         {
-            name: 'items',
-            path: '/items/',
-            component: httpVueLoader('js/pages/items.vue'),
+            name: 'positions',
+            path: '/positions/',
+            component: httpVueLoader('js/pages/positions.vue'),
         },
         {
             name: 'requirements',

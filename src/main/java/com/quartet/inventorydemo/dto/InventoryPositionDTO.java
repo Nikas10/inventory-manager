@@ -3,7 +3,6 @@ package com.quartet.inventorydemo.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class InventoryPositionDTO {
-
   private String name;
   private String description;
   private String isBundle;

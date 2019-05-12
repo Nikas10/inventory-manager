@@ -1,7 +1,9 @@
 package com.quartet.inventorydemo.rest;
 
+
 import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
+
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
@@ -14,7 +16,9 @@ import com.quartet.inventorydemo.service.RequirementValueService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -83,7 +87,10 @@ public class InventoryPositionController {
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO, boolean isBundle) {
     String description = positionDTO.getDescription();
     String name = positionDTO.getName();
+
+
     InventoryPosition newPosition = positionService.add(name, description, isBundle);
+
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
