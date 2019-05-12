@@ -8,6 +8,7 @@ public class InventoryPositionDTO {
   private String description;
   private String isBundle;
 
+
   InventoryPositionDTO(String name, String description, String isBundle) {
     this.name = name;
     this.description = description;
