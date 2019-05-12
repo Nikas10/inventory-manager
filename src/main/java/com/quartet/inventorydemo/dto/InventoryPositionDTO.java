@@ -1,17 +1,15 @@
 package com.quartet.inventorydemo.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class InventoryPositionDTO {
 
   private String name;
   private String description;
-  private String isBundle;
+  private Boolean bundle;
 
-  InventoryPositionDTO(String name, String description, String isBundle) {
+  InventoryPositionDTO(String name, String description, Boolean bundle) {
     this.name = name;
     this.description = description;
-    this.isBundle = isBundle;
+    this.bundle = bundle;
   }
 
   private InventoryPositionDTO() {
@@ -25,7 +23,7 @@ public class InventoryPositionDTO {
     return description;
   }
 
-  public String getIsBundle() {
-    return isBundle;
+  public Boolean getBundle() {
+    return bundle;
   }
 }

@@ -3,13 +3,12 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
-import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.repository.InventoryPositionRepository;
-import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -68,7 +66,8 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
   }
 
   @Override
-  public InventoryPosition add(@NotBlank @Valid String name, @NotNull @Valid String description, boolean isBundle) {
+  public InventoryPosition add(@NotBlank @Valid String name, @NotNull @Valid String description,
+      boolean isBundle) {
 
     Optional<InventoryPosition> optionalPosition = getByName(name);
 
@@ -91,32 +90,32 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
 
     if ((!"".equals(positionDTO.getDescription())) &&
         (positionDTO.getDescription() != null)) {
-      positionToModify.setDescription(positionDTO.getDescription());
+      positionToModify.setDescription(
+          positionDTO.getDescription());  //TODO check if string valid and throw exception
     }
 
     if ((!"".equals(positionDTO.getName())) &&
         (positionDTO.getName() != null)) {
-      positionToModify.setName(positionDTO.getName());
+      positionToModify.setName(positionDTO.getName());  //TODO check uniqueness
     }
 
-    if ((!"".equals(positionDTO.getIsBundle())) &&
-        (positionDTO.getIsBundle() != null)) {
-      switch (positionDTO.getIsBundle()) {
-        case "true":
-          //positionToModify.setBundle(true);
-          setBundle(id, true);
-          break;
-        case "false":
-          //positionToModify.setBundle(false);
-          setBundle(id, false);
-          break;
-        default:
-          break;
-      }
-
+    if (positionDTO.getBundle() != null) {
+      setBundle(positionToModify, positionDTO.getBundle());
     }
 
     return positionRepo.saveAndFlush(positionToModify);
+  }
+
+  private void setBundle(InventoryPosition positionToModify, Boolean bundle) {
+    if (!positionToModify.isBundle()) {
+      positionToModify.setBundle(bundle);
+      return;
+    }
+
+    if (!positionToModify.getBundleInventoryPositions().isEmpty()) {
+      throw new UpdateNotSupportedException("Bundle has assigned items!");
+    }
+    positionToModify.setBundle(bundle);
   }
 
   @Override
@@ -133,20 +132,6 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
       // inventoryPosition is not bundle
       removeInventoryPosition(positionToRemove);
     }
-  }
-
-  @Override
-  public InventoryPosition setBundle(@NotNull @Valid UUID id, @NotNull @Valid Boolean value) {
-    InventoryPosition position = getByPositionID(id).orElseThrow(
-      () -> new ResourceNotFoundException("Position with id: " + id + " not found"));
-    if (position.isBundle() && !value) {
-      if (position.getBundleInventoryPositions().isEmpty())
-        position.setBundle(value);
-      else throw new IllegalStateException("Bundle has assigned items!");
-    } else {
-      position.setBundle(value);
-    }
-    return position;
   }
 
   private void removeInventoryPosition(InventoryPosition position) {
@@ -168,9 +153,11 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
   private void removeBundle(InventoryPosition position) {
     // check if everyone in storage else throw exception
 
-    Optional<InventoryItem> optionalBundleItem = inventoryItemService.getByInventoryPositionIdInStorage(position.getId());
-    InventoryItem bundleItem = optionalBundleItem.orElseThrow(() -> new ResourceNotFoundException("Bundle with id: "
-        + position.getId() + " does not exist as item."));
+    Optional<InventoryItem> optionalBundleItem = inventoryItemService
+        .getByInventoryPositionIdInStorage(position.getId());
+    InventoryItem bundleItem = optionalBundleItem
+        .orElseThrow(() -> new ResourceNotFoundException("Bundle with id: "
+            + position.getId() + " does not exist as item."));
     inventoryItemService.unpackBundlesInStorage(position.getId(), bundleItem.getAmount());
 
     positionRepo.delete(position);
