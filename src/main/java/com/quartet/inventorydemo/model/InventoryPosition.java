@@ -82,6 +82,12 @@ public class InventoryPosition extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<RequirementValue> requirementValues;
 
+  @ApiModelProperty(position = 3, notes = "Bundle Indicator")
+  @NotNull(message = "Indicator must be not null")
+  @Column(name = "bundle", nullable = false)
+  private Boolean bundle;
+
+
   private InventoryPosition() {
   }
 
@@ -130,8 +136,10 @@ public class InventoryPosition extends History {
   }
 
   public boolean isBundle() {
-    if (getBundleInventoryPositions() != null) {
-      return getBundleInventoryPositions().stream().anyMatch(x -> x.getBundlePosition().equals(this));
-    } else return false;
+    return bundle;
+  }
+
+  public void setBundle(Boolean bundle) {
+    this.bundle = bundle;
   }
 }
