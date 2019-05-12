@@ -20,10 +20,14 @@ public interface Bundle_InventoryPositionService {
       @NotNull @Valid UUID positionId,
       @NotNull @Valid Bundle_InventoryPositionDTO bundle_inventoryPositionDTO);
 
-  public Bundle_InventoryPosition add(
+  Bundle_InventoryPosition add(
       @NotNull @Valid UUID bundleId,
       @NotNull @Valid UUID positionId,
       @NotNull Bundle_InventoryPositionDTO bundle_inventoryPositionDTO);
+
+  void remove(
+      @NotNull @Valid UUID bundleId,
+      @NotNull @Valid UUID positionId);
 
   List<InventoryPosition> getBundleFirstLevelContents(
       @NotNull @Valid UUID bundle

@@ -143,6 +143,44 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
   }
 
   @Override
+  public void remove(@NotNull @Valid UUID bundleId, @NotNull @Valid UUID positionId) {
+
+    Optional<InventoryPosition> optionalBundle = positionService.getByPositionID(bundleId);
+    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(positionId);
+
+    InventoryPosition bundle = optionalBundle.orElseThrow(
+        () -> new ResourceNotFoundException("Bundle with id: " + bundleId + " not found."));
+    InventoryPosition position = optionalPosition.orElseThrow(
+        () ->
+            new ResourceNotFoundException("Position with id: " + positionId + " not found."));
+
+    if (!bundle.isBundle()) {
+      throw new NotBundleException("Inventory position with id: "
+          + bundleId
+          + " is not bundle.");
+    }
+
+    Optional<InventoryItem> optionalBundleItem = inventoryItemService.getByInventoryPositionIdInStorage(bundleId);
+    if (optionalBundleItem.isPresent()) {
+      InventoryItem bundleItem = optionalBundleItem.get();
+      Integer amount = bundleItem.getAmount();
+      inventoryItemService.unpackBundlesInStorage(bundleId, amount);
+    }
+
+    Optional<Bundle_InventoryPosition> bundlePositionOptional =
+        bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(position, bundle);
+
+    Bundle_InventoryPosition bundlePosition = bundlePositionOptional.orElseThrow(() ->
+        new ResourceNotFoundException("Bundle with id: "
+                                      + bundleId
+                                      + " does not contains position with id: "
+                                      + positionId
+                                      + " ."));
+
+    bundle_InventoryPositionRepo.delete(bundlePosition);
+  }
+
+  @Override
   public List<InventoryPosition> getBundleFirstLevelContents(@NotNull @Valid UUID bundleId) {
     Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
     InventoryPosition result = bundle.orElseThrow(

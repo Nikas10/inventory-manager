@@ -165,7 +165,7 @@ public class InventoryPositionController {
 
   @RequestMapping(
       value = "bundles/{bundleId}/parts/{partId}/updated",
-      method = RequestMethod.POST)
+      method = RequestMethod.PATCH)
   public ResponseEntity<?> updateBundleParts(
       @PathVariable("bundleId") String stringPositionID,
       @PathVariable("partId") String stringRequirementID,
@@ -174,6 +174,18 @@ public class InventoryPositionController {
     UUID partId = UUID.fromString(stringRequirementID);
     Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
     return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}/parts/{partId}",
+      method = RequestMethod.DELETE)
+  public ResponseEntity<?> removeBundleParts(
+      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("partId") String stringRequirementID) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    UUID partId = UUID.fromString(stringRequirementID);
+    bundle_inventoryPositionService.remove(bundleId, partId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @RequestMapping(value = "/bundleId/{bundleId}/positionId/{positionId}", method = RequestMethod.PATCH)
