@@ -103,10 +103,12 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
         (positionDTO.getIsBundle() != null)) {
       switch (positionDTO.getIsBundle()) {
         case "true":
-          positionToModify.setBundle(true);
+          //positionToModify.setBundle(true);
+          setBundle(id, true);
           break;
         case "false":
-          positionToModify.setBundle(false);
+          //positionToModify.setBundle(false);
+          setBundle(id, false);
           break;
         default:
           break;
