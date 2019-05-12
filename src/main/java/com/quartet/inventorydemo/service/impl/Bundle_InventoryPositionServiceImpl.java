@@ -3,9 +3,11 @@ package com.quartet.inventorydemo.service.impl;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
+import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
+import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +28,16 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
 
   private final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo;
   private final InventoryPositionService positionService;
+  private final InventoryItemService inventoryItemService;
 
   @Autowired
   public Bundle_InventoryPositionServiceImpl(
       @Qualifier("Bundle_InventoryPositionRepository") final Bundle_InventoryPositionRepository bundle_InventoryPositionRepo,
-      @Qualifier("InventoryPositionService") final InventoryPositionService positionService) {
+      @Qualifier("InventoryPositionService") final InventoryPositionService positionService,
+      @Qualifier("InventoryItemService") final InventoryItemService inventoryItemService) {
     this.bundle_InventoryPositionRepo = bundle_InventoryPositionRepo;
     this.positionService = positionService;
+    this.inventoryItemService = inventoryItemService;
   }
 
   @Override
@@ -70,6 +75,11 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
 
     Optional<Bundle_InventoryPosition> bundlePositionOptional =
         bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(position, bundle);
+
+    Optional<InventoryItem> optionalBundleItem = inventoryItemService.getByInventoryPositionIdInStorage(bundleId);
+    InventoryItem bundleItem = optionalBundleItem.orElseThrow(() -> new ResourceNotFoundException("Item of"));
+    Integer amount = bundleItem.getAmount();
+    inventoryItemService.unpackBundlesInStorage(bundleId, amount);
 
     Bundle_InventoryPosition toChange = bundlePositionOptional.orElseThrow(() ->
                                               new ResourceNotFoundException(
