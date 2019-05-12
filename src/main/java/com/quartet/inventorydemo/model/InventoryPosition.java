@@ -54,6 +54,11 @@ public class InventoryPosition extends History {
   @Column(name = "description", nullable = false)
   private String description;
 
+  @ApiModelProperty(position = 3, notes = "Bundle Indicator")
+  @NotNull(message = "Bundle must be true or false (Not null)")
+  @Column(name = "bundle", nullable = false)
+  private Boolean bundle;
+
   @ApiModelProperty(hidden = true)
   @ManyToMany(
       mappedBy = "inventoryPositions",
@@ -82,20 +87,16 @@ public class InventoryPosition extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<RequirementValue> requirementValues;
 
-  @ApiModelProperty(position = 3, notes = "Bundle Indicator")
-  @NotNull(message = "Indicator must be not null")
-  @Column(name = "bundle", nullable = false)
-  private Boolean bundle;
-
-
   private InventoryPosition() {
   }
 
   public InventoryPosition(
       @NotBlank(message = "Name must be not empty") String name,
-      @NotNull(message = "Description must be not null") String description) {
+      @NotNull(message = "Description must be not null") String description,
+      @NotNull(message = "Description must be not null") Boolean bundle) {
     this.name = name;
     this.description = description;
+    this.bundle = bundle;
   }
 
   public UUID getId() {

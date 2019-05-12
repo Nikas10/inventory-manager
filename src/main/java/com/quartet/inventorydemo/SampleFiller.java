@@ -63,15 +63,15 @@ public class SampleFiller implements InitializingBean {
     Role role5 = roleService.add(new Role("role name 5", "role description 5"));
 
     InventoryPosition inventoryPosition1 = inventoryPositionService
-        .add("inventory position name 1", "inventory position description 1");
+        .add("inventory position name 1", "inventory position description 1", false);
     InventoryPosition inventoryPosition2 = inventoryPositionService
-        .add("inventory position name 2", "inventory position description 2");
+        .add("inventory position name 2", "inventory position description 2", false);
     InventoryPosition inventoryPosition3 = inventoryPositionService
-        .add("inventory position name 3", "inventory position description 3");
+        .add("inventory position name 3", "inventory position description 3", false);
     InventoryPosition inventoryPosition4 = inventoryPositionService
-        .add("inventory position name 4", "inventory position description 4");
+        .add("inventory position name 4", "inventory position description 4", false);
     InventoryPosition inventoryPosition5 = inventoryPositionService
-        .add("inventory position name 5", "inventory position description 5");
+        .add("inventory position name 5", "inventory position description 5", false);
 
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));

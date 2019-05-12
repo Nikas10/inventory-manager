@@ -23,5 +23,7 @@ public class InventoryPositionDTO {
     return description;
   }
 
-  public Boolean getBundle() {return bundle;}
+  public Boolean getBundle() {
+    return bundle;
+  }
 }

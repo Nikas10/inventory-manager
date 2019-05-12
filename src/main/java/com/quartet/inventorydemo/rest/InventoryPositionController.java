@@ -1,6 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
-import static java.util.Objects.isNull;
+import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
@@ -13,6 +13,7 @@ import com.quartet.inventorydemo.service.RequirementValueService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -59,47 +60,24 @@ public class InventoryPositionController {
     return new ResponseEntity<>(positionService.getAll(), HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/isbundle/{uuid}", method = RequestMethod.GET)
-  public ResponseEntity<?> isBundle(@PathVariable("uuid") String stringUuid) {
-    UUID id = UUID.fromString(stringUuid);
-    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(id);
-    InventoryPosition result = optionalPosition.orElseThrow(
-        () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
-    return new ResponseEntity<>(result.isBundle(), HttpStatus.OK);
-  }
-
-  @RequestMapping(value = "/setbundle/{uuid}/{value}", method = RequestMethod.POST)
-  public ResponseEntity<?> setBundle(@PathVariable("uuid") String stringUuid,
-      @PathVariable("value") Boolean value) {
-    UUID id = UUID.fromString(stringUuid);
-    InventoryPosition updatedPosition = positionService.setBundle(id, value);
-    positionService.update(id, updatedPosition);
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
   @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
     String description = positionDTO.getDescription();
     String name = positionDTO.getName();
-    InventoryPosition newPosition = positionService.add(name, description);
+    Boolean bundle = positionDTO.getBundle();
+
+    InventoryPosition newPosition = positionService.add(name, description, bundle);
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
-  public ResponseEntity<?> update(@PathVariable("uuid") String stringUuid,
-      @RequestBody InventoryPositionDTO positionDTO) {
-    UUID id = UUID.fromString(stringUuid);
-    InventoryPosition updatedPosition;
-    if (!isNull(positionDTO.getBundle())) {
-      updatedPosition = positionService.setBundle(id, positionDTO.getBundle());
-    } else {
-      updatedPosition = positionService.getByPositionID(id).orElseThrow(
-          () -> new ResourceNotFoundException("Position with id: " + id + " not found."));
-    }
-    updatedPosition.setDescription(positionDTO.getDescription());
-    updatedPosition.setName(positionDTO.getName());
-    InventoryPosition newPosition = positionService.update(id, updatedPosition);
-    return new ResponseEntity<>(newPosition, HttpStatus.OK);
+  @RequestMapping(value = "/{positionId}", method = RequestMethod.PATCH)
+  public ResponseEntity<?> update(
+      @PathVariable("positionId") @Valid String stringPositionId,
+      @RequestBody InventoryPositionDTO inventoryPositionDTO) {
+    UUID positionId = UUID.fromString(stringPositionId);
+
+    positionService.update(positionId, inventoryPositionDTO);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @RequestMapping(value = "/{uuid}", method = RequestMethod.DELETE)
@@ -163,22 +141,41 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/{partId}/value/{value}",
+      value = "bundles/{bundleId}/parts/{partId}/new",
       method = RequestMethod.POST)
-  public ResponseEntity<?> updateOrCreateBundle(
+  public ResponseEntity<?> addBundleParts(
       @PathVariable("bundleId") String stringPositionID,
       @PathVariable("partId") String stringRequirementID,
-      @PathVariable("value") Integer value) {
+      @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
-    Optional<InventoryPosition> partOfBundle = positionService.getByPositionID(partId);
-    if (!bundle.isPresent() || !partOfBundle.isPresent()) {
-      throw new ResourceNotFoundException("Requested bundle or position are not found!");
-    } else {
-      Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(partOfBundle.get(), bundle.get(), value);
-      return new ResponseEntity<>(bundlePart, HttpStatus.OK);
-    }
+    Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.add(bundleId, partId, bundle_inventoryPositionDTO);
+    return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}/parts/{partId}/updated",
+      method = RequestMethod.PATCH)
+  public ResponseEntity<?> updateBundleParts(
+      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("partId") String stringRequirementID,
+      @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    UUID partId = UUID.fromString(stringRequirementID);
+    Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
+    return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}/parts/{partId}",
+      method = RequestMethod.DELETE)
+  public ResponseEntity<?> removeBundleParts(
+      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("partId") String stringRequirementID) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    UUID partId = UUID.fromString(stringRequirementID);
+    bundle_inventoryPositionService.remove(bundleId, partId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @RequestMapping(

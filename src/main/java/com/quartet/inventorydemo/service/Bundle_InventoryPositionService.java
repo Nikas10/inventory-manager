@@ -1,7 +1,9 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
+import com.quartet.inventorydemo.model.RequirementValue;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -14,9 +16,18 @@ public interface Bundle_InventoryPositionService {
       @NotNull @Valid InventoryPosition partOfInventoryPosition);
 
   Bundle_InventoryPosition update(
-      @NotNull @Valid InventoryPosition bundle,
-      @NotNull @Valid InventoryPosition partOfInventoryPosition,
-      @NotNull @Valid Integer value);
+      @NotNull @Valid UUID bundleId,
+      @NotNull @Valid UUID positionId,
+      @NotNull @Valid Bundle_InventoryPositionDTO bundle_inventoryPositionDTO);
+
+  Bundle_InventoryPosition add(
+      @NotNull @Valid UUID bundleId,
+      @NotNull @Valid UUID positionId,
+      @NotNull Bundle_InventoryPositionDTO bundle_inventoryPositionDTO);
+
+  void remove(
+      @NotNull @Valid UUID bundleId,
+      @NotNull @Valid UUID positionId);
 
   List<InventoryPosition> getBundleFirstLevelContents(
       @NotNull @Valid UUID bundle

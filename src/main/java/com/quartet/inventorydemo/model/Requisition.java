@@ -123,22 +123,6 @@ public class Requisition extends History {
       @PastOrPresent(message = "Provide correct date. It can not be future then now")
           Date creationDate,
       @NotNull(message = "Due date can not be null") Date dueDate,
-      @NotNull(message = "Description can not be null") String description) {
-    this.account = account;
-    this.assignedtoAccount = null;
-    this.status = status;
-    this.creationDate = creationDate;
-    this.dueDate = dueDate;
-    this.description = description;
-  }
-
-  public Requisition(
-      @NotNull(message = "Account must be not null") Account account,
-      @NotNull(message = "Status must be not null") String status,
-      @NotNull(message = "Creation date can not be null")
-      @PastOrPresent(message = "Provide correct date. It can not be future then now")
-          Date creationDate,
-      @NotNull(message = "Due date can not be null") Date dueDate,
       @NotNull(message = "Description can not be null") String description,
       @NotNull(message = "Holder can not be null") Holder holder) {
     this.account = account;

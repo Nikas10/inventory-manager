@@ -4,6 +4,7 @@ import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.id.Bundle_InventoryPositionId;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface Bundle_InventoryPositionRepository
     extends JpaRepository<Bundle_InventoryPosition, Bundle_InventoryPositionId> {
 
-  Bundle_InventoryPosition findByInventoryPositionAndBundlePosition(
+ Optional<Bundle_InventoryPosition> findByInventoryPositionAndBundlePosition(
       InventoryPosition inventoryPosition, InventoryPosition bundlePosition);
 
   List<Bundle_InventoryPosition> findByInventoryPosition(InventoryPosition inventoryPosition);
