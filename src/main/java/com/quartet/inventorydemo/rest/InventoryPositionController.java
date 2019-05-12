@@ -70,9 +70,9 @@ public class InventoryPositionController {
     return new ResponseEntity<>(newPosition, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/{positionId}", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
   public ResponseEntity<?> update(
-      @PathVariable("positionId") @Valid String stringPositionId,
+      @PathVariable("uuid") @Valid String stringPositionId,
       @RequestBody InventoryPositionDTO inventoryPositionDTO) {
     UUID positionId = UUID.fromString(stringPositionId);
 
