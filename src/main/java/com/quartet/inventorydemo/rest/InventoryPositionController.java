@@ -151,22 +151,29 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/{partId}/value/{value}",
+      value = "bundles/{bundleId}/parts/{partId}/new",
       method = RequestMethod.POST)
-  public ResponseEntity<?> updateOrCreateBundle(
+  public ResponseEntity<?> addBundleParts(
       @PathVariable("bundleId") String stringPositionID,
       @PathVariable("partId") String stringRequirementID,
-      @PathVariable("value") Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
+      @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    Optional<InventoryPosition> bundle = positionService.getByPositionID(bundleId);
-    Optional<InventoryPosition> partOfBundle = positionService.getByPositionID(partId);
-    if (!bundle.isPresent() || !partOfBundle.isPresent()) {
-      throw new ResourceNotFoundException("Requested bundle or position are not found!");
-    } else {
-      Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
-      return new ResponseEntity<>(bundlePart, HttpStatus.OK);
-    }
+    Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.add(bundleId, partId, bundle_inventoryPositionDTO);
+    return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "bundles/{bundleId}/parts/{partId}/updated",
+      method = RequestMethod.POST)
+  public ResponseEntity<?> updateBundleParts(
+      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("partId") String stringRequirementID,
+      @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
+    UUID bundleId = UUID.fromString(stringPositionID);
+    UUID partId = UUID.fromString(stringRequirementID);
+    Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
+    return new ResponseEntity<>(bundlePart, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/bundleId/{bundleId}/positionId/{positionId}", method = RequestMethod.PATCH)

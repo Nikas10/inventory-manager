@@ -1,10 +1,14 @@
 package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
+import com.quartet.inventorydemo.exception.NotBundleException;
+import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
+import com.quartet.inventorydemo.model.Requirement;
+import com.quartet.inventorydemo.model.RequirementValue;
 import com.quartet.inventorydemo.repository.Bundle_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
 import com.quartet.inventorydemo.service.InventoryItemService;
@@ -60,6 +64,43 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
   }
 
   @Override
+  public Bundle_InventoryPosition add(
+      @NotNull @Valid UUID bundleId,
+      @NotNull @Valid UUID positionId,
+      @NotNull Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
+    Optional<InventoryPosition> optionalBundle = positionService.getByPositionID(bundleId);
+    Optional<InventoryPosition> optionalPosition = positionService.getByPositionID(positionId);
+
+    InventoryPosition bundle = optionalBundle.orElseThrow(
+        () -> new ResourceNotFoundException("Bundle with id: " + bundleId + " not found."));
+    InventoryPosition position = optionalPosition.orElseThrow(
+        () ->
+            new ResourceNotFoundException("Position with id: " + positionId + " not found."));
+
+    if (!bundle.isBundle()) {
+      throw new NotBundleException("Inventory position with id: "
+                                   + bundleId
+                                   + " is not bundle.");
+    }
+
+    Optional<Bundle_InventoryPosition> optionalBundle_inventoryPosition =
+        bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(position, bundle);
+
+    if (optionalBundle_inventoryPosition.isPresent()) {
+      throw new ResourceAlreadyExistsException(
+          "Bundle with id:"
+              + bundleId
+              + " already has position with id: "
+              + positionId
+              + " .");
+    }
+
+    Bundle_InventoryPosition newBundleInventoryPosition =
+        new Bundle_InventoryPosition(position, bundle, bundle_inventoryPositionDTO.getAmount());
+    return bundle_InventoryPositionRepo.saveAndFlush(newBundleInventoryPosition);
+  }
+
+  @Override
   public Bundle_InventoryPosition update(@NotNull @Valid UUID bundleId,
                                          @NotNull @Valid UUID positionId,
                                          @NotNull @Valid Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
@@ -73,13 +114,21 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
         () ->
             new ResourceNotFoundException("Position with id: " + positionId + " not found."));
 
-    Optional<Bundle_InventoryPosition> bundlePositionOptional =
-        bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(position, bundle);
+    if (!bundle.isBundle()) {
+      throw new NotBundleException("Inventory position with id: "
+          + bundleId
+          + " is not bundle.");
+    }
 
     Optional<InventoryItem> optionalBundleItem = inventoryItemService.getByInventoryPositionIdInStorage(bundleId);
-    InventoryItem bundleItem = optionalBundleItem.orElseThrow(() -> new ResourceNotFoundException("Item of"));
-    Integer amount = bundleItem.getAmount();
-    inventoryItemService.unpackBundlesInStorage(bundleId, amount);
+    if (optionalBundleItem.isPresent()) {
+      InventoryItem bundleItem = optionalBundleItem.get();
+      Integer amount = bundleItem.getAmount();
+      inventoryItemService.unpackBundlesInStorage(bundleId, amount);
+    }
+
+    Optional<Bundle_InventoryPosition> bundlePositionOptional =
+        bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(position, bundle);
 
     Bundle_InventoryPosition toChange = bundlePositionOptional.orElseThrow(() ->
                                               new ResourceNotFoundException(
@@ -88,6 +137,7 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
                                                       + " does not contains position with id: "
                                                       + positionId
                                                       + " ."));
+
     toChange.setAmount(bundle_inventoryPositionDTO.getAmount());
     return bundle_InventoryPositionRepo.saveAndFlush(toChange);
   }
