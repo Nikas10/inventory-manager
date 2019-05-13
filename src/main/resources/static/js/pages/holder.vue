@@ -36,8 +36,8 @@
       </b-table>
       <h2>Items</h2>
       <b-table small :items="items" :fields="itemsFields">
-        <template slot="login" slot-scope="data">
-          <b-link :to="'/users/' + data.item.login">{{data.value}}</b-link>
+        <template slot="name" slot-scope="data">
+          <b-link :to="'/positions/' + data.item.id">{{data.value}}</b-link>
         </template>
       </b-table>
     </b-container>
