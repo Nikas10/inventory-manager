@@ -28,37 +28,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class SampleFiller implements InitializingBean {
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-  @Autowired
-  private AccountService accountService;
-  @Autowired
-  private HolderService holderService;
-  @Autowired
-  private RoleService roleService;
-  @Autowired
-  private RequirementService requirementService;
-  @Autowired
-  private RequisitionProcessService requisitionProcessService;
-  @Autowired
-  private RequisitionService requisitionService;
-  @Autowired
-  private InventoryPositionService inventoryPositionService;
-  @Autowired
-  private InventoryItemService inventoryItemService;
-  @Autowired
-  private Bundle_InventoryPositionService bundle_inventoryPositionService;
+  @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired private AccountService accountService;
+  @Autowired private HolderService holderService;
+  @Autowired private RoleService roleService;
+  @Autowired private RequirementService requirementService;
+  @Autowired private RequisitionProcessService requisitionProcessService;
+  @Autowired private RequisitionService requisitionService;
+  @Autowired private InventoryPositionService inventoryPositionService;
+  @Autowired private InventoryItemService inventoryItemService;
+  @Autowired private Bundle_InventoryPositionService bundle_inventoryPositionService;
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    Account admin = accountService.add(new Account("a", "a", "a", "a",
-        passwordEncoder.encode("a"), "admin", "a@a"));
-    Account staff = accountService.add(new Account("s", "s", "s", "s",
-        passwordEncoder.encode("s"), "staff", "s@s"));
-    Account user1 = accountService.add(new Account("u1", "u1", "u1", "u1",
-        passwordEncoder.encode("u1"), "user", "u1@u1"));
-    Account user2 = accountService.add(new Account("u2", "u2", "u2", "u2",
-        passwordEncoder.encode("u2"), "user", "u2@u2"));
+    Account admin =
+        accountService.add(
+            new Account("a", "a", "a", "a", passwordEncoder.encode("a"), "admin", "a@a"));
+    Account staff =
+        accountService.add(
+            new Account("s", "s", "s", "s", passwordEncoder.encode("s"), "staff", "s@s"));
+    Account user1 =
+        accountService.add(
+            new Account("u1", "u1", "u1", "u1", passwordEncoder.encode("u1"), "user", "u1@u1"));
+    Account user2 =
+        accountService.add(
+            new Account("u2", "u2", "u2", "u2", passwordEncoder.encode("u2"), "user", "u2@u2"));
 
     Holder holder1 = holderService.add("holder description 1", "holder name 1");
     Holder holder2 = holderService.add("holder description 2", "holder name 2");
@@ -72,35 +66,51 @@ public class SampleFiller implements InitializingBean {
     Role role4 = roleService.add(new Role("role name 4", "role description 4"));
     Role role5 = roleService.add(new Role("role name 5", "role description 5"));
 
-    InventoryPosition inventoryPosition1 = inventoryPositionService
-        .add("inventory position name 1", "inventory position description 1", false);
-    InventoryPosition inventoryPosition2 = inventoryPositionService
-        .add("inventory position name 2", "inventory position description 2", false);
-    InventoryPosition inventoryPosition3 = inventoryPositionService
-        .add("inventory position name 3", "inventory position description 3", false);
-    InventoryPosition inventoryPosition4 = inventoryPositionService
-        .add("inventory position name 4", "inventory position description 4", false);
-    InventoryPosition inventoryPosition5 = inventoryPositionService
-        .add("inventory position name 5", "inventory position description 5", false);
+    InventoryPosition inventoryPosition1 =
+        inventoryPositionService.add(
+            "inventory position name 1", "inventory position description 1", false);
+    InventoryPosition inventoryPosition2 =
+        inventoryPositionService.add(
+            "inventory position name 2", "inventory position description 2", false);
+    InventoryPosition inventoryPosition3 =
+        inventoryPositionService.add(
+            "inventory position name 3", "inventory position description 3", false);
+    InventoryPosition inventoryPosition4 =
+        inventoryPositionService.add(
+            "inventory position name 4", "inventory position description 4", false);
+    InventoryPosition inventoryPosition5 =
+        inventoryPositionService.add(
+            "inventory position name 5", "inventory position description 5", false);
 
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
 
-    accountService.addHolders(user1.getLogin(),
-        new HashSet<>(Arrays.asList(holder1.getId(), holder2.getId(), holder3.getId())));
-    accountService.addHolders(user2.getLogin(),
-        new HashSet<>(Arrays.asList(holder3.getId(), holder4.getId())));
+    accountService.addHolder(user1.getLogin(), holder1.getId());
+    accountService.addHolder(user1.getLogin(), holder2.getId());
+    accountService.addHolder(user1.getLogin(), holder3.getId());
 
-    holderService.addRoles(holder1.getId(), new HashSet<>(Arrays.asList(role1.getId())));
-    holderService
-        .addRoles(holder2.getId(), new HashSet<>(Arrays.asList(role2.getId(), role3.getId())));
-    holderService
-        .addRoles(holder3.getId(), new HashSet<>(Arrays.asList(role3.getId(), role4.getId())));
-    holderService
-        .addRoles(holder4.getId(), new HashSet<>(Arrays.asList(role4.getId(), role1.getId())));
+    accountService.addHolder(user2.getLogin(), holder3.getId());
+    accountService.addHolder(user2.getLogin(), holder4.getId());
 
-    roleService.addInventoryPositions(role1.getId(), new HashSet<>(Arrays.asList(inventoryPosition1.getId(),
-        inventoryPosition2.getId(), inventoryPosition3.getId())));
+    holderService.addRole(holder1.getId(), role1.getId());
+    holderService.addRole(holder1.getId(), role2.getId());
+
+    holderService.addRole(holder2.getId(), role2.getId());
+    holderService.addRole(holder2.getId(), role3.getId());
+
+    holderService.addRole(holder3.getId(), role3.getId());
+    holderService.addRole(holder3.getId(), role4.getId());
+
+    holderService.addRole(holder4.getId(), role4.getId());
+    holderService.addRole(holder4.getId(), role1.getId());
+
+    roleService.addInventoryPositions(
+        role1.getId(),
+        new HashSet<>(
+            Arrays.asList(
+                inventoryPosition1.getId(),
+                inventoryPosition2.getId(),
+                inventoryPosition3.getId())));
 
     inventoryItemService.addToStorage(inventoryPosition1.getId(), 400);
     inventoryItemService.addToStorage(inventoryPosition2.getId(), 400);
@@ -114,32 +124,17 @@ public class SampleFiller implements InitializingBean {
     inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), 4);
     inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), 5);
 
-    HashSet<UUID> adminHoldersIds = new HashSet<>();
-    HashSet<UUID> staffHoldersIds = new HashSet<>();
+    accountService.addHolder(admin.getLogin(), holder1.getId());
+    accountService.addHolder(admin.getLogin(), holder2.getId());
+    accountService.addHolder(admin.getLogin(), holder3.getId());
+    accountService.addHolder(admin.getLogin(), holder4.getId());
+    accountService.addHolder(admin.getLogin(), holder5.getId());
 
-    adminHoldersIds.add(holder1.getId());
-    adminHoldersIds.add(holder2.getId());
-    adminHoldersIds.add(holder3.getId());
-    adminHoldersIds.add(holder4.getId());
-    adminHoldersIds.add(holder5.getId());
-
-    staffHoldersIds.add(holder1.getId());
-    staffHoldersIds.add(holder2.getId());
-    staffHoldersIds.add(holder3.getId());
-    staffHoldersIds.add(holder5.getId());
-
-    accountService.addHolders(admin.getLogin(), adminHoldersIds);
-    accountService.addHolders(staff.getLogin(), staffHoldersIds);
-
-
-    /*roleService.addInventoryPositions(role1.getId(),
-        new HashSet<>(Arrays.asList(inventoryPosition1.getId())));
-    roleService.addInventoryPositions(role2.getId(),
-        new HashSet<>(Arrays.asList(inventoryPosition2.getId(), inventoryPosition3.getId(),
-            inventoryPosition4.getId())));
-    roleService.addInventoryPositions(role3.getId(),
-        new HashSet<>(Arrays.asList(inventoryPosition3.getId(), inventoryPosition4.getId(),
-            inventoryPosition5.getId())));*/
+    accountService.addHolder(staff.getLogin(), holder1.getId());
+    accountService.addHolder(staff.getLogin(), holder2.getId());
+    accountService.addHolder(staff.getLogin(), holder3.getId());
+    accountService.addHolder(staff.getLogin(), holder4.getId());
+    accountService.addHolder(staff.getLogin(), holder5.getId());
 
     ArrayList<String> stringPositionIds = new ArrayList<>();
     stringPositionIds.add(inventoryPosition1.getId().toString());
@@ -151,32 +146,27 @@ public class SampleFiller implements InitializingBean {
     roleIds.add(role2.getId());
     roleIds.add(role3.getId());
 
-    //holderService.addRoles(holder1.getId(), roleIds);
-
     Date creationDate = new Date();
     Date dueDate = new Date(creationDate.getTime() + 1000000000);
 
-
-
-
-    Requisition req1 = requisitionService.add(
-        user1.getLogin(),
-        creationDate,
-        "user1 req 1.",
-        dueDate,
-        "REVIEW_NEEDED",
-        holder1.getId(),
-        stringPositionIds
-        );
-    Requisition req2 = requisitionService.add(
-        user2.getLogin(),
-        creationDate,
-        "user2 req 1.",
-        dueDate,
-        "REJECTED",
-        holder1.getId(),
-        stringPositionIds
-    );
+    Requisition req1 =
+        requisitionService.add(
+            user1.getLogin(),
+            creationDate,
+            "user1 req 1.",
+            dueDate,
+            "REVIEW_NEEDED",
+            holder1.getId(),
+            stringPositionIds);
+    Requisition req2 =
+        requisitionService.add(
+            user2.getLogin(),
+            creationDate,
+            "user2 req 1.",
+            dueDate,
+            "REJECTED",
+            holder1.getId(),
+            stringPositionIds);
 
     requisitionProcessService.create(req1);
     requisitionProcessService.create(req2);
