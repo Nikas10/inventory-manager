@@ -2,10 +2,15 @@
   <c-default-page :storage="storage">
     <b-container>
       <h1>Requisitions</h1>
-        <b-button to="/requisitions/new">Create New</b-button>
+      <b-button to="/requisitions/new">Create New</b-button>
 
-        <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
-      <b-table small :items="requisitions" :fields="fields"></b-table>
+      <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
+      <b-table small :items="requisitions" :fields="fields">
+        <template slot="id" slot-scope="data">
+          <b-link :to="'/requisitions/' + data.item.id">{{data.value}}</b-link>
+        </template>
+        <template slot="creationDate" slot-scope="data">{{formatDate(data.value) }}</template>
+      </b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -19,8 +24,20 @@ module.exports = {
   data: function() {
     return {
       fields: {
-        name: {
-          label: "Name",
+        id: {
+          label: "Id",
+          sortable: true
+        },
+        description: {
+          label: "Description",
+          sortable: true
+        },
+        status: {
+          label: "Status",
+          sortable: true
+        },
+        creationDate: {
+          label: "Creation Date",
           sortable: true
         },
         status: {
@@ -41,6 +58,10 @@ module.exports = {
     };
   },
   methods: {
+    formatDate: function(string) {
+      let date = new Date(string);
+      return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay();
+    },
     loadPage: function() {
       if (!this.storage.user) {
         // TODO
