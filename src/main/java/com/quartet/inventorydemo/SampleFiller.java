@@ -12,6 +12,7 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
+import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.RoleService;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class SampleFiller implements InitializingBean {
   private RoleService roleService;
   @Autowired
   private RequirementService requirementService;
+  @Autowired
+  private RequisitionProcessService requisitionProcessService;
   @Autowired
   private RequisitionService requisitionService;
   @Autowired
@@ -152,7 +155,11 @@ public class SampleFiller implements InitializingBean {
 
     Date creationDate = new Date();
     Date dueDate = new Date(creationDate.getTime() + 1000000000);
-    requisitionService.add(
+
+
+
+
+    Requisition req1 = requisitionService.add(
         user1.getLogin(),
         creationDate,
         "user1 req 1.",
@@ -161,5 +168,17 @@ public class SampleFiller implements InitializingBean {
         holder1.getId(),
         stringPositionIds
         );
+    Requisition req2 = requisitionService.add(
+        user2.getLogin(),
+        creationDate,
+        "user2 req 1.",
+        dueDate,
+        "REJECTED",
+        holder1.getId(),
+        stringPositionIds
+    );
+
+    requisitionProcessService.create(req1);
+    requisitionProcessService.create(req2);
   }
 }
