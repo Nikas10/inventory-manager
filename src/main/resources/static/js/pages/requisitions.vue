@@ -2,13 +2,9 @@
   <c-default-page :storage="storage">
     <b-container>
       <h1>Requisitions</h1>
-      <b-from>
         <b-button to="/requisitions/new">Create New</b-button>
-      </b-from>
 
-      <b-form>
         <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
-      </b-form>
       <b-table small :items="requisitions" :fields="fields"></b-table>
     </b-container>
   </c-default-page>
