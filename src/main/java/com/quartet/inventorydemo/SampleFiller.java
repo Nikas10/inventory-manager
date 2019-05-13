@@ -138,10 +138,6 @@ public class SampleFiller implements InitializingBean {
         new HashSet<>(Arrays.asList(inventoryPosition3.getId(), inventoryPosition4.getId(),
             inventoryPosition5.getId())));*/
 
-    /*Requisition adminReq = new Requisition(admin, admin, "REVIEW_NEEDED", new Date(), new Date(), "admin req 1.");
-    Requisition staffReq = new Requisition(admin, admin, "REVIEW_NEEDED", new Date(), new Date(), "staff req 1.");
-    Requisition userReq = new Requisition(admin, admin, "REVIEW_NEEDED", new Date(), new Date(), "user req 1.");
-*/
     ArrayList<String> stringPositionIds = new ArrayList<>();
     stringPositionIds.add(inventoryPosition1.getId().toString());
     stringPositionIds.add(inventoryPosition2.getId().toString());
