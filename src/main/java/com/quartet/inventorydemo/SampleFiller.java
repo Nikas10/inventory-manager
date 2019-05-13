@@ -13,6 +13,7 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
+import com.quartet.inventorydemo.service.RequirementValueService;
 import com.quartet.inventorydemo.service.RoleService;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +35,8 @@ public class SampleFiller implements InitializingBean {
   private RoleService roleService;
   @Autowired
   private RequirementService requirementService;
+  @Autowired
+  private RequirementValueService requirementValueService;
   @Autowired
   private InventoryPositionService inventoryPositionService;
   @Autowired
@@ -80,15 +83,19 @@ public class SampleFiller implements InitializingBean {
     InventoryPosition bundle2 = inventoryPositionService
         .add("inventory position bundle name 2", "inventory position bundle description 2", true);
 
-    Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
-    Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
-
     bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition1.getId(),
         new Bundle_InventoryPositionDTO(3));
     bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition2.getId(),
         new Bundle_InventoryPositionDTO(1));
     bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition3.getId(),
         new Bundle_InventoryPositionDTO(2));
+
+    Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
+    Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
+
+    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), "requirement value");
+    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), "requirement value");
+    requirementValueService.add(inventoryPosition3.getId(), requirement2.getId(), "requirement value");
 
     accountService.addHolders(user1.getLogin(),
         new HashSet<>(Arrays.asList(holder1.getId(), holder2.getId(), holder3.getId())));
