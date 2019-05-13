@@ -40,7 +40,11 @@ module.exports = {
   },
   methods: {
     onSubmit(evt) {
-      this.$root.auth(this.form.login, this.form.password);
+      const self = this;
+
+      this.$root.auth(this.form.login, this.form.password, function (){
+        self.$router.go(-1);
+      });
 
       evt.preventDefault();
     }

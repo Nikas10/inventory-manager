@@ -39,13 +39,19 @@
         <b-form-input id="creationDate" disabled v-model="form.creationDate" type="date" required></b-form-input>
       </b-form-group>
 
-      <h2>
-        Requested Positions
-      </h2>
+      <b-button v-if="form.status == 'REVIEW_NEEDED'" @click="setStatusApproved">Approve</b-button>
 
-      <b-table small :items="positions" :fields="positionsFields">
+      <b-button v-if="form.status == 'REVIEW_NEEDED'">Require Clarification</b-button>
 
-      </b-table>
+      <b-button v-if="form.status == 'REVIEW_NEEDED'">Reject</b-button>
+
+      <b-button v-if="form.status == 'APPROVED'">Complete</b-button>
+
+      <b-button v-if="form.status == 'REQUIRED_CLARIFICATION'">Complete Changes</b-button>
+
+      <h2>Requested Positions</h2>
+
+      <b-table small :items="positions" :fields="positionsFields"></b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -91,7 +97,7 @@ module.exports = {
       let date = new Date(string);
 
       let year = date.getFullYear();
-      let month = this.appendZeroes(date.getMonth() + 1)
+      let month = this.appendZeroes(date.getMonth() + 1);
       let day = this.appendZeroes(date.getDate());
 
       return year + "-" + month + "-" + day;
@@ -117,10 +123,18 @@ module.exports = {
       const requisitonId = this.$route.params.id;
 
       this.$server
-        .get("/requisitions/" + requisitonId + '/positions/')
+        .get("/requisitions/" + requisitonId + "/positions/")
         .then(function(response) {
           self.positions = response.data;
         });
+    },
+    setStatusApproved: function() {
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      this.$server
+        .patch("/requisitions/" + requisitonId, { status: "APPROVED" })
+        .then(function(response) {});
     }
   },
   mounted: function() {

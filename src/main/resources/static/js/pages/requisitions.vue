@@ -6,6 +6,9 @@
 
       <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
       <b-table small :items="requisitions" :fields="fields">
+        <template slot="holderName" slot-scope="data">
+          <b-link :to="'/holders/' + data.item.holderUUID">{{data.value}}</b-link>
+        </template>
         <template slot="id" slot-scope="data">
           <b-link :to="'/requisitions/' + data.item.id">{{data.value}}</b-link>
         </template>
@@ -26,6 +29,10 @@ module.exports = {
       fields: {
         id: {
           label: "Id",
+          sortable: true
+        },
+        holderName: {
+          label: "Holder",
           sortable: true
         },
         description: {
@@ -51,9 +58,8 @@ module.exports = {
         { value: "user", text: "Only mine own" }
       ],
       requisitions: [],
-      selectedFilter: "all",
       filter: {
-        scope: "none"
+        scope: "all"
       }
     };
   },
@@ -68,10 +74,10 @@ module.exports = {
         return;
       }
 
-      if (this.storage.user.role == "user") {
-        this.loadOwnedRequisitions();
-      } else {
+      if (this.filter.scope == "all") {
         this.loadAllRequisitions();
+      } else if (this.filter.scope == "user") {
+        this.loadOwnedRequisitions();
       }
     },
     loadAllRequisitions: function() {
@@ -113,6 +119,8 @@ module.exports = {
       } else {
         this.filter.scope = "user";
       }
+
+      this.loadPage();
     },
     filter: {
       handler: function(a, b) {
