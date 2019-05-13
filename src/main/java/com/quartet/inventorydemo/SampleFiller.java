@@ -121,13 +121,9 @@ public class SampleFiller implements InitializingBean {
     holderService.addRole(holder4.getId(), role4.getId());
     holderService.addRole(holder4.getId(), role1.getId());
 
-    roleService.addInventoryPositions(
-        role1.getId(),
-        new HashSet<>(
-            Arrays.asList(
-                inventoryPosition1.getId(),
-                inventoryPosition2.getId(),
-                inventoryPosition3.getId())));
+    roleService.addInventoryPosition(role1.getId(), inventoryPosition1.getId());
+    roleService.addInventoryPosition(role1.getId(), inventoryPosition2.getId());
+    roleService.addInventoryPosition(role1.getId(), inventoryPosition3.getId());
 
     inventoryItemService.addToStorage(inventoryPosition1.getId(), 400);
     inventoryItemService.addToStorage(inventoryPosition2.getId(), 400);

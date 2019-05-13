@@ -161,6 +161,10 @@ public class Requisition extends History {
     return id;
   }
 
+  public Holder getHolder() {return holder;}
+
+  public void setHolder(Holder holder) {this.holder = holder;}
+
   public Account getAccount() {
     return account;
   }
