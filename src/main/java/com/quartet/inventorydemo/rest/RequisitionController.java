@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sun.plugin.dom.exception.InvalidStateException;
 
+@Validated
 @RestController
 @RequestMapping("api/requisitions")
 public class RequisitionController {
@@ -94,7 +97,7 @@ public class RequisitionController {
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
   public ResponseEntity<?> getById(
-      @PathVariable("id") @NotBlank @UUIDString String id) {
+      @PathVariable("id") @NotBlank @Valid @UUIDString String id) {
     UUID requestId = UUID.fromString(id);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
         () -> new ResourceNotFoundException("Requisition with id " + id + " is not found!"));
@@ -115,7 +118,7 @@ public class RequisitionController {
 
   @RequestMapping(value = "/{id}/positions", method = RequestMethod.GET)
   public ResponseEntity<?> getPositionsById(
-      @PathVariable("id") @NotBlank @UUIDString String id) {
+      @PathVariable("id") @NotBlank @Valid @UUIDString String id) {
     UUID requestId = UUID.fromString(id);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
         () -> new ResourceNotFoundException("Requisition with id " + id + " is not found!"));
@@ -133,8 +136,8 @@ public class RequisitionController {
 
   @RequestMapping(value = "/{requisitionId}/positions", method = RequestMethod.POST)
   public ResponseEntity<?> addNewPositionLink(
-      @PathVariable("requisitionId") @NotBlank @UUIDString String requisitionId,
-      @RequestParam("positionId") @NotBlank @UUIDString String positionId,
+      @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
+      @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId,
       @RequestParam("amount") @NotNull @Positive Integer amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
@@ -158,8 +161,8 @@ public class RequisitionController {
 
   @RequestMapping(value = "/{requisitionId}/positions/{positionId}", method = RequestMethod.DELETE)
   public ResponseEntity<?> removePositionsLinkById(
-      @PathVariable("requisitionId") @NotBlank @UUIDString String requisitionId,
-      @RequestParam("positionId") @NotBlank @UUIDString String positionId) {
+      @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
+      @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
@@ -179,9 +182,10 @@ public class RequisitionController {
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
   public ResponseEntity<?> update(
-      @PathVariable("id") UUID id, @RequestBody RequisitionDTO requisitionDTO) {
-    Optional<Requisition> original = requisitionService.getById(id);
-
+      @PathVariable("id") @NotBlank @Valid @UUIDString String id,
+      @RequestBody RequisitionDTO requisitionDTO) {
+    UUID reqId = UUID.fromString(id);
+    Optional<Requisition> original = requisitionService.getById(reqId);
     original.ifPresent(
         currentRequisition -> {
           String oldStatus = currentRequisition.getStatus();
