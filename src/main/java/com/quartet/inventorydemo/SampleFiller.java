@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo;
 
+import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -125,17 +126,17 @@ public class SampleFiller implements InitializingBean {
     roleService.addInventoryPosition(role1.getId(), inventoryPosition2.getId());
     roleService.addInventoryPosition(role1.getId(), inventoryPosition3.getId());
 
-    inventoryItemService.addToStorage(inventoryPosition1.getId(), 400);
-    inventoryItemService.addToStorage(inventoryPosition2.getId(), 400);
-    inventoryItemService.addToStorage(inventoryPosition3.getId(), 400);
-    inventoryItemService.addToStorage(inventoryPosition4.getId(), 400);
-    inventoryItemService.addToStorage(inventoryPosition5.getId(), 400);
+    inventoryItemService.addToStorage(inventoryPosition1.getId(), new AddInventoryItemToStorageDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition2.getId(), new AddInventoryItemToStorageDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition3.getId(), new AddInventoryItemToStorageDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition4.getId(), new AddInventoryItemToStorageDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition5.getId(), new AddInventoryItemToStorageDTO(400));
 
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), 1);
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), 2);
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), 3);
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), 4);
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), 5);
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), new AddInventoryItemToStorageDTO(1));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), new AddInventoryItemToStorageDTO(2));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), new AddInventoryItemToStorageDTO(3));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), new AddInventoryItemToStorageDTO(4));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), new AddInventoryItemToStorageDTO(5));
 
     accountService.addHolder(admin.getLogin(), holder1.getId());
     accountService.addHolder(admin.getLogin(), holder2.getId());

@@ -2,6 +2,7 @@ package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
+import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -60,7 +61,7 @@ public class InventoryPositionController {
     return new ResponseEntity<>(positionService.getAll(), HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/new", method = RequestMethod.POST)
+  @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> create(@RequestBody InventoryPositionDTO positionDTO) {
     String description = positionDTO.getDescription();
     String name = positionDTO.getName();
@@ -92,31 +93,31 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "/{positionId}/requirements/{requirementId}/requirement_value/{value}",
+      value = "/{positionId}/requirements/{requirementId}",
       method = RequestMethod.POST)
   public ResponseEntity<?> createRequirementValue(
       @PathVariable("positionID") String stringPositionID,
       @PathVariable("requirementID") String stringRequirementID,
-      @PathVariable("value") String requirementValue) {
+      @RequestBody RequirementValueUpdateDTO requirementValueUpdateDTO) {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
     RequirementValue newProperty =
-        requirementValueService.add(positionID, requirementID, requirementValue);
+        requirementValueService.add(positionID, requirementID, requirementValueUpdateDTO);
 
     return new ResponseEntity<>(newProperty, HttpStatus.OK);
   }
 
   @RequestMapping(
-      value = "/{positionId}/requirements/{requirementId}/requirement_value/{value}",
+      value = "/{positionId}/requirements/{requirementId}",
       method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRequirementValue(
       @PathVariable("positionID") String stringPositionID,
       @PathVariable("requirementID") String stringRequirementID,
-      @PathVariable("value") String value) {
+      @RequestBody RequirementValueUpdateDTO requirementValueUpdateDTO) {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
 
-    RequirementValue newProperty = requirementValueService.update(positionID, requirementID, value);
+    RequirementValue newProperty = requirementValueService.update(positionID, requirementID, requirementValueUpdateDTO);
 
     return new ResponseEntity<>(newProperty, HttpStatus.OK);
   }
@@ -141,7 +142,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/{partId}/new",
+      value = "/{positionId}/bundleParts/{partId}",
       method = RequestMethod.POST)
   public ResponseEntity<?> addBundleParts(
       @PathVariable("bundleId") String stringPositionID,
@@ -154,7 +155,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/{partId}/updated",
+      value = "/{positionId}/bundleParts/{partId}",
       method = RequestMethod.PATCH)
   public ResponseEntity<?> updateBundleParts(
       @PathVariable("bundleId") String stringPositionID,
@@ -167,7 +168,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/{partId}",
+      value = "/{positionId}/bundleParts/{partId}",
       method = RequestMethod.DELETE)
   public ResponseEntity<?> removeBundleParts(
       @PathVariable("bundleId") String stringPositionID,
@@ -179,7 +180,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/{partId}/value",
+      value = "/{positionId}/bundleParts/{partId}",
       method = RequestMethod.GET)
   public ResponseEntity<?> getBundleValue(
       @PathVariable("bundleId") String stringPositionID,
@@ -197,10 +198,10 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(
-      value = "bundles/{bundleId}/parts/",
+      value = "/{positionId}/bundleParts/",
       method = RequestMethod.GET)
   public ResponseEntity<?> getBundleFirstLevelContents (
-      @PathVariable("bundleId") String stringPositionID) {
+      @PathVariable("positionId") String stringPositionID) {
     UUID bundleId = UUID.fromString(stringPositionID);
     List<InventoryPosition> result = bundle_inventoryPositionService.getBundleFirstLevelContents(bundleId);
     return new ResponseEntity<>(result, HttpStatus.OK);

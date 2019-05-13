@@ -65,7 +65,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/new", method = RequestMethod.POST)
+  @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> createInventoryHolder(@RequestBody HolderDTO holderDTO) {
     String description = holderDTO.getDescription();
     String name = holderDTO.getName();

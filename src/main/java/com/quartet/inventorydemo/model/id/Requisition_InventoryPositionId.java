@@ -12,7 +12,7 @@ public class Requisition_InventoryPositionId implements Serializable {
   private UUID inventoryPositionId;
   private UUID requisitionId;
 
-  private Requisition_InventoryPositionId() {
+  public Requisition_InventoryPositionId() {
   }
 
   public Requisition_InventoryPositionId(

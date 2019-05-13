@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
 import com.quartet.inventorydemo.exception.NotBundleException;
 import com.quartet.inventorydemo.exception.NotEnoughItemsException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
@@ -124,7 +125,7 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
   @Override
   public InventoryItem moveFromHolderToStorage(@NotNull @Valid UUID inventoryPositionId,
-      @NotNull @Valid UUID holderId, @Positive @Valid Integer amountToMove) {
+      @NotNull @Valid UUID holderId, @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     InventoryPosition inventoryPosition = getInventoryPositionOrThrowException(
         inventoryPositionId);
     Optional<InventoryItem> inventoryItemOptional = getByInventoryPositionIdAndHolderId(
@@ -133,20 +134,20 @@ public class InventoryItemServiceImpl implements InventoryItemService {
         () -> new ResourceNotFoundException(
             "Holder doesn't hold item with this inventory position"));
     Integer holderAmount = holderInventoryItem.getAmount();
-    if (holderAmount < amountToMove) {
+    if (holderAmount < addInventoryItemToStorageDTO.getAmount()) {
       throw new NotEnoughItemsException("Holder doesn't have enough items to move");
     }
-    holderInventoryItem.setAmount(holderAmount - amountToMove);
+    holderInventoryItem.setAmount(holderAmount - addInventoryItemToStorageDTO.getAmount());
 
     Holder storageHolder = holderService.getStorageHolder();
     InventoryItem inventoryItemInStorage = getByInventoryPositionIdInStorage(inventoryPositionId)
         .map(e -> {
-          e.setAmount(e.getAmount() + amountToMove);
+          e.setAmount(e.getAmount() + addInventoryItemToStorageDTO.getAmount());
           return e;
         })
         .orElseGet(() -> new InventoryItem(storageHolder,
             inventoryPosition,
-            "In storage", amountToMove));
+            "In storage", addInventoryItemToStorageDTO.getAmount()));
     if (holderInventoryItem.getAmount() == 0) {
       inventoryItemRepository.delete(holderInventoryItem);
     }
@@ -156,7 +157,7 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
   @Override
   public InventoryItem moveFromStorageToHolder(@NotNull @Valid UUID inventoryPositionId,
-      @NotNull @Valid UUID holderId, @Positive @Valid Integer amountToMove) {
+      @NotNull @Valid UUID holderId, @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     Holder holder = getHolderOrThrowException(holderId);
     InventoryPosition inventoryPosition = getInventoryPositionOrThrowException(
         inventoryPositionId);
@@ -165,19 +166,19 @@ public class InventoryItemServiceImpl implements InventoryItemService {
         .orElseThrow(() -> new ResourceNotFoundException(
             "Storage doesn't hold item with this inventory position"));
     Integer amountInStorage = inventoryItemInStorage.getAmount();
-    if (amountInStorage < amountToMove) {
+    if (amountInStorage < addInventoryItemToStorageDTO.getAmount()) {
       throw new NotEnoughItemsException("Storage doesn't contain enough items");
     }
-    inventoryItemInStorage.setAmount(amountInStorage - amountToMove);
+    inventoryItemInStorage.setAmount(amountInStorage - addInventoryItemToStorageDTO.getAmount());
 
     InventoryItem holderInventoryItem = getByInventoryPositionIdAndHolderId(inventoryPositionId,
         holderId)
         .map((e) -> {
-          e.setAmount(e.getAmount() + amountToMove);
+          e.setAmount(e.getAmount() + addInventoryItemToStorageDTO.getAmount());
           return e;
         })
         .orElseGet(() -> new InventoryItem(holder, inventoryPosition, "Holding",
-            amountToMove)); //TODO status
+            addInventoryItemToStorageDTO.getAmount())); //TODO status
     if (inventoryItemInStorage.getAmount() == 0) {
       inventoryItemRepository.delete(inventoryItemInStorage);
     }
@@ -293,30 +294,30 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
   @Override
   public InventoryItem addToStorage(@NotNull @Valid UUID inventoryPositionId,
-      @Positive @Valid Integer amount) {
+      @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     InventoryPosition inventoryPosition = getInventoryPositionOrThrowException(
         inventoryPositionId);
     Holder storageHolder = holderService.getStorageHolder();
     InventoryItem inventoryItem = getByInventoryPositionIdInStorage(inventoryPosition.getId())
         .map(e -> {
-          e.setAmount(e.getAmount() + amount);
+          e.setAmount(e.getAmount() + addInventoryItemToStorageDTO.getAmount());
           return e;
         })
-        .orElseGet(() -> new InventoryItem(storageHolder, inventoryPosition, "In storage", amount));
+        .orElseGet(() -> new InventoryItem(storageHolder, inventoryPosition, "In storage", addInventoryItemToStorageDTO.getAmount()));
     return inventoryItemRepository.save(inventoryItem);
   }
 
   @Override
   public void removeFromStorage(@NotNull @Valid UUID inventoryPositionId,
-      @Positive @Valid Integer amount) {
+      @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     InventoryItem inventoryItem = getByInventoryPositionIdInStorage(inventoryPositionId)
         .orElseThrow(
             () -> new ResourceNotFoundException("Inventory item not found in storage")
         );
-    if (inventoryItem.getAmount() < amount) {
+    if (inventoryItem.getAmount() < addInventoryItemToStorageDTO.getAmount()) {
       throw new NotEnoughItemsException("Can not delete more than storage contains");
     }
-    inventoryItem.setAmount(inventoryItem.getAmount() - amount);
+    inventoryItem.setAmount(inventoryItem.getAmount() - addInventoryItemToStorageDTO.getAmount());
     if (inventoryItem.getAmount() == 0) {
       inventoryItemRepository.delete(inventoryItem);
     }

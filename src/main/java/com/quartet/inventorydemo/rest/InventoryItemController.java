@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.rest;
 
 
+import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,7 +53,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/positionId/{uuid}/holderId/{holder}", method = RequestMethod.GET)
+  @RequestMapping(value = "/positions/{uuid}/holders/{holder}", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryItemByHolder(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId) {
@@ -65,7 +67,7 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/holderId/{holder}", method = RequestMethod.GET)
+  @RequestMapping(value = "/holders/{holder}", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryItemsByHolder(
       @PathVariable("holder") @UUIDString @Valid String holderId) {
     UUID uuid = UUID.fromString(holderId);
@@ -81,46 +83,46 @@ public class InventoryItemController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/storage/positionId/{uuid}/amount/{amount}", method = RequestMethod.POST)
+  @RequestMapping(value = "/storage/positions/{uuid}", method = RequestMethod.POST)
   public ResponseEntity<?> addInventoryItemToStorage(
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @PathVariable("amount") Integer amount) {
+      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     UUID uuid = UUID.fromString(positionId);
-    inventoryItemService.addToStorage(uuid, amount);
+    inventoryItemService.addToStorage(uuid, addInventoryItemToStorageDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/storage/positionId/{uuid}/amount/{amount}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/storage/positions/{uuid}", method = RequestMethod.DELETE)
   public ResponseEntity<?> removeInventoryItemFromStorage(
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @PathVariable("amount") Integer amount) {
+      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     UUID uuid = UUID.fromString(positionId);
-    inventoryItemService.removeFromStorage(uuid, amount);
+    inventoryItemService.removeFromStorage(uuid, addInventoryItemToStorageDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "positionId/{uuid}/holderId/{holder}/amount/{amount}", method = RequestMethod.PUT)
+  @RequestMapping(value = "positions/{uuid}/holders/{holder}", method = RequestMethod.PUT)
   public ResponseEntity<?> moveInventoryItemToStorage(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @PathVariable("amount") Integer amount) {
+      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     UUID holder = UUID.fromString(holderId);
     UUID position = UUID.fromString(positionId);
-    inventoryItemService.moveFromHolderToStorage(position, holder, amount);
+    inventoryItemService.moveFromHolderToStorage(position, holder, addInventoryItemToStorageDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "storage/positionId/{uuid}/holderId/{holder}/amount/{amount}", method = RequestMethod.PUT)
+  @RequestMapping(value = "storage/positions/{uuid}/holders/{holder}", method = RequestMethod.PUT)
   public ResponseEntity<?> moveInventoryItemFromStorage(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @PathVariable("amount") Integer amount) {
+      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
     UUID holder = UUID.fromString(holderId);
     UUID position = UUID.fromString(positionId);
-    inventoryItemService.moveFromStorageToHolder(position, holder, amount);
+    inventoryItemService.moveFromStorageToHolder(position, holder, addInventoryItemToStorageDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }
