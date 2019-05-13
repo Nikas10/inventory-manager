@@ -22,7 +22,8 @@ import javax.validation.constraints.Positive;
 public class Requisition_InventoryPosition extends History implements Serializable {
 
   @EmbeddedId
-  private Requisition_InventoryPositionId requisition_inventoryPositionId;
+  private Requisition_InventoryPositionId requisition_inventoryPositionId
+      = new Requisition_InventoryPositionId();
 
   @ApiModelProperty(hidden = true)
   @NotNull(message = "Inventory position must be not null")

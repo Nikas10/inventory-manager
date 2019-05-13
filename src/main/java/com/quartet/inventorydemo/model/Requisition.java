@@ -99,6 +99,10 @@ public class Requisition extends History {
   private Requisition() {
   }
 
+  public Set<Requisition_InventoryPosition> getRequisitionInventoryPositions() {
+    return requisitionInventoryPositions;
+  }
+
   public Requisition(
       @NotNull(message = "Account must be not null") Account account,
       Account assignedtoAccount,
