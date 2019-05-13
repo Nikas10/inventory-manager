@@ -77,11 +77,9 @@ public class HolderController {
   public ResponseEntity<?> updateInventoryHolder(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody HolderDTO holderDTO) {
-    String description = holderDTO.getDescription();
-    String name = holderDTO.getName();
     UUID uuid = UUID.fromString(stringUuid);
 
-    Holder updatedHolder = holderService.update(uuid, description, name);
+    Holder updatedHolder = holderService.update(uuid, holderDTO);
     return new ResponseEntity<>(updatedHolder, HttpStatus.OK);
   }
 

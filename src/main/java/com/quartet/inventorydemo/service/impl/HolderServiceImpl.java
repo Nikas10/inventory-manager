@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.dto.InventoryItemDTO;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
@@ -168,6 +169,26 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
     }
 
     return holderItemsWithPositionName;
+  }
+
+  @Override
+  public Holder update(@NotNull @Valid UUID holderId, @NotNull @Valid HolderDTO holderDTO) {
+    Optional<Holder> holderOptional = getByHolderID(holderId);
+    Holder holderToUpdate =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
+
+    if (!"".equals(holderDTO.getName()) &&
+        holderDTO.getName() != null) {
+      holderToUpdate.setName(holderDTO.getName());
+    }
+
+    if (!"".equals(holderDTO.getDescription()) &&
+        holderDTO.getDescription() != null) {
+      holderToUpdate.setDescription(holderDTO.getDescription());
+    }
+
+    return inventoryHolderRepository.saveAndFlush(holderToUpdate);
   }
 
   private boolean isExists(@NotNull @Valid Holder holder) {
