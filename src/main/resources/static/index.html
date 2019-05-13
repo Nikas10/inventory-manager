@@ -131,8 +131,10 @@ window.app = new Vue({
         });
       return promiseLoadUser;
     },
-    auth(login, password) {
-      var self = this;
+    auth(login, password, callback) {
+      const self = this;
+      const call = callback;
+
       return axios
         .post(
           baseURL +
@@ -152,7 +154,7 @@ window.app = new Vue({
           //setCookie("auth", token.access_token, token.expires_in);
 
           self.setToken(token.access_token);
-
+          call();
           self.loadUser();
         });
     },
