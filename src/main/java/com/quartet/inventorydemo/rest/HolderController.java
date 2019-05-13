@@ -105,24 +105,25 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/roles/", method = RequestMethod.PATCH)
-  public ResponseEntity<?> updateInventoryHolderLinksToRoles(
-      @PathVariable("uuid") @UUIDString @Valid String stringUuid,
-      @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
-    UUID uuid = UUID.fromString(stringUuid);
-    Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
-    Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
-    Holder result = null;
-    if (!addByIds.isEmpty()) {
-      result = holderService.addRoles(uuid, addByIds);
-    }
-    if (!removeByIds.isEmpty()) {
-      result = holderService.removeRoles(uuid, removeByIds);
-    }
-    if (result == null) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-    return new ResponseEntity<>(result.getRoles(), HttpStatus.OK);
+  @RequestMapping(value = "/{holderId}/roles", method = RequestMethod.POST)
+  public ResponseEntity<?> addLinkToRole(
+      @PathVariable("holderId") @UUIDString @Valid String holderId,
+      @RequestParam("roleId") @UUIDString @Valid String roleId) {
+    UUID holder = UUID.fromString(holderId);
+    UUID role = UUID.fromString(roleId);
+    holderService.addRole(holder, role);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
+  // @PreAuthorize("hasAuthority('STAFF')")
+  @RequestMapping(value = "/{holderId}/roles/{roleId}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> removeLinkToRole(
+      @PathVariable("holderId") @UUIDString @Valid String holderId,
+      @PathVariable("roleId") @UUIDString @Valid String roleId) {
+    UUID holder = UUID.fromString(holderId);
+    UUID role = UUID.fromString(roleId);
+    holderService.removeRole(holder, role);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   // @PreAuthorize("hasAuthority('USER')")
