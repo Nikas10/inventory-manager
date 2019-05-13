@@ -214,6 +214,6 @@ public class RequisitionController {
           // TODO: Обработать остальные изменения
         });
 
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
