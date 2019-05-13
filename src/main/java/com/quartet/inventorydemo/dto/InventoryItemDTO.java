@@ -10,6 +10,14 @@ public class InventoryItemDTO {
   private InventoryItemDTO() {
   }
 
+  public InventoryItemDTO(String holderName, String positionName, String status,
+      Integer amount) {
+    this.holderName = holderName;
+    this.positionName = positionName;
+    this.status = status;
+    this.amount = amount;
+  }
+
   public String getHolderName() {
     return holderName;
   }

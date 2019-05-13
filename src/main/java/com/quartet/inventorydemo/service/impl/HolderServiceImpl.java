@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.InventoryItemDTO;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.RoleService;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -146,6 +148,27 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
     currentRoles.removeAll(roleService.getByRoleIDs(roleIds));
 
     return inventoryHolderRepository.saveAndFlush(holderWithRoles);
+  }
+
+  @Override
+  public Collection<InventoryItemDTO> getHolderItems(@NotNull @Valid UUID holderId) {
+    Optional<Holder> holderOptional = getByHolderID(holderId);
+    Holder holderWithItems =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
+
+    Set<InventoryItem> holderInventoryItems = holderWithItems.getInventoryItems();
+    Collection<InventoryItemDTO> holderItemsWithPositionName = new ArrayList<>();
+    for (InventoryItem current: holderInventoryItems) {
+      String positionName = current.getInventoryPosition().getName();
+      String holdername = current.getHolder().getName();
+      Integer amount = current.getAmount();
+      String status = current.getStatus();
+      holderItemsWithPositionName.add(new InventoryItemDTO(holdername, positionName, status, amount));
+
+    }
+
+    return holderItemsWithPositionName;
   }
 
   private boolean isExists(@NotNull @Valid Holder holder) {

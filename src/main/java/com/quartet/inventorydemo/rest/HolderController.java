@@ -2,6 +2,7 @@ package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.dto.HolderDTO;
+import com.quartet.inventorydemo.dto.InventoryItemDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
@@ -139,12 +140,10 @@ public class HolderController {
   // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "/{uuid}/items/", method = RequestMethod.GET)
   public ResponseEntity<?> getInventoryHolderLinksToHoldedItems(
-      @PathVariable("uuid") @UUIDString @Valid String stringUuid) {
-    UUID uuid = UUID.fromString(stringUuid);
-    Optional<Holder> holderOptional = holderService.getByHolderID(uuid);
-    holderOptional.orElseThrow(
-        () -> new ResourceNotFoundException("inventory holder with id: " + uuid + "not found"));
-    return new ResponseEntity<>(holderOptional.get().getInventoryItems(), HttpStatus.OK);
+      @PathVariable("uuid") @UUIDString @Valid String stringHolderUuid) {
+    UUID holderUUID = UUID.fromString(stringHolderUuid);
+    Collection<InventoryItemDTO> holderItems = holderService.getHolderItems(holderUUID);
+    return new ResponseEntity<>(holderItems, HttpStatus.OK);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
