@@ -145,23 +145,23 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.DELETE)
-  public ResponseEntity<?> addInventoryHolderLinkToAccount(
+  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.POST)
+  public ResponseEntity<?> addHolderLink(
       @PathVariable("login") @NotBlank @Valid String login,
       @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
     UUID holder = UUID.fromString(holderId);
-    Account result = accountService.addHolder(login, holder);
-    return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
+    accountService.addHolder(login, holder);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.POST)
-  public ResponseEntity<?> deleteInventoryHolderLinkToAccount(
+  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> deleteHolderLink(
       @PathVariable("login") @NotBlank @Valid String login,
       @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
     UUID holder = UUID.fromString(holderId);
-    Account result = accountService.removeHolder(login, holder);
-    return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
+    accountService.removeHolder(login, holder);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
