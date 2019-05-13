@@ -25,11 +25,11 @@ public interface RoleService {
 
   void remove(@NotNull @Valid UUID uuid);
 
-  Role addInventoryPositions(
-      @NotNull @Valid UUID roleId, @NotNull @Valid Set<UUID> inventoryPositionIds);
+  Role addInventoryPosition(
+      @NotNull @Valid UUID roleId, @NotNull @Valid UUID inventoryPositionId);
 
-  Role removeInventoryPositions(
-      @NotNull @Valid UUID roleId, @NotNull @Valid Set<UUID> inventoryPositionIds);
+  Role removeInventoryPosition(
+      @NotNull @Valid UUID roleId, @NotNull @Valid UUID inventoryPositionId);
 
   Set<UUID> getNotAllowedInventoryPositionIds(
       @NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> inventoryPositionIds);

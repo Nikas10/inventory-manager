@@ -92,38 +92,29 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public Role addInventoryPositions(
-      @NotNull @Valid UUID roleId, @NotNull @Valid Set<UUID> inventoryPositionIds) {
-    Optional<Role> rolerOptional = getByRoleID(roleId);
-    Role roleWithInventoryPositions =
-        rolerOptional.orElseThrow(
+  public Role addInventoryPosition(
+      @NotNull @Valid UUID roleId, @NotNull @Valid UUID inventoryPositionId) {
+    Role role =
+        getByRoleID(roleId).orElseThrow(
             () -> new ResourceNotFoundException("Role with id: " + roleId + " not found"));
-
-    Collection<InventoryPosition> positionsToAdd = inventoryPositionService.getByPositionIDs(inventoryPositionIds);
-    Set<InventoryPosition> rolePositions = roleWithInventoryPositions.getInventoryPositions();
-
-    if (positionsToAdd.isEmpty()) {
-      throw new ResourceNotFoundException("No positions with specified ids.");
-    }
-    checkPositionsPresence(rolePositions, positionsToAdd);
-
-    rolePositions.addAll(positionsToAdd);
-
-    return roleRepository.saveAndFlush(roleWithInventoryPositions);
+    InventoryPosition positionToAdd = inventoryPositionService.getByPositionID(inventoryPositionId)
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Position with id: " + inventoryPositionId + "not found"));
+    role.getInventoryPositions().add(positionToAdd);
+    return roleRepository.saveAndFlush(role);
   }
 
   @Override
-  public Role removeInventoryPositions(
-      @NotNull @Valid UUID roleId, @NotNull @Valid Set<UUID> inventoryPositionIds) {
-    Optional<Role> rolerOptional = getByRoleID(roleId);
-    Role roleWithInventoryPositions =
-        rolerOptional.orElseThrow(
+  public Role removeInventoryPosition(
+      @NotNull @Valid UUID roleId, @NotNull @Valid UUID inventoryPositionId) {
+    Role role =
+        getByRoleID(roleId).orElseThrow(
             () -> new ResourceNotFoundException("Role with id: " + roleId + " not found"));
-
-    Set<InventoryPosition> inventoryPositions = roleWithInventoryPositions.getInventoryPositions();
-    inventoryPositions.removeAll(inventoryPositionService.getByPositionIDs(inventoryPositionIds));
-
-    return roleRepository.saveAndFlush(roleWithInventoryPositions);
+    InventoryPosition positionToRemove = inventoryPositionService.getByPositionID(inventoryPositionId)
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Position with id: " + inventoryPositionId + "not found"));
+    role.getInventoryPositions().remove(positionToRemove);
+    return roleRepository.saveAndFlush(role);
   }
 
   @Override

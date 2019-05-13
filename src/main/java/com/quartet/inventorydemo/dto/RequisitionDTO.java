@@ -5,28 +5,43 @@ import java.util.List;
 
 public class RequisitionDTO {
 
+  /*Id for GET op*/
+  private String id;
+
   private String login;
+  private String assignedTo;
   private String status;
   private Date creationDate;
   private Date dueDate;
   private String description;
-  private String stringHolderUUID;
-  private List<String> stringInventoryPositionUUIDs;
+  private String holderName;
+  private String holderUUID;
+  private List<String> inventoryPositionUUIDs;
 
-  public RequisitionDTO(String login, String status, Date creationDate, Date dueDate,
-      String description, String stringHolderUUID,
-      List<String> stringInventoryPositionUUIDs) {
+  public RequisitionDTO(String login, String assignedTo, String status, Date creationDate, Date dueDate,
+      String description, String holderName, String holderUUID,
+      List<String> inventoryPositionUUIDs) {
+    this.assignedTo = assignedTo;
     this.login = login;
     this.status = status;
     this.creationDate = creationDate;
     this.dueDate = dueDate;
     this.description = description;
-    this.stringHolderUUID = stringHolderUUID;
-    this.stringInventoryPositionUUIDs = stringInventoryPositionUUIDs;
+    this.holderName = holderName;
+    this.holderUUID = holderUUID;
+    this.inventoryPositionUUIDs = inventoryPositionUUIDs;
   }
 
   private RequisitionDTO() {
   }
+
+  public void setId(String id) {this.id = id;}
+
+  public String getId() {return id;}
+
+  public String getAssignedTo() {return assignedTo;}
+
+  public void setAssignedTo(String assignedTo) {this.assignedTo = assignedTo;}
 
   public String getLogin() {
     return login;
@@ -52,20 +67,24 @@ public class RequisitionDTO {
     return description;
   }
 
-  public String getStringHolderUUID() {
-    return stringHolderUUID;
+  public String getHolderUUID() {
+    return holderUUID;
   }
 
-  public void setStringHolderUUID(String stringHolderUUID) {
-    this.stringHolderUUID = stringHolderUUID;
+  public void setHolderUUID(String holderUUID) {
+    this.holderUUID = holderUUID;
   }
 
-  public List<String> getStringInventoryPositionUUIDs() {
-    return stringInventoryPositionUUIDs;
+  public String getHolderName() {return holderName;}
+
+  public void setHolderName(String holderName) {this.holderName = holderName;}
+
+  public List<String> getInventoryPositionUUIDs() {
+    return inventoryPositionUUIDs;
   }
 
-  public void setStringInventoryPositionUUIDs(
-      List<String> stringInventoryPositionUUIDs) {
-    this.stringInventoryPositionUUIDs = stringInventoryPositionUUIDs;
+  public void setInventoryPositionUUIDs(
+      List<String> inventoryPositionUUIDs) {
+    this.inventoryPositionUUIDs = inventoryPositionUUIDs;
   }
 }
