@@ -1,15 +1,20 @@
 package com.quartet.inventorydemo.rest;
 
+import static java.util.Objects.isNull;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -40,26 +45,59 @@ public class RequisitionController {
 
   // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "/new", method = RequestMethod.POST)
-  public ResponseEntity<?> createReuisition(@RequestBody RequisitionDTO requisitionDTO) {
+  public ResponseEntity<?> createRequisition(@RequestBody RequisitionDTO requisitionDTO) {
 
     String login = requisitionDTO.getLogin();
     Date creationDate = requisitionDTO.getCreationDate();
     String description = requisitionDTO.getDescription();
     Date dueDate = requisitionDTO.getDueDate();
     String status = requisitionDTO.getStatus();
-    String stringHolderUUID = requisitionDTO.getStringHolderUUID();
-    List<String> stringInventoryPositionUUIDs = requisitionDTO.getStringInventoryPositionUUIDs();
+    String holderUUID = requisitionDTO.getHolderUUID();
+    List<String> inventoryPositionUUIDs = requisitionDTO.getInventoryPositionUUIDs();
 
     Requisition newRequisition =
-        requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(stringHolderUUID), stringInventoryPositionUUIDs);
+        requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(holderUUID), inventoryPositionUUIDs);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAll() {
-    Collection<Requisition> requisitions = requisitionService.getAll();
-    return new ResponseEntity<>(requisitions, HttpStatus.OK);
+    List<RequisitionDTO> result = requisitionService.getAll().parallelStream()
+        .map(e -> new RequisitionDTO(
+            e.getId().toString(),
+            e.getAccount().getLogin(),
+            isNull(e.getAssignedtoAccount())
+                ? StringUtils.EMPTY : e.getAssignedtoAccount().getLogin(),
+            e.getStatus(),
+            e.getCreationDate(),
+            e.getDueDate(),
+            e.getDescription(),
+            e.getHolder().getName(),
+            e.getHolder().getId().toString(),
+            Collections.emptyList()
+        )).collect(Collectors.toList());
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+  public ResponseEntity<?> getById(
+      @PathVariable("id") UUID id) {
+    Requisition requisition = requisitionService.getById(id).orElseThrow(
+        () -> new ResourceNotFoundException("Requisition with id " + id + " is not found!"));
+    RequisitionDTO result = new RequisitionDTO(
+        requisition.getId().toString(),
+        requisition.getAccount().getLogin(),
+        isNull(requisition.getAssignedtoAccount())
+            ? StringUtils.EMPTY : requisition.getAssignedtoAccount().getLogin(),
+        requisition.getStatus(),
+        requisition.getCreationDate(),
+        requisition.getDueDate(),
+        requisition.getDescription(),
+        requisition.getHolder().getName(),
+        requisition.getHolder().getId().toString(),
+        Collections.emptyList());
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)

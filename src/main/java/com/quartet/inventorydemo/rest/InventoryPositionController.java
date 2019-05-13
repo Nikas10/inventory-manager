@@ -135,7 +135,7 @@ public class InventoryPositionController {
   }
 
   @RequestMapping(value = "/{positionId}/requirements/", method = RequestMethod.GET)
-  public ResponseEntity<?> getRequirements(@PathVariable("positionID") String stringPositionID) {
+  public ResponseEntity<?> getRequirements(@PathVariable("positionId") String stringPositionID) {
     UUID positionID = UUID.fromString(stringPositionID);
     return new ResponseEntity<>(
         requirementValueService.getRequirementsValues(positionID), HttpStatus.OK);

@@ -1,14 +1,12 @@
 package com.quartet.inventorydemo.rest;
 
-import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
+import com.quartet.inventorydemo.dto.RoleDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.RoleService;
 import com.quartet.inventorydemo.util.UUIDString;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -57,9 +56,9 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRole(
-      @PathVariable("uuid") @UUIDString @Valid String stringUuid, @RequestBody Role role) {
+      @PathVariable("uuid") @UUIDString @Valid String stringUuid, @RequestBody RoleDTO role) {
     UUID uuid = UUID.fromString(stringUuid);
     Role updatedRole = roleService.update(uuid, role);
     return new ResponseEntity<>(updatedRole, HttpStatus.OK);
@@ -98,25 +97,24 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}/positions/", method = RequestMethod.PATCH)
-  public ResponseEntity<?> updateRoleLinksToInventoryPosition(
-      @PathVariable("uuid") @UUIDString @Valid String stringUuid,
-      @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
+  @RequestMapping(value = "/{roleId}/positions", method = RequestMethod.POST)
+  public ResponseEntity<?> addLinkToInventoryPosition(
+      @PathVariable("roleId") @UUIDString @Valid String roleId,
+      @RequestParam("positionId") @UUIDString @Valid String positionId) {
+    UUID role = UUID.fromString(roleId);
+    UUID position = UUID.fromString(positionId);
+    roleService.addInventoryPosition(role, position);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
 
-    UUID uuid = UUID.fromString(stringUuid);
-    Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
-    Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
-    Role result = null;
-    if (!addByIds.isEmpty()) {
-      result = roleService.addInventoryPositions(uuid, addByIds);
-    }
-    if (!removeByIds.isEmpty()) {
-      result = roleService.removeInventoryPositions(uuid, removeByIds);
-    }
-    if (result == null) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    return new ResponseEntity<>(result.getInventoryPositions(), HttpStatus.OK);
+  // @PreAuthorize("hasAuthority('STAFF')")
+  @RequestMapping(value = "/{roleId}/positions/{positionId}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> removeLinkFromInventoryPosition(
+      @PathVariable("roleId") @UUIDString @Valid String roleId,
+      @PathVariable("positionId") @UUIDString @Valid String positionId) {
+    UUID role = UUID.fromString(roleId);
+    UUID position = UUID.fromString(positionId);
+    roleService.removeInventoryPosition(role, position);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 }

@@ -2,7 +2,15 @@
   <c-default-page :storage="storage">
     <b-container>
       <h1>Requisitions</h1>
-      <b-table small :items="requisitions" :fields="fields"></b-table>
+      <b-button to="/requisitions/new">Create New</b-button>
+
+      <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
+      <b-table small :items="requisitions" :fields="fields">
+        <template slot="id" slot-scope="data">
+          <b-link :to="'/requisitions/' + data.item.id">{{data.value}}</b-link>
+        </template>
+        <template slot="creationDate" slot-scope="data">{{formatDate(data.value) }}</template>
+      </b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -17,14 +25,43 @@ module.exports = {
     return {
       fields: {
         id: {
-          label: "ID",
+          label: "Id",
+          sortable: true
+        },
+        description: {
+          label: "Description",
+          sortable: true
+        },
+        status: {
+          label: "Status",
+          sortable: true
+        },
+        creationDate: {
+          label: "Creation Date",
+          sortable: true
+        },
+        status: {
+          label: "Status",
           sortable: true
         }
       },
-      requisitions: []
+      filterOptions: [
+        //{value: 'none', text: "All"},
+        { value: "all", text: "All" },
+        { value: "user", text: "Only mine own" }
+      ],
+      requisitions: [],
+      selectedFilter: "all",
+      filter: {
+        scope: "none"
+      }
     };
   },
   methods: {
+    formatDate: function(string) {
+      let date = new Date(string);
+      return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay();
+    },
     loadPage: function() {
       if (!this.storage.user) {
         // TODO
@@ -67,7 +104,21 @@ module.exports = {
   watch: {
     "storage.user": function(a, b) {
       // TODO не очень хорошо получается, что метод дёргается 2 раза, но пока так.
-      this.loadPage();
+      if (!this.storage.user) {
+        return;
+      }
+
+      if (["admin", "staff"].includes(this.storage.user.role)) {
+        this.filter.scope = "all";
+      } else {
+        this.filter.scope = "user";
+      }
+    },
+    filter: {
+      handler: function(a, b) {
+        this.loadPage();
+      },
+      deep: true
     }
   }
 };

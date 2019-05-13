@@ -13,6 +13,7 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
+import com.quartet.inventorydemo.service.RequirementValueService;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.RoleService;
@@ -29,16 +30,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class SampleFiller implements InitializingBean {
 
-  @Autowired private PasswordEncoder passwordEncoder;
-  @Autowired private AccountService accountService;
-  @Autowired private HolderService holderService;
-  @Autowired private RoleService roleService;
-  @Autowired private RequirementService requirementService;
-  @Autowired private RequisitionProcessService requisitionProcessService;
-  @Autowired private RequisitionService requisitionService;
-  @Autowired private InventoryPositionService inventoryPositionService;
-  @Autowired private InventoryItemService inventoryItemService;
-  @Autowired private Bundle_InventoryPositionService bundle_inventoryPositionService;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private HolderService holderService;
+  @Autowired
+  private RoleService roleService;
+  @Autowired
+  private RequirementService requirementService;
+  @Autowired
+  private RequirementValueService requirementValueService;
+  @Autowired
+  private RequisitionProcessService requisitionProcessService;
+  @Autowired
+  private RequisitionService requisitionService;
+  @Autowired
+  private InventoryPositionService inventoryPositionService;
+  @Autowired
+  private InventoryItemService inventoryItemService;
+  @Autowired
+  private Bundle_InventoryPositionService bundle_inventoryPositionService;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -86,6 +99,10 @@ public class SampleFiller implements InitializingBean {
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
 
+    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), "requirement value 1");
+    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), "requirement value 1 (2)");
+    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), "requirement value 1");
+
     accountService.addHolder(user1.getLogin(), holder1.getId());
     accountService.addHolder(user1.getLogin(), holder2.getId());
     accountService.addHolder(user1.getLogin(), holder3.getId());
@@ -105,13 +122,9 @@ public class SampleFiller implements InitializingBean {
     holderService.addRole(holder4.getId(), role4.getId());
     holderService.addRole(holder4.getId(), role1.getId());
 
-    roleService.addInventoryPositions(
-        role1.getId(),
-        new HashSet<>(
-            Arrays.asList(
-                inventoryPosition1.getId(),
-                inventoryPosition2.getId(),
-                inventoryPosition3.getId())));
+    roleService.addInventoryPosition(role1.getId(), inventoryPosition1.getId());
+    roleService.addInventoryPosition(role1.getId(), inventoryPosition2.getId());
+    roleService.addInventoryPosition(role1.getId(), inventoryPosition3.getId());
 
     inventoryItemService.addToStorage(inventoryPosition1.getId(), new AddInventoryItemToStorageDTO(400));
     inventoryItemService.addToStorage(inventoryPosition2.getId(), new AddInventoryItemToStorageDTO(400));
