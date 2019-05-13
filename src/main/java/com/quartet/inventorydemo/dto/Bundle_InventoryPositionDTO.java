@@ -12,6 +12,10 @@ public class Bundle_InventoryPositionDTO {
   private Bundle_InventoryPositionDTO() {
   }
 
+  public Bundle_InventoryPositionDTO(int amount) {
+    this.amount = amount;
+  }
+
   public int getAmount() {
     return amount;
   }
