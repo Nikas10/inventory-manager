@@ -32,7 +32,7 @@
           <b-link :to="'/positions/' + data.item.id">{{data.value}}</b-link>
         </template>
       </b-table> -->
-    
+
   </c-default-page>
 </template>
 
