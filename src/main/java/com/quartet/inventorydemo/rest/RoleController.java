@@ -1,14 +1,12 @@
 package com.quartet.inventorydemo.rest;
 
-import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
+import com.quartet.inventorydemo.dto.RoleDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.RoleService;
 import com.quartet.inventorydemo.util.UUIDString;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,9 +56,9 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRole(
-      @PathVariable("uuid") @UUIDString @Valid String stringUuid, @RequestBody Role role) {
+      @PathVariable("uuid") @UUIDString @Valid String stringUuid, @RequestBody RoleDTO role) {
     UUID uuid = UUID.fromString(stringUuid);
     Role updatedRole = roleService.update(uuid, role);
     return new ResponseEntity<>(updatedRole, HttpStatus.OK);
