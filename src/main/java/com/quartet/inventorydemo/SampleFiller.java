@@ -1,6 +1,8 @@
 package com.quartet.inventorydemo;
 
+import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.model.Account;
+import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requirement;
@@ -73,8 +75,20 @@ public class SampleFiller implements InitializingBean {
     InventoryPosition inventoryPosition5 = inventoryPositionService
         .add("inventory position name 5", "inventory position description 5", false);
 
+    InventoryPosition bundle1 = inventoryPositionService
+        .add("inventory position bundle name 1", "inventory position bundle description 1", true);
+    InventoryPosition bundle2 = inventoryPositionService
+        .add("inventory position bundle name 2", "inventory position bundle description 2", true);
+
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
+
+    bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition1.getId(),
+        new Bundle_InventoryPositionDTO(3));
+    bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition2.getId(),
+        new Bundle_InventoryPositionDTO(1));
+    bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition3.getId(),
+        new Bundle_InventoryPositionDTO(2));
 
     accountService.addHolders(user1.getLogin(),
         new HashSet<>(Arrays.asList(holder1.getId(), holder2.getId(), holder3.getId())));
@@ -95,12 +109,17 @@ public class SampleFiller implements InitializingBean {
     inventoryItemService.addToStorage(inventoryPosition4.getId(), 400);
     inventoryItemService.addToStorage(inventoryPosition5.getId(), 400);
 
+    inventoryItemService.addToStorage(bundle1.getId(), 100);
+    inventoryItemService.addToStorage(bundle2.getId(), 100);
+
     inventoryItemService.moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), 1);
     inventoryItemService.moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), 2);
     inventoryItemService.moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), 3);
     inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), 4);
     inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), 5);
 
+    inventoryItemService.moveFromStorageToHolder(bundle1.getId(), holder1.getId(), 1);
+    inventoryItemService.moveFromStorageToHolder(bundle2.getId(), holder2.getId(), 2);
 
     roleService.addInventoryPositions(role1.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition1.getId())));
