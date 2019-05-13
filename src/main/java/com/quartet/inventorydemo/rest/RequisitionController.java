@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.RequisitionDTO;
+import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
@@ -60,6 +61,14 @@ public class RequisitionController {
   public ResponseEntity<?> getAll() {
     Collection<Requisition> requisitions = requisitionService.getAll();
     return new ResponseEntity<>(requisitions, HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+  public ResponseEntity<?> getById(
+      @PathVariable("id") UUID id) {
+    Requisition requisition = requisitionService.getById(id).orElseThrow(
+        () -> new ResourceNotFoundException("Requisition with id " + id + " is not found!"));
+    return new ResponseEntity<>(requisition, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
