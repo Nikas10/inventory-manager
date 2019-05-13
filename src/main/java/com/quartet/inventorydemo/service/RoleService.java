@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.RoleDTO;
 import com.quartet.inventorydemo.model.Role;
 import java.util.Collection;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface RoleService {
 
   Role add(@NotNull @Valid Role role);
 
-  Role update(@NotNull @Valid UUID uuid, @NotNull @Valid Role role);
+  Role update(@NotNull @Valid UUID uuid, @NotNull @Valid RoleDTO role);
 
   void remove(@NotNull @Valid UUID uuid);
 
