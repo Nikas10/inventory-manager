@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
 import static java.util.Objects.isNull;
+
 import com.quartet.inventorydemo.dto.RoleDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -75,13 +76,19 @@ public class RoleServiceImpl implements RoleService {
     Role roleToModify =
         getByRoleID(uuid).orElseThrow(
             () -> new ResourceNotFoundException("Role with id: " + uuid + "not found"));
-    Optional<Role> validation = getByRoleName(role.getName());
-    if (validation.isPresent() && !validation.get().getName().equals(roleToModify.getName())) {
+
+    if (!isNull(role.getName())) {
+      Optional<Role> validation = getByRoleName(role.getName());
+      if (validation.isPresent() && !validation.get().getName().equals(roleToModify.getName())) {
         throw new IllegalStateException("Trying to set a name which is already taken!");
-    } else {
-      if (!isNull(role.getName())) roleToModify.setName(role.getName());
-      if (!isNull(role.getDescription())) roleToModify.setDescription(role.getDescription());
+      }
+      roleToModify.setName(role.getName());
     }
+
+    if (!isNull(role.getDescription())) {
+      roleToModify.setDescription(role.getDescription());
+    }
+
     return roleRepository.saveAndFlush(roleToModify);
   }
 
@@ -102,7 +109,8 @@ public class RoleServiceImpl implements RoleService {
             () -> new ResourceNotFoundException("Role with id: " + roleId + " not found"));
     InventoryPosition positionToAdd = inventoryPositionService.getByPositionID(inventoryPositionId)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Position with id: " + inventoryPositionId + "not found"));
+            () -> new ResourceNotFoundException(
+                "Position with id: " + inventoryPositionId + "not found"));
     role.getInventoryPositions().add(positionToAdd);
     return roleRepository.saveAndFlush(role);
   }
@@ -113,9 +121,11 @@ public class RoleServiceImpl implements RoleService {
     Role role =
         getByRoleID(roleId).orElseThrow(
             () -> new ResourceNotFoundException("Role with id: " + roleId + " not found"));
-    InventoryPosition positionToRemove = inventoryPositionService.getByPositionID(inventoryPositionId)
+    InventoryPosition positionToRemove = inventoryPositionService
+        .getByPositionID(inventoryPositionId)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Position with id: " + inventoryPositionId + "not found"));
+            () -> new ResourceNotFoundException(
+                "Position with id: " + inventoryPositionId + "not found"));
     role.getInventoryPositions().remove(positionToRemove);
     return roleRepository.saveAndFlush(role);
   }
@@ -147,10 +157,12 @@ public class RoleServiceImpl implements RoleService {
     return alreadyExists.isPresent();
   }
 
-  private void checkPositionsPresence(Set<InventoryPosition> rolePositions, Collection<InventoryPosition> positionsToAdd) {
-    for (InventoryPosition currentPosition: positionsToAdd) {
-      if(rolePositions.contains(currentPosition)) {
-        throw new ResourceAlreadyExistsException("Position with id: " + currentPosition.getId() + " already exists for selected role.");
+  private void checkPositionsPresence(Set<InventoryPosition> rolePositions,
+      Collection<InventoryPosition> positionsToAdd) {
+    for (InventoryPosition currentPosition : positionsToAdd) {
+      if (rolePositions.contains(currentPosition)) {
+        throw new ResourceAlreadyExistsException(
+            "Position with id: " + currentPosition.getId() + " already exists for selected role.");
       }
     }
   }
