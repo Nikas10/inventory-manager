@@ -21,6 +21,9 @@ public class RoleDTO {
     this.description = description;
   }
 
+  private RoleDTO() {
+  }
+
   public RoleDTO(String name, String description) {
     this.name = name;
     this.description = description;
