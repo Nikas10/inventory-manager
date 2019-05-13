@@ -14,7 +14,7 @@
         </b-form-group>
         <b-form-group label="Description:">
           <b-form-textarea
-            id="email"
+            id="description"
             :disabled="!changesAllowed"
             v-model="form.description"
             placeholder="Description"
