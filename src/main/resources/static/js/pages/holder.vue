@@ -69,8 +69,8 @@ module.exports = {
         }
       },
       itemsFields: {
-        inventoryPosition: {
-          label: "InventoryPosition",
+        name: {
+          label: "Name",
           sortable: true
         },
         status: {
