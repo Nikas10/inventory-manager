@@ -4,6 +4,7 @@ import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requirement;
+import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
@@ -11,9 +12,13 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
+import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.RoleService;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.UUID;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +37,8 @@ public class SampleFiller implements InitializingBean {
   private RoleService roleService;
   @Autowired
   private RequirementService requirementService;
+  @Autowired
+  private RequisitionService requisitionService;
   @Autowired
   private InventoryPositionService inventoryPositionService;
   @Autowired
@@ -89,6 +96,9 @@ public class SampleFiller implements InitializingBean {
     holderService
         .addRoles(holder4.getId(), new HashSet<>(Arrays.asList(role4.getId(), role1.getId())));
 
+    roleService.addInventoryPositions(role1.getId(), new HashSet<>(Arrays.asList(inventoryPosition1.getId(),
+        inventoryPosition2.getId(), inventoryPosition3.getId())));
+
     inventoryItemService.addToStorage(inventoryPosition1.getId(), 400);
     inventoryItemService.addToStorage(inventoryPosition2.getId(), 400);
     inventoryItemService.addToStorage(inventoryPosition3.getId(), 400);
@@ -101,14 +111,59 @@ public class SampleFiller implements InitializingBean {
     inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), 4);
     inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), 5);
 
+    HashSet<UUID> adminHoldersIds = new HashSet<>();
+    HashSet<UUID> staffHoldersIds = new HashSet<>();
 
-    roleService.addInventoryPositions(role1.getId(),
+    adminHoldersIds.add(holder1.getId());
+    adminHoldersIds.add(holder2.getId());
+    adminHoldersIds.add(holder3.getId());
+    adminHoldersIds.add(holder4.getId());
+    adminHoldersIds.add(holder5.getId());
+
+    staffHoldersIds.add(holder1.getId());
+    staffHoldersIds.add(holder2.getId());
+    staffHoldersIds.add(holder3.getId());
+    staffHoldersIds.add(holder5.getId());
+
+    accountService.addHolders(admin.getLogin(), adminHoldersIds);
+    accountService.addHolders(staff.getLogin(), staffHoldersIds);
+
+
+    /*roleService.addInventoryPositions(role1.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition1.getId())));
     roleService.addInventoryPositions(role2.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition2.getId(), inventoryPosition3.getId(),
             inventoryPosition4.getId())));
     roleService.addInventoryPositions(role3.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition3.getId(), inventoryPosition4.getId(),
-            inventoryPosition5.getId())));
+            inventoryPosition5.getId())));*/
+
+    /*Requisition adminReq = new Requisition(admin, admin, "REVIEW_NEEDED", new Date(), new Date(), "admin req 1.");
+    Requisition staffReq = new Requisition(admin, admin, "REVIEW_NEEDED", new Date(), new Date(), "staff req 1.");
+    Requisition userReq = new Requisition(admin, admin, "REVIEW_NEEDED", new Date(), new Date(), "user req 1.");
+*/
+    ArrayList<String> stringPositionIds = new ArrayList<>();
+    stringPositionIds.add(inventoryPosition1.getId().toString());
+    stringPositionIds.add(inventoryPosition2.getId().toString());
+    stringPositionIds.add(inventoryPosition3.getId().toString());
+
+    HashSet<UUID> roleIds = new HashSet<>();
+    roleIds.add(role1.getId());
+    roleIds.add(role2.getId());
+    roleIds.add(role3.getId());
+
+    //holderService.addRoles(holder1.getId(), roleIds);
+
+    Date creationDate = new Date();
+    Date dueDate = new Date(creationDate.getTime() + 1000000000);
+    requisitionService.add(
+        user1.getLogin(),
+        creationDate,
+        "user1 req 1.",
+        dueDate,
+        "REVIEW_NEEDED",
+        holder1.getId(),
+        stringPositionIds
+        );
   }
 }
