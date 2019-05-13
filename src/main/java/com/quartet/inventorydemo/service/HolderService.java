@@ -34,9 +34,9 @@ public interface HolderService {
 
   void remove(@NotNull @Valid UUID uuid);
 
-  Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
+  Holder addRole(@NotNull @Valid UUID holderId, @NotNull @Valid UUID roleId);
 
-  Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
+  Holder removeRole(@NotNull @Valid UUID holderId, @NotNull @Valid UUID roleId);
 
   Collection<InventoryItemDTOFromHolder> getHolderItems(@NotNull @Valid UUID holderId);
 }

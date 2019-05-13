@@ -29,7 +29,7 @@ public interface AccountService {
 
   void remove(@NotBlank @Valid String login);
 
-  Account addHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds);
+  Account addHolder(@NotBlank @Valid String login, @NotNull @Valid UUID holderId);
 
-  Account removeHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds);
+  Account removeHolder(@NotBlank @Valid String login, @NotNull @Valid UUID holderId);
 }

@@ -120,35 +120,26 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   }
 
   @Override
-  public Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds) {
-    Optional<Holder> holderOptional = getByHolderID(holderId);
+  public Holder addRole(@NotNull @Valid UUID holderId, @NotNull @Valid UUID roleId) {
     Holder holderWithRoles =
-        holderOptional.orElseThrow(
-            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
-
-    Set<Role> holderRoles = holderWithRoles.getRoles();
-    Collection<Role> rolesToAdd = roleService.getByRoleIDs(roleIds);
-
-    if (rolesToAdd.isEmpty()) {
-      throw new ResourceNotFoundException("No roles with specified ids.");
-    }
-    checkRolePresence(holderRoles, rolesToAdd);
-
-    holderRoles.addAll(rolesToAdd);
-
+        getByHolderID(holderId).orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " is not found"));
+    Role roleToAdd = roleService.getByRoleID(roleId)
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Role with id: " + roleId + " is not found"));
+    holderWithRoles.getRoles().add(roleToAdd);
     return inventoryHolderRepository.saveAndFlush(holderWithRoles);
   }
 
   @Override
-  public Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds) {
-    Optional<Holder> holderOptional = getByHolderID(holderId);
+  public Holder removeRole(@NotNull @Valid UUID holderId, @NotNull @Valid UUID roleId) {
     Holder holderWithRoles =
-        holderOptional.orElseThrow(
-            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
-
-    Set<Role> currentRoles = holderWithRoles.getRoles();
-    currentRoles.removeAll(roleService.getByRoleIDs(roleIds));
-
+        getByHolderID(holderId).orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " is not found"));
+    Role roleToAdd = roleService.getByRoleID(roleId)
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Role with id: " + roleId + " is not found"));
+    holderWithRoles.getRoles().remove(roleToAdd);
     return inventoryHolderRepository.saveAndFlush(holderWithRoles);
   }
 
