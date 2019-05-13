@@ -10,6 +10,8 @@ public class RequisitionInventoryPositionDTO {
   private String description;
   private Integer amount;
 
+  public RequisitionInventoryPositionDTO() {}
+
   public RequisitionInventoryPositionDTO(String id, String name, String description,
       Integer amount) {
     this.id = id;
