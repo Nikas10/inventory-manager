@@ -105,10 +105,10 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{holderId}/roles/{roleId}", method = RequestMethod.POST)
+  @RequestMapping(value = "/{holderId}/roles", method = RequestMethod.POST)
   public ResponseEntity<?> addLinkToRole(
       @PathVariable("holderId") @UUIDString @Valid String holderId,
-      @PathVariable("roleId") @UUIDString @Valid String roleId) {
+      @RequestParam("roleId") @UUIDString @Valid String roleId) {
     UUID holder = UUID.fromString(holderId);
     UUID role = UUID.fromString(roleId);
     holderService.addRole(holder, role);
@@ -116,10 +116,10 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{holderId}/roles/{roleId}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/{holderId}/roles", method = RequestMethod.DELETE)
   public ResponseEntity<?> removeLinkToRole(
       @PathVariable("holderId") @UUIDString @Valid String holderId,
-      @PathVariable("roleId") @UUIDString @Valid String roleId) {
+      @RequestParam("roleId") @UUIDString @Valid String roleId) {
     UUID holder = UUID.fromString(holderId);
     UUID role = UUID.fromString(roleId);
     holderService.removeRole(holder, role);

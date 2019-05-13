@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -145,20 +146,20 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.POST)
+  @RequestMapping(value = "/{login}/holders", method = RequestMethod.POST)
   public ResponseEntity<?> addHolderLink(
       @PathVariable("login") @NotBlank @Valid String login,
-      @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
+      @RequestParam("holderId") @NotBlank @UUIDString String holderId) {
     UUID holder = UUID.fromString(holderId);
     accountService.addHolder(login, holder);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/{login}/holders", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteHolderLink(
       @PathVariable("login") @NotBlank @Valid String login,
-      @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
+      @RequestParam("holderId") @NotBlank @UUIDString String holderId) {
     UUID holder = UUID.fromString(holderId);
     accountService.removeHolder(login, holder);
     return new ResponseEntity<>(HttpStatus.CREATED);
