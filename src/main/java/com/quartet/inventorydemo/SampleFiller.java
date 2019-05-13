@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo;
 
 import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
+import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -99,9 +100,12 @@ public class SampleFiller implements InitializingBean {
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
 
-    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), "requirement value 1");
-    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), "requirement value 1 (2)");
-    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), "requirement value 1");
+    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), new RequirementValueUpdateDTO(
+        "requirement value 1"));
+    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), new RequirementValueUpdateDTO(
+        "requirement value 1 2"));
+    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), new RequirementValueUpdateDTO(
+        "requirement value 1"));
 
     accountService.addHolder(user1.getLogin(), holder1.getId());
     accountService.addHolder(user1.getLogin(), holder2.getId());
