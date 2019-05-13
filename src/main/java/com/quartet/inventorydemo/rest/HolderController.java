@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.rest;
 import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.dto.InventoryItemDTO;
+import com.quartet.inventorydemo.dto.InventoryItemDTOFromHolder;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
@@ -77,11 +78,9 @@ public class HolderController {
   public ResponseEntity<?> updateInventoryHolder(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody HolderDTO holderDTO) {
-    String description = holderDTO.getDescription();
-    String name = holderDTO.getName();
     UUID uuid = UUID.fromString(stringUuid);
 
-    Holder updatedHolder = holderService.update(uuid, description, name);
+    Holder updatedHolder = holderService.update(uuid, holderDTO);
     return new ResponseEntity<>(updatedHolder, HttpStatus.OK);
   }
 
@@ -142,7 +141,7 @@ public class HolderController {
   public ResponseEntity<?> getInventoryHolderLinksToHoldedItems(
       @PathVariable("uuid") @UUIDString @Valid String stringHolderUuid) {
     UUID holderUUID = UUID.fromString(stringHolderUuid);
-    Collection<InventoryItemDTO> holderItems = holderService.getHolderItems(holderUUID);
+    Collection<InventoryItemDTOFromHolder> holderItems = holderService.getHolderItems(holderUUID);
     return new ResponseEntity<>(holderItems, HttpStatus.OK);
   }
 
