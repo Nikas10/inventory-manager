@@ -14,7 +14,7 @@
       </b-form-group>
 
       <b-form-group label="Creator:">
-        <b-form-input id="creator" disabled v-model="form.creator" required placeholder="Creator"></b-form-input>
+        <b-form-input id="creator" disabled v-model="form.login" required placeholder="Creator"></b-form-input>
       </b-form-group>
 
       <b-form-group label="Assigned To:">
@@ -38,6 +38,14 @@
       <b-form-group label="Creation Date:">
         <b-form-input id="creationDate" disabled v-model="form.creationDate" type="date" required></b-form-input>
       </b-form-group>
+
+      <h2>
+        Requested Positions
+      </h2>
+
+      <b-table small :items="positions" :fields="positionsFields">
+
+      </b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -52,20 +60,46 @@ module.exports = {
     return {
       form: {
         description: "",
-        creator: "",
+        login: "",
         status: "new",
-        creationDate: "",
-        dueDate: "",
+        creationDate: this.formatDate(Date.now()),
+        dueDate: null,
         assigned: ""
       },
-      requisition: {}
+      positionsFields: {
+        name: {
+          label: "Name",
+          sortable: true
+        },
+        amount: {
+          label: "Amount",
+          sortable: true
+        }
+      },
+      requisition: {},
+      positions: []
     };
   },
   methods: {
+    appendZeroes: function(n) {
+      if (n <= 9) {
+        return "0" + n;
+      }
+      return n;
+    },
+    formatDate(string) {
+      let date = new Date(string);
+
+      let year = date.getFullYear();
+      let month = this.appendZeroes(date.getMonth() + 1)
+      let day = this.appendZeroes(date.getDate());
+
+      return year + "-" + month + "-" + day;
+    },
     loadPage: function() {
-      if (this.$route.params.id == "new") {
-      } else {
+      if (this.$route.params.id != "new") {
         this.loadRequisition();
+        this.loadPositions();
       }
     },
     loadRequisition: function() {
@@ -77,6 +111,16 @@ module.exports = {
         .then(function(response) {
           self.form = response.data;
         });
+    },
+    loadPositions: function() {
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      this.$server
+        .get("/requisitions/" + requisitonId + '/positions/')
+        .then(function(response) {
+          self.positions = response.data;
+        });
     }
   },
   mounted: function() {
@@ -84,7 +128,7 @@ module.exports = {
   },
   watch: {
     $route: function(to, from) {
-      //this.loadPage();
+      this.loadPage();
     }
   }
 };
