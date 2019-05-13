@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -42,7 +43,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   public RequirementValue add(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull String requirementValue) {
+      @NotNull @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO) {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
@@ -64,8 +65,13 @@ public class RequirementValueServiceImpl implements RequirementValueService {
               + "already exists.");
     }
 
-    RequirementValue newRequirementValue =
-        new RequirementValue(optionalRequirement.get(), optionalPosition.get(), requirementValue);
+    RequirementValue newRequirementValue = requirementValueOptional.get();
+
+    if (!"".equals(requirementValueUpdateDTO.getRequirementValue()) &&
+        (requirementValueUpdateDTO.getRequirementValue() != null)) {
+      newRequirementValue.setValue(requirementValueUpdateDTO.getRequirementValue());
+    }
+
     return requirementValueRepo.saveAndFlush(newRequirementValue);
   }
 
@@ -73,7 +79,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   public RequirementValue update(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull String requirementValue) {
+      @NotNull @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO) {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
@@ -95,7 +101,12 @@ public class RequirementValueServiceImpl implements RequirementValueService {
                     + positionID
                     + " not found."));
     RequirementValue toChange = requirementValueOptional.get();
-    toChange.setValue(requirementValue);
+
+    if ("".equals(requirementValueUpdateDTO.getRequirementValue()) &&
+        (requirementValueUpdateDTO.getRequirementValue() != null)) {
+      toChange.setValue(requirementValueUpdateDTO.getRequirementValue());
+    }
+
     return requirementValueRepo.saveAndFlush(toChange);
   }
 

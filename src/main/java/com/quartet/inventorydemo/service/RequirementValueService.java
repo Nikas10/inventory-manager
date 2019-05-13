@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.model.RequirementValue;
 import java.util.Collection;
 import java.util.Optional;
@@ -17,12 +18,12 @@ public interface RequirementValueService {
   RequirementValue add(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull String requirementValue);
+      @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO);
 
   RequirementValue update(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull String requirementValue);
+      @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO);
 
   Collection<RequirementValue> getRequirementsValues(@NotNull @Valid UUID positionID);
 

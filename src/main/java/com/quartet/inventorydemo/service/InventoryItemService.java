@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
 import com.quartet.inventorydemo.model.InventoryItem;
 import java.util.Collection;
 import java.util.Optional;
@@ -34,12 +35,12 @@ public interface InventoryItemService {
   InventoryItem moveFromHolderToStorage(
       @NotNull @Valid UUID inventoryPositionId,
       @NotNull @Valid UUID holderId,
-      @Positive @Valid Integer amountToMove);
+      @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO);
 
   InventoryItem moveFromStorageToHolder(
       @NotNull @Valid UUID inventoryPositionId,
       @NotNull @Valid UUID holderId,
-      @Positive @Valid Integer amountToMove);
+      @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO);
 
   InventoryItem packBundlesInStorage(
       @NotNull @Valid UUID bundleInventoryPositionId, @Positive @Valid Integer amountOfBundles);
@@ -49,8 +50,10 @@ public interface InventoryItemService {
       @NotNull @Valid UUID bundleInventoryPositionId, @Positive @Valid Integer amountOfBundles);
 
   InventoryItem addToStorage(
-      @NotNull @Valid UUID inventoryPositionId, @Positive @Valid Integer amount);
+      @NotNull @Valid UUID inventoryPositionId,
+      @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO);
 
   void removeFromStorage(
-      @NotNull @Valid UUID inventoryPositionId, @Positive @Valid Integer amount);
+      @NotNull @Valid UUID inventoryPositionId,
+      @NotNull @Valid AddInventoryItemToStorageDTO addInventoryItemToStorageDTO);
 }
