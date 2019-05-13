@@ -5,9 +5,7 @@ import java.util.List;
 
 public class RequisitionDTO {
 
-  /*Id for GET op*/
   private String id;
-
   private String login;
   private String assignedTo;
   private String status;
@@ -18,9 +16,10 @@ public class RequisitionDTO {
   private String holderUUID;
   private List<String> inventoryPositionUUIDs;
 
-  public RequisitionDTO(String login, String assignedTo, String status, Date creationDate, Date dueDate,
-      String description, String holderName, String holderUUID,
+  public RequisitionDTO(String id, String login, String assignedTo, String status,
+      Date creationDate, Date dueDate, String description, String holderName, String holderUUID,
       List<String> inventoryPositionUUIDs) {
+    this.id = id;
     this.assignedTo = assignedTo;
     this.login = login;
     this.status = status;
