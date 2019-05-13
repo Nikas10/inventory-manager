@@ -116,7 +116,7 @@ public class RequisitionController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/{id}/positions", method = RequestMethod.GET)
+  @RequestMapping(value = "/{id}/positions/", method = RequestMethod.GET)
   public ResponseEntity<?> getPositionsById(
       @PathVariable("id") @NotBlank @Valid @UUIDString String id) {
     UUID requestId = UUID.fromString(id);
@@ -134,7 +134,7 @@ public class RequisitionController {
     return new ResponseEntity<>(requestedItems, HttpStatus.OK);
   }
 
-  @RequestMapping(value = "/{requisitionId}/positions", method = RequestMethod.POST)
+  @RequestMapping(value = "/{requisitionId}/positions/", method = RequestMethod.POST)
   public ResponseEntity<?> addNewPositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
       @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId,
