@@ -1,6 +1,8 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.dto.InventoryItemDTO;
+import com.quartet.inventorydemo.dto.InventoryItemDTOFromHolder;
 import com.quartet.inventorydemo.model.Holder;
 import java.util.Collection;
 import java.util.Optional;
@@ -27,11 +29,14 @@ public interface HolderService {
   Holder update(
       @NotNull @Valid UUID uuid, @NotNull @Valid String description, @NotNull @Valid String name);
 
+  Holder update(
+      @NotNull @Valid UUID holderId, @NotNull @Valid HolderDTO holderDTO);
+
   void remove(@NotNull @Valid UUID uuid);
 
   Holder addRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
 
   Holder removeRoles(@NotNull @Valid UUID holderId, @NotNull @Valid Set<UUID> roleIds);
 
-  Collection<InventoryItemDTO> getHolderItems(@NotNull @Valid UUID holderId);
+  Collection<InventoryItemDTOFromHolder> getHolderItems(@NotNull @Valid UUID holderId);
 }

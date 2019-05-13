@@ -1,6 +1,8 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.HolderDTO;
 import com.quartet.inventorydemo.dto.InventoryItemDTO;
+import com.quartet.inventorydemo.dto.InventoryItemDTOFromHolder;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -151,23 +153,43 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   }
 
   @Override
-  public Collection<InventoryItemDTO> getHolderItems(@NotNull @Valid UUID holderId) {
+  public Collection<InventoryItemDTOFromHolder> getHolderItems(@NotNull @Valid UUID holderId) {
     Optional<Holder> holderOptional = getByHolderID(holderId);
     Holder holderWithItems =
         holderOptional.orElseThrow(
             () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
 
     Set<InventoryItem> holderInventoryItems = holderWithItems.getInventoryItems();
-    Collection<InventoryItemDTO> holderItemsWithPositionName = new ArrayList<>();
+    Collection<InventoryItemDTOFromHolder> holderItemsWithPositionName = new ArrayList<>();
     for (InventoryItem current: holderInventoryItems) {
       String positionName = current.getInventoryPosition().getName();
-      String holdername = current.getHolder().getName();
+      UUID id = current.getInventoryPosition().getId();
       Integer amount = current.getAmount();
       String status = current.getStatus();
-      holderItemsWithPositionName.add(new InventoryItemDTO(holdername, positionName, status, amount));
+      holderItemsWithPositionName.add(new InventoryItemDTOFromHolder(id, positionName, status, amount));
     }
 
     return holderItemsWithPositionName;
+  }
+
+  @Override
+  public Holder update(@NotNull @Valid UUID holderId, @NotNull @Valid HolderDTO holderDTO) {
+    Optional<Holder> holderOptional = getByHolderID(holderId);
+    Holder holderToUpdate =
+        holderOptional.orElseThrow(
+            () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
+
+    if (!"".equals(holderDTO.getName()) &&
+        holderDTO.getName() != null) {
+      holderToUpdate.setName(holderDTO.getName());
+    }
+
+    if (!"".equals(holderDTO.getDescription()) &&
+        holderDTO.getDescription() != null) {
+      holderToUpdate.setDescription(holderDTO.getDescription());
+    }
+
+    return inventoryHolderRepository.saveAndFlush(holderToUpdate);
   }
 
   private boolean isExists(@NotNull @Valid Holder holder) {
