@@ -1,5 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
+import static java.util.Objects.isNull;
+import com.quartet.inventorydemo.dto.RoleDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -16,7 +18,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -70,15 +71,17 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  public Role update(@NotNull @Valid UUID uuid, @NotNull @Valid Role role) {
-    Optional<Role> roleOptional = getByRoleID(uuid);
-    if (isExists(role)) {
-      throw new ResourceAlreadyExistsException("role with same name already exists");
-    }
+  public Role update(@NotNull @Valid UUID uuid, @NotNull @Valid RoleDTO role) {
     Role roleToModify =
-        roleOptional.orElseThrow(
+        getByRoleID(uuid).orElseThrow(
             () -> new ResourceNotFoundException("Role with id: " + uuid + "not found"));
-    BeanUtils.copyProperties(role, roleToModify, "id", "inventoryPositions", "holders");
+    Optional<Role> validation = getByRoleName(role.getName());
+    if (validation.isPresent() && !validation.get().getName().equals(roleToModify.getName())) {
+        throw new IllegalStateException("Trying to set a name which is already taken!");
+    } else {
+      if (!isNull(role.getName())) roleToModify.setName(role.getName());
+      if (!isNull(role.getDescription())) roleToModify.setDescription(role.getDescription());
+    }
     return roleRepository.saveAndFlush(roleToModify);
   }
 
