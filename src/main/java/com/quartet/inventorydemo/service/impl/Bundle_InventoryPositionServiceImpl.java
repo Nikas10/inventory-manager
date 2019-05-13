@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.BundlePartsDTO;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.exception.NotBundleException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
@@ -62,7 +63,7 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
   }
 
   @Override
-  public Bundle_InventoryPosition add(
+  public BundlePartsDTO add(
       @NotNull @Valid UUID bundleId,
       @NotNull @Valid UUID positionId,
       @NotNull Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
@@ -91,11 +92,13 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
 
     Bundle_InventoryPosition newBundleInventoryPosition =
         new Bundle_InventoryPosition(position, bundle, bundle_inventoryPositionDTO.getAmount());
-    return bundle_InventoryPositionRepo.saveAndFlush(newBundleInventoryPosition);
+    bundle_InventoryPositionRepo.saveAndFlush(newBundleInventoryPosition);
+
+    return new BundlePartsDTO(position.getName(), position.getId().toString(), bundle_inventoryPositionDTO.getAmount().toString());
   }
 
   @Override
-  public Bundle_InventoryPosition update(@NotNull @Valid UUID bundleId,
+  public BundlePartsDTO update(@NotNull @Valid UUID bundleId,
       @NotNull @Valid UUID positionId,
       @NotNull @Valid Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
 
@@ -132,7 +135,9 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
                 + " ."));
 
     toChange.setAmount(bundle_inventoryPositionDTO.getAmount());
-    return bundle_InventoryPositionRepo.saveAndFlush(toChange);
+    bundle_InventoryPositionRepo.saveAndFlush(toChange);
+
+    return new BundlePartsDTO(position.getName(), position.getId().toString(), bundle_inventoryPositionDTO.getAmount().toString());
   }
 
   @Override

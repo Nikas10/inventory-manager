@@ -170,13 +170,15 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
         holderOptional.orElseThrow(
             () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
 
-    if (!"".equals(holderDTO.getName()) &&
-        holderDTO.getName() != null) {
+    if ((holderDTO.getName() != null) &&
+        !"".equals(holderDTO.getName()))
+    {
       holderToUpdate.setName(holderDTO.getName());
     }
 
-    if (!"".equals(holderDTO.getDescription()) &&
-        holderDTO.getDescription() != null) {
+    if ((holderDTO.getDescription() != null) &&
+        !"".equals(holderDTO.getDescription()))
+    {
       holderToUpdate.setDescription(holderDTO.getDescription());
     }
 

@@ -47,9 +47,9 @@ public class RequirementValueServiceImpl implements RequirementValueService {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
-    optionalPosition.orElseThrow(
+    InventoryPosition position = optionalPosition.orElseThrow(
         () -> new ResourceNotFoundException("Position with id: " + positionID + " not found."));
-    optionalRequirement.orElseThrow(
+    Requirement requirement = optionalRequirement.orElseThrow(
         () ->
             new ResourceNotFoundException("Requirement with id: " + requirementID + " not found."));
 
@@ -65,14 +65,16 @@ public class RequirementValueServiceImpl implements RequirementValueService {
               + "already exists.");
     }
 
-    RequirementValue newRequirementValue = requirementValueOptional.get();
+
 
     if (!"".equals(requirementValueUpdateDTO.getRequirementValue()) &&
         (requirementValueUpdateDTO.getRequirementValue() != null)) {
+      RequirementValue newRequirementValue = new RequirementValue(requirement, position, requirementValueUpdateDTO.getRequirementValue());
       newRequirementValue.setValue(requirementValueUpdateDTO.getRequirementValue());
+      return requirementValueRepo.saveAndFlush(newRequirementValue);
     }
 
-    return requirementValueRepo.saveAndFlush(newRequirementValue);
+    return null;
   }
 
   @Override

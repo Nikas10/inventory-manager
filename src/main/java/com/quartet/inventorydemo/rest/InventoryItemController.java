@@ -1,7 +1,7 @@
 package com.quartet.inventorydemo.rest;
 
 
-import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
+import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
@@ -86,9 +86,9 @@ public class InventoryItemController {
   @RequestMapping(value = "/storage/positions/{uuid}", method = RequestMethod.POST)
   public ResponseEntity<?> addInventoryItemToStorage(
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
+      @RequestBody AmountDTO amountDTO) {
     UUID uuid = UUID.fromString(positionId);
-    inventoryItemService.addToStorage(uuid, addInventoryItemToStorageDTO);
+    inventoryItemService.addToStorage(uuid, amountDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -96,9 +96,9 @@ public class InventoryItemController {
   @RequestMapping(value = "/storage/positions/{uuid}", method = RequestMethod.DELETE)
   public ResponseEntity<?> removeInventoryItemFromStorage(
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
+      @RequestBody AmountDTO amountDTO) {
     UUID uuid = UUID.fromString(positionId);
-    inventoryItemService.removeFromStorage(uuid, addInventoryItemToStorageDTO);
+    inventoryItemService.removeFromStorage(uuid, amountDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -107,10 +107,10 @@ public class InventoryItemController {
   public ResponseEntity<?> moveInventoryItemToStorage(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
+      @RequestBody AmountDTO amountDTO) {
     UUID holder = UUID.fromString(holderId);
     UUID position = UUID.fromString(positionId);
-    inventoryItemService.moveFromHolderToStorage(position, holder, addInventoryItemToStorageDTO);
+    inventoryItemService.moveFromHolderToStorage(position, holder, amountDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -119,10 +119,10 @@ public class InventoryItemController {
   public ResponseEntity<?> moveInventoryItemFromStorage(
       @PathVariable("holder") @UUIDString @Valid String holderId,
       @PathVariable("uuid") @UUIDString @Valid String positionId,
-      @RequestBody AddInventoryItemToStorageDTO addInventoryItemToStorageDTO) {
+      @RequestBody AmountDTO amountDTO) {
     UUID holder = UUID.fromString(holderId);
     UUID position = UUID.fromString(positionId);
-    inventoryItemService.moveFromStorageToHolder(position, holder, addInventoryItemToStorageDTO);
+    inventoryItemService.moveFromStorageToHolder(position, holder, amountDTO);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

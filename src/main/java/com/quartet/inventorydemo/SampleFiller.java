@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo;
 
-import com.quartet.inventorydemo.dto.AddInventoryItemToStorageDTO;
+import com.quartet.inventorydemo.dto.AmountDTO;
+import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
@@ -19,7 +20,6 @@ import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.RoleService;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
@@ -100,10 +100,9 @@ public class SampleFiller implements InitializingBean {
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
 
-    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), new RequirementValueUpdateDTO(
-        "requirement value 1"));
+    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), new RequirementValueUpdateDTO("requirement value 1"));
     requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), new RequirementValueUpdateDTO("requirement value 1 (2)"));
-    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), new RequirementValueUpdateDTO("requirement value 1"));
+    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), new RequirementValueUpdateDTO( "requirement value 1"));
 
     accountService.addHolder(user1.getLogin(), holder1.getId());
     accountService.addHolder(user1.getLogin(), holder2.getId());
@@ -128,17 +127,17 @@ public class SampleFiller implements InitializingBean {
     roleService.addInventoryPosition(role1.getId(), inventoryPosition2.getId());
     roleService.addInventoryPosition(role1.getId(), inventoryPosition3.getId());
 
-    inventoryItemService.addToStorage(inventoryPosition1.getId(), new AddInventoryItemToStorageDTO(400));
-    inventoryItemService.addToStorage(inventoryPosition2.getId(), new AddInventoryItemToStorageDTO(400));
-    inventoryItemService.addToStorage(inventoryPosition3.getId(), new AddInventoryItemToStorageDTO(400));
-    inventoryItemService.addToStorage(inventoryPosition4.getId(), new AddInventoryItemToStorageDTO(400));
-    inventoryItemService.addToStorage(inventoryPosition5.getId(), new AddInventoryItemToStorageDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition1.getId(), new AmountDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition2.getId(), new AmountDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition3.getId(), new AmountDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition4.getId(), new AmountDTO(400));
+    inventoryItemService.addToStorage(inventoryPosition5.getId(), new AmountDTO(400));
 
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), new AddInventoryItemToStorageDTO(1));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), new AddInventoryItemToStorageDTO(2));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), new AddInventoryItemToStorageDTO(3));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), new AddInventoryItemToStorageDTO(4));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), new AddInventoryItemToStorageDTO(5));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), new AmountDTO(1));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), new AmountDTO(2));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), new AmountDTO(3));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), new AmountDTO(4));
+    inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), new AmountDTO(5));
 
     accountService.addHolder(admin.getLogin(), holder1.getId());
     accountService.addHolder(admin.getLogin(), holder2.getId());
