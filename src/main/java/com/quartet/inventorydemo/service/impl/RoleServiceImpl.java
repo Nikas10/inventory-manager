@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import com.quartet.inventorydemo.dto.RoleDTO;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RoleRepository;
@@ -80,7 +81,7 @@ public class RoleServiceImpl implements RoleService {
     if (!isNull(role.getName())) {
       Optional<Role> validation = getByRoleName(role.getName());
       if (validation.isPresent() && !validation.get().getName().equals(roleToModify.getName())) {
-        throw new IllegalStateException("Trying to set a name which is already taken!");
+        throw new UpdateNotSupportedException("Trying to set a name which is already taken!");
       }
       roleToModify.setName(role.getName());
     }
