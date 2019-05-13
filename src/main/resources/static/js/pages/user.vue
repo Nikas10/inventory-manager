@@ -46,9 +46,16 @@
         </b-form>
       </b-card>
       <h2>Holders</h2>
+      <b-input-group>
+        <b-form-select></b-form-select>
+        <b-button>Add Holder</b-button>
+      </b-input-group>
       <b-table small :items="holders" :fields="fields">
         <template slot="name" slot-scope="data">
           <b-link :to="'/holders/' + data.item.id">{{data.value}}</b-link>
+        </template>
+        <template slot="actions" slot-scope="data">
+          <b-button size="sm" @click="removeHolder(data.item.id)">Remove</b-button>
         </template>
       </b-table>
     </b-container>
@@ -80,6 +87,9 @@ module.exports = {
         description: {
           label: "Description",
           sortable: true
+        },
+        actions: {
+          label: "Actions"
         }
       },
       holders: []
@@ -133,6 +143,10 @@ module.exports = {
           role: this.form.role
         })
         .then(function(response) {});
+    },
+    removeHolder: function(holderId) {
+      // TODO Отправить запрос на удаление связки, после этого обновить холдеров
+      console.log(holderId);
     }
   },
   mounted: function() {

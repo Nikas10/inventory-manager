@@ -6,6 +6,7 @@ import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requirement;
+import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
@@ -13,10 +14,15 @@ import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
+import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.RequirementValueService;
 import com.quartet.inventorydemo.service.RoleService;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.UUID;
+import java.util.UUID;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +43,8 @@ public class SampleFiller implements InitializingBean {
   private RequirementService requirementService;
   @Autowired
   private RequirementValueService requirementValueService;
+  @Autowired
+  private RequisitionService requisitionService;
   @Autowired
   private InventoryPositionService inventoryPositionService;
   @Autowired
@@ -83,19 +91,19 @@ public class SampleFiller implements InitializingBean {
     InventoryPosition bundle2 = inventoryPositionService
         .add("inventory position bundle name 2", "inventory position bundle description 2", true);
 
+    Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
+    Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
+
+    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), "requirement value 1");
+    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), "requirement value 1 (2)");
+    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), "requirement value 2");
+
     bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition1.getId(),
         new Bundle_InventoryPositionDTO(3));
     bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition2.getId(),
         new Bundle_InventoryPositionDTO(1));
     bundle_inventoryPositionService.add(bundle1.getId(), inventoryPosition3.getId(),
         new Bundle_InventoryPositionDTO(2));
-
-    Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
-    Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
-
-    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), "requirement value");
-    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), "requirement value");
-    requirementValueService.add(inventoryPosition3.getId(), requirement2.getId(), "requirement value");
 
     accountService.addHolders(user1.getLogin(),
         new HashSet<>(Arrays.asList(holder1.getId(), holder2.getId(), holder3.getId())));
@@ -109,6 +117,9 @@ public class SampleFiller implements InitializingBean {
         .addRoles(holder3.getId(), new HashSet<>(Arrays.asList(role3.getId(), role4.getId())));
     holderService
         .addRoles(holder4.getId(), new HashSet<>(Arrays.asList(role4.getId(), role1.getId())));
+
+    roleService.addInventoryPositions(role1.getId(), new HashSet<>(Arrays.asList(inventoryPosition1.getId(),
+        inventoryPosition2.getId(), inventoryPosition3.getId())));
 
     inventoryItemService.addToStorage(inventoryPosition1.getId(), 400);
     inventoryItemService.addToStorage(inventoryPosition2.getId(), 400);
@@ -128,13 +139,54 @@ public class SampleFiller implements InitializingBean {
     inventoryItemService.moveFromStorageToHolder(bundle1.getId(), holder1.getId(), 1);
     inventoryItemService.moveFromStorageToHolder(bundle2.getId(), holder2.getId(), 2);
 
-    roleService.addInventoryPositions(role1.getId(),
+    HashSet<UUID> adminHoldersIds = new HashSet<>();
+    HashSet<UUID> staffHoldersIds = new HashSet<>();
+
+    adminHoldersIds.add(holder1.getId());
+    adminHoldersIds.add(holder2.getId());
+    adminHoldersIds.add(holder3.getId());
+    adminHoldersIds.add(holder4.getId());
+    adminHoldersIds.add(holder5.getId());
+
+    staffHoldersIds.add(holder1.getId());
+    staffHoldersIds.add(holder2.getId());
+    staffHoldersIds.add(holder3.getId());
+    staffHoldersIds.add(holder5.getId());
+
+    accountService.addHolders(admin.getLogin(), adminHoldersIds);
+    accountService.addHolders(staff.getLogin(), staffHoldersIds);
+
+    /*roleService.addInventoryPositions(role1.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition1.getId())));
     roleService.addInventoryPositions(role2.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition2.getId(), inventoryPosition3.getId(),
             inventoryPosition4.getId())));
     roleService.addInventoryPositions(role3.getId(),
         new HashSet<>(Arrays.asList(inventoryPosition3.getId(), inventoryPosition4.getId(),
-            inventoryPosition5.getId())));
+            inventoryPosition5.getId())));*/
+
+    ArrayList<String> stringPositionIds = new ArrayList<>();
+    stringPositionIds.add(inventoryPosition1.getId().toString());
+    stringPositionIds.add(inventoryPosition2.getId().toString());
+    stringPositionIds.add(inventoryPosition3.getId().toString());
+
+    HashSet<UUID> roleIds = new HashSet<>();
+    roleIds.add(role1.getId());
+    roleIds.add(role2.getId());
+    roleIds.add(role3.getId());
+
+    //holderService.addRoles(holder1.getId(), roleIds);
+
+    Date creationDate = new Date();
+    Date dueDate = new Date(creationDate.getTime() + 1000000000);
+    requisitionService.add(
+        user1.getLogin(),
+        creationDate,
+        "user1 req 1.",
+        dueDate,
+        "REVIEW_NEEDED",
+        holder1.getId(),
+        stringPositionIds
+        );
   }
 }
