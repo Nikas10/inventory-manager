@@ -156,10 +156,10 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holders", method = RequestMethod.DELETE)
+  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.DELETE)
   public ResponseEntity<?> deleteHolderLink(
       @PathVariable("login") @NotBlank @Valid String login,
-      @RequestParam("holderId") @NotBlank @UUIDString String holderId) {
+      @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
     UUID holder = UUID.fromString(holderId);
     accountService.removeHolder(login, holder);
     return new ResponseEntity<>(HttpStatus.CREATED);
