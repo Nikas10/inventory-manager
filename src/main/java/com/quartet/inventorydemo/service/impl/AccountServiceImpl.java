@@ -136,36 +136,24 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public Account addHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds) {
-    Optional<Account> accountOptional = getByLogin(login);
+  public Account addHolder(@NotBlank @Valid String login, @NotNull @Valid UUID holderId) {
     Account accountWithHolders =
-        accountOptional.orElseThrow(
+        getByLogin(login).orElseThrow(
             () -> new ResourceNotFoundException("Account with login: " + login + " not found"));
-
-
-    Set<Holder> accountHolders = accountWithHolders.getHolders();
-    Collection<Holder> holdersToAdd = holderService.getByHolderIDs(holderIds);
-
-    if (holdersToAdd.isEmpty()) {
-        throw new ResourceNotFoundException("No holders with specified ids.");
-    }
-    checkHolderExistence(accountHolders, holdersToAdd);
-
-    accountHolders.addAll(holdersToAdd);
-
+    Holder holder = holderService.getByHolderID(holderId).orElseThrow(()
+        -> new ResourceNotFoundException("Holder with id: " + holderId + " is not found"));
+    accountWithHolders.getHolders().add(holder);
     return accountRepository.saveAndFlush(accountWithHolders);
   }
 
   @Override
-  public Account removeHolders(@NotBlank @Valid String login, @NotNull @Valid Set<UUID> holderIds) {
-    Optional<Account> accountOptional = getByLogin(login);
+  public Account removeHolder(@NotBlank @Valid String login, @NotNull @Valid UUID holderId) {
     Account accountWithHolders =
-        accountOptional.orElseThrow(
+        getByLogin(login).orElseThrow(
             () -> new ResourceNotFoundException("Account with login: " + login + " not found"));
-
-    Set<Holder> currentHolders = accountWithHolders.getHolders();
-    currentHolders.removeAll(holderService.getByHolderIDs(holderIds));
-
+    Holder holder = holderService.getByHolderID(holderId).orElseThrow(()
+        -> new ResourceNotFoundException("Holder with id: " + holderId + " is not found"));
+    accountWithHolders.getHolders().remove(holder);
     return accountRepository.saveAndFlush(accountWithHolders);
   }
 

@@ -1,17 +1,12 @@
 package com.quartet.inventorydemo.rest;
 
 import com.quartet.inventorydemo.dto.AccountDTO;
-import com.quartet.inventorydemo.dto.CreateAndDeleteLinksForm;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.util.UUIDString;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -28,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -151,23 +145,22 @@ public class AccountController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{login}/holders/", method = RequestMethod.PATCH)
-  public ResponseEntity<?> updateInventoryHolderLinksToAccounts(
+  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> addInventoryHolderLinkToAccount(
       @PathVariable("login") @NotBlank @Valid String login,
-      @RequestBody CreateAndDeleteLinksForm createAndDeleteLinksForm) {
-    Set<UUID> addByIds = createAndDeleteLinksForm.convertAndGetAddIds();
-    Set<UUID> removeByIds = createAndDeleteLinksForm.convertAndGetRemoveIds();
-    Account result = null;
-    if (!addByIds.isEmpty()) {
-      result = accountService.addHolders(login, addByIds);
-    }
-    if (!removeByIds.isEmpty()) {
-      result = accountService.removeHolders(login, removeByIds);
-    }
+      @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
+    UUID holder = UUID.fromString(holderId);
+    Account result = accountService.addHolder(login, holder);
+    return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
+  }
 
-    if (result == null) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+  // @PreAuthorize("hasAuthority('STAFF')")
+  @RequestMapping(value = "/{login}/holders/{holderId}", method = RequestMethod.POST)
+  public ResponseEntity<?> deleteInventoryHolderLinkToAccount(
+      @PathVariable("login") @NotBlank @Valid String login,
+      @PathVariable("holderId") @NotBlank @UUIDString String holderId) {
+    UUID holder = UUID.fromString(holderId);
+    Account result = accountService.removeHolder(login, holder);
     return new ResponseEntity<>(result.getHolders(), HttpStatus.OK);
   }
 
