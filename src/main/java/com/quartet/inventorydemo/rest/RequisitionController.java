@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -62,8 +63,21 @@ public class RequisitionController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAll() {
-    Collection<Requisition> requisitions = requisitionService.getAll();
-    return new ResponseEntity<>(requisitions, HttpStatus.OK);
+    List<RequisitionDTO> result = requisitionService.getAll().parallelStream()
+        .map(e -> new RequisitionDTO(
+            e.getId().toString(),
+            e.getAccount().getLogin(),
+            isNull(e.getAssignedtoAccount())
+                ? StringUtils.EMPTY : e.getAssignedtoAccount().getLogin(),
+            e.getStatus(),
+            e.getCreationDate(),
+            e.getDueDate(),
+            e.getDescription(),
+            e.getHolder().getName(),
+            e.getHolder().getId().toString(),
+            Collections.emptyList()
+        )).collect(Collectors.toList());
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -72,6 +86,7 @@ public class RequisitionController {
     Requisition requisition = requisitionService.getById(id).orElseThrow(
         () -> new ResourceNotFoundException("Requisition with id " + id + " is not found!"));
     RequisitionDTO result = new RequisitionDTO(
+        requisition.getId().toString(),
         requisition.getAccount().getLogin(),
         isNull(requisition.getAssignedtoAccount())
             ? StringUtils.EMPTY : requisition.getAssignedtoAccount().getLogin(),
@@ -82,7 +97,6 @@ public class RequisitionController {
         requisition.getHolder().getName(),
         requisition.getHolder().getId().toString(),
         Collections.emptyList());
-    result.setId(requisition.getId().toString());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
