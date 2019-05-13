@@ -52,7 +52,7 @@ public class RequisitionController {
     List<String> stringInventoryPositionUUIDs = requisitionDTO.getStringInventoryPositionUUIDs();
 
     Requisition newRequisition =
-        requisitionService.add(login, creationDate, description, dueDate, status, stringHolderUUID, stringInventoryPositionUUIDs);
+        requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(stringHolderUUID), stringInventoryPositionUUIDs);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
