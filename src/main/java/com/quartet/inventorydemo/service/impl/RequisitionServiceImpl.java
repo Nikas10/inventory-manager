@@ -66,10 +66,9 @@ public class RequisitionServiceImpl implements RequisitionService {
       @NotNull @Valid String description,
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
-      @NotNull @Valid String holderStringUUID,
+      @NotNull @Valid UUID holderId,
       @NotEmpty @Valid List<String> stringInventoryPositionUUIDs) {
 
-    UUID holderId = UUID.fromString(holderStringUUID);
     Set<UUID> inventoryPositionUUIDs = new HashSet<>();
     for (String currentUUID: stringInventoryPositionUUIDs) {
       inventoryPositionUUIDs.add(UUID.fromString(currentUUID));

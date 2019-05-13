@@ -25,7 +25,7 @@ public interface RequisitionService {
       @NotNull @Valid String description,
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
-      @NotNull @Valid String holderStringUUID,
+      @NotNull @Valid UUID holderId,
       @NotEmpty @Valid List<String> stringInventoryPositionUUIDs);
 
   Requisition update(@NotNull @Valid Requisition requisition);
