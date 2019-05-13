@@ -165,7 +165,6 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
       Integer amount = current.getAmount();
       String status = current.getStatus();
       holderItemsWithPositionName.add(new InventoryItemDTO(holdername, positionName, status, amount));
-
     }
 
     return holderItemsWithPositionName;

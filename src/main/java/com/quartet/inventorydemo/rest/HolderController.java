@@ -73,7 +73,7 @@ public class HolderController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/{uuid}", method = RequestMethod.PUT)
+  @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH)
   public ResponseEntity<?> updateInventoryHolder(
       @PathVariable("uuid") @UUIDString @Valid String stringUuid,
       @RequestBody HolderDTO holderDTO) {

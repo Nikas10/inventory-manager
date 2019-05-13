@@ -2,36 +2,36 @@ package com.quartet.inventorydemo.dto;
 
 public class InventoryItemDTO {
 
-  private String holderName;
-  private String positionName;
+  private String holder;
+  private String name;
   private String status;
   private Integer amount;
 
   private InventoryItemDTO() {
   }
 
-  public InventoryItemDTO(String holderName, String positionName, String status,
+  public InventoryItemDTO(String holder, String name, String status,
       Integer amount) {
-    this.holderName = holderName;
-    this.positionName = positionName;
+    this.holder = holder;
+    this.name = name;
     this.status = status;
     this.amount = amount;
   }
 
-  public String getHolderName() {
-    return holderName;
+  public String getHolder() {
+    return holder;
   }
 
-  public void setHolderName(String holderName) {
-    this.holderName = holderName;
+  public void setHolder(String holder) {
+    this.holder = holder;
   }
 
-  public String getPositionName() {
-    return positionName;
+  public String getName() {
+    return name;
   }
 
-  public void setPositionName(String positionName) {
-    this.positionName = positionName;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getStatus() {
