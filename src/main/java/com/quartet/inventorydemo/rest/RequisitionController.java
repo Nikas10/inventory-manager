@@ -14,9 +14,11 @@ import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
+import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import com.quartet.inventorydemo.util.UUIDString;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,21 +52,24 @@ public class RequisitionController {
   private final RequisitionService requisitionService;
   private final RequisitionProcessService requisitionProcessService;
   private final AccountService accountService;
+  private final Requisition_InventoryPositionService requisition_InventoryPositionService;
 
   @Autowired
   public RequisitionController(
       @Qualifier("RequisitionService") final RequisitionService requisitionService,
       @Qualifier("RequisitionProcessService") final RequisitionProcessService requisitionProcessService,
       @Qualifier("InventoryPositionService") final InventoryPositionService positionService,
-      @Qualifier("AccountService") final AccountService accountService) {
+      @Qualifier("AccountService") final AccountService accountService,
+      @Qualifier("Requisition_InventoryPositionService") final Requisition_InventoryPositionService requisition_InventoryPositionService) {
     this.requisitionService = requisitionService;
     this.requisitionProcessService = requisitionProcessService;
     this.positionService = positionService;
     this.accountService = accountService;
+    this.requisition_InventoryPositionService = requisition_InventoryPositionService;
   }
 
   // @PreAuthorize("hasAuthority('USER')")
-  @RequestMapping(value = "/new", method = RequestMethod.POST)
+  @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> createRequisition(@RequestBody RequisitionDTO requisitionDTO) {
     String login = requisitionDTO.getLogin();
     Date creationDate = requisitionDTO.getCreationDate();
@@ -142,7 +147,7 @@ public class RequisitionController {
   public ResponseEntity<?> addNewPositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
       @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId,
-      @RequestParam("amount") @NotNull @Positive Integer amount) {
+      @RequestBody Integer amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
@@ -166,7 +171,7 @@ public class RequisitionController {
   @RequestMapping(value = "/{requisitionId}/positions/{positionId}", method = RequestMethod.DELETE)
   public ResponseEntity<?> removePositionsLinkById(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
-      @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId) {
+      @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
@@ -258,12 +263,18 @@ public class RequisitionController {
                     .flatMap(e -> e.getInventoryPositions().stream())
                 .collect(Collectors.toSet());
             if (availablePositions.containsAll(positions.keySet())) {
-              currentRequisition.setRequisitionInventoryPositions(
-                  positions.entrySet()
-                      .parallelStream()
-                      .map(e -> new Requisition_InventoryPosition(e.getKey(), currentRequisition, e.getValue()))
-                  .collect(Collectors.toSet())
-              );
+              Set<Requisition_InventoryPosition> toAdd = new HashSet<>();
+              positions.forEach((key, value) -> {
+                Optional<Requisition_InventoryPosition> req =
+                    requisition_InventoryPositionService.findByRequisitionAndInventoryPosition(currentRequisition, key);
+                if (req.isPresent()){
+                  req.get().setAmount(value);
+                  requisition_InventoryPositionService.update(req.get());
+                } else {
+                  toAdd.add(new Requisition_InventoryPosition(key, currentRequisition, value));
+                }
+              });
+              currentRequisition.getRequisitionInventoryPositions().addAll(toAdd);
             }
           }
           requisitionService.update(currentRequisition);
