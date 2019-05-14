@@ -6,7 +6,7 @@
       <b-form-group label="Description:">
         <b-form-textarea
           id="description"
-          disabled
+          :disabled="!changesAllowed"
           v-model="form.description"
           required
           placeholder="Description"
@@ -32,22 +32,42 @@
       </b-form-group>
 
       <b-form-group label="Due Date:">
-        <b-form-input id="dueDate" disabled v-model="form.dueDate" type="date" required></b-form-input>
+        <b-form-input
+          id="dueDate"
+          :disabled="!changesAllowed"
+          v-model="form.dueDate"
+          type="date"
+          required
+        ></b-form-input>
       </b-form-group>
 
       <b-form-group label="Creation Date:">
-        <b-form-input id="creationDate" disabled v-model="form.creationDate" type="date" required></b-form-input>
+        <b-form-input
+          id="creationDate"
+          :disabled="!changesAllowed"
+          v-model="form.creationDate"
+          type="date"
+          required
+        ></b-form-input>
       </b-form-group>
 
       <b-button v-if="form.status == 'REVIEW_NEEDED'" @click="setStatusApproved">Approve</b-button>
 
-      <b-button v-if="form.status == 'REVIEW_NEEDED'">Require Clarification</b-button>
+      <b-button
+        v-if="form.status == 'REVIEW_NEEDED'"
+        @click="setStatusRequiredClarification"
+      >Require Clarification</b-button>
 
-      <b-button v-if="form.status == 'REVIEW_NEEDED'">Reject</b-button>
+      <b-button v-if="form.status == 'REVIEW_NEEDED'" @click="setStatusRejected">Reject</b-button>
 
-      <b-button v-if="form.status == 'APPROVED'">Complete</b-button>
+      <b-button v-if="form.status == 'APPROVED'" @click="setStatusCompleted">Complete</b-button>
 
-      <b-button v-if="form.status == 'REQUIRED_CLARIFICATION'">Complete Changes</b-button>
+      <b-button
+        v-if="form.status == 'REQUIRED_CLARIFICATION'"
+        @click="setStatusCompletedChanges"
+      >Complete Changes</b-button>
+
+      <b-button v-if="form.status == 'NEW'" @click="createRequisition">Create</b-button>
 
       <h2>Requested Positions</h2>
 
@@ -67,9 +87,9 @@ module.exports = {
       form: {
         description: "",
         login: "",
-        status: "new",
+        status: "NEW",
         creationDate: this.formatDate(Date.now()),
-        dueDate: null,
+        dueDate: this.formatDate(new Date().setDate(new Date().getDate() + 14)),
         assigned: ""
       },
       positionsFields: {
@@ -85,6 +105,19 @@ module.exports = {
       requisition: {},
       positions: []
     };
+  },
+  computed: {
+    changesAllowed: function() {
+      if (!this.storage.user) {
+        return false;
+      }
+
+      const isNew = this.form.status == "NEW";
+      const needsClarification = this.form.status == "REQUIRED_CLARIFICATION";
+      const isStaff = ["staff", "admin"].includes(this.storage.user.role);
+
+      return isNew || needsClarification || isStaff;
+    }
   },
   methods: {
     appendZeroes: function(n) {
@@ -116,6 +149,8 @@ module.exports = {
         .get("/requisitions/" + requisitonId)
         .then(function(response) {
           self.form = response.data;
+          self.form.dueDate = self.formatDate(response.data.dueDate);
+          self.form.creationDate = self.formatDate(response.data.creationDate);
         });
     },
     loadPositions: function() {
@@ -134,6 +169,47 @@ module.exports = {
 
       this.$server
         .patch("/requisitions/" + requisitonId, { status: "APPROVED" })
+        .then(function(response) {});
+    },
+    setStatusRequiredClarification: function() {
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      this.$server
+        .patch("/requisitions/" + requisitonId, {
+          status: "REQUIRED_CLARIFICATION"
+        })
+        .then(function(response) {});
+    },
+    setStatusRejected: function() {
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      this.$server
+        .patch("/requisitions/" + requisitonId, { status: "REJECTED" })
+        .then(function(response) {});
+    },
+    setStatusCompleted: function() {
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      this.$server
+        .patch("/requisitions/" + requisitonId, { status: "COMPLETED" })
+        .then(function(response) {});
+    },
+    setStatusCompletedChanges: function() {
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      this.$server
+        .patch("/requisitions/" + requisitonId, { status: "REVIEW_NEEDED" })
+        .then(function(response) {});
+    },
+    createRequisition: function() {
+      const self = this;
+
+      this.$server
+        .post("/requisitions/", this.form)
         .then(function(response) {});
     }
   },
