@@ -7,16 +7,16 @@ import java.util.UUID;
 
 public class Bundle_InventoryPositionDTO {
 
-  private int amount;
+  private Integer amount;
 
   private Bundle_InventoryPositionDTO() {
   }
 
-  public Bundle_InventoryPositionDTO(int amount) {
+  public Bundle_InventoryPositionDTO(Integer amount) {
     this.amount = amount;
   }
 
-  public int getAmount() {
+  public Integer getAmount() {
     return amount;
   }
 }

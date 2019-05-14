@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
+import com.quartet.inventorydemo.dto.BundlePartsDTO;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
@@ -150,8 +151,8 @@ public class InventoryPositionController {
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.add(bundleId, partId, bundle_inventoryPositionDTO);
-    return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService.add(bundleId, partId, bundle_inventoryPositionDTO);
+    return new ResponseEntity<>(bundlePartsDTO, HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -163,8 +164,8 @@ public class InventoryPositionController {
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    Bundle_InventoryPosition bundlePart = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
-    return new ResponseEntity<>(bundlePart, HttpStatus.OK);
+    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
+    return new ResponseEntity<>(bundlePartsDTO, HttpStatus.OK);
   }
 
   @RequestMapping(

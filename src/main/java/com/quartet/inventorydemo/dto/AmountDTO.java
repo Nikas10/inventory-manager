@@ -1,12 +1,12 @@
 package com.quartet.inventorydemo.dto;
 
-public class AddInventoryItemToStorageDTO {
+public class AmountDTO {
   Integer amount;
 
-  public AddInventoryItemToStorageDTO() {
+  public AmountDTO() {
   }
 
-  public AddInventoryItemToStorageDTO(Integer amount) {
+  public AmountDTO(Integer amount) {
     this.amount = amount;
   }
 

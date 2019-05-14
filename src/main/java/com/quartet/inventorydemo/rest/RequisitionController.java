@@ -6,6 +6,7 @@ import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
+import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
@@ -39,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sun.plugin.dom.exception.InvalidStateException;
 
 @Validated
 @RestController
@@ -155,7 +155,7 @@ public class RequisitionController {
         .filter(e -> e.getInventoryPosition().equals(position))
         .findFirst();
     if (validation.isPresent()) {
-      throw new InvalidStateException("Trying to add an already existing link!");
+      throw new UpdateNotSupportedException("Trying to add an already existing link!");
     }
     Requisition_InventoryPosition linkToAdd = new Requisition_InventoryPosition(position, requisition, amount);
     requisition.getRequisitionInventoryPositions().add(linkToAdd);
@@ -269,6 +269,6 @@ public class RequisitionController {
           requisitionService.update(currentRequisition);
         });
 
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
