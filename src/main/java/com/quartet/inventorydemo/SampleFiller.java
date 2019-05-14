@@ -5,6 +5,7 @@ import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 
+import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -168,30 +169,38 @@ public class SampleFiller implements InitializingBean {
     Date creationDate = new Date();
     Date dueDate = new Date(creationDate.getTime() + 1000000000);
 
+    RequisitionDTO dto1 = new RequisitionDTO(null,
+        user1.getLogin(),
+        null,
+        "REVIEW_NEEDED",
+        creationDate,
+        dueDate,
+        "user1 req 1.",
+        holder1.getName(),
+        holder1.getId().toString(),
+        stringPositionIds.
+            parallelStream()
+            .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+            .collect(Collectors.toList()));
+
+    RequisitionDTO dto2 = new RequisitionDTO(null,
+        user2.getLogin(),
+        null,
+        "REJECTED",
+        creationDate,
+        dueDate,
+        "user2 req 1.",
+        holder1.getName(),
+        holder1.getId().toString(),
+        stringPositionIds.
+            parallelStream()
+            .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+            .collect(Collectors.toList()));
+
     Requisition req1 =
-        requisitionService.add(
-            user1.getLogin(),
-            creationDate,
-            "user1 req 1.",
-            dueDate,
-            "REVIEW_NEEDED",
-            holder1.getId(),
-            stringPositionIds.
-                parallelStream()
-                .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
-                .collect(Collectors.toList()));
+        requisitionService.add(dto1);
     Requisition req2 =
-        requisitionService.add(
-            user2.getLogin(),
-            creationDate,
-            "user2 req 1.",
-            dueDate,
-            "REJECTED",
-            holder1.getId(),
-            stringPositionIds.
-                parallelStream()
-                .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
-                .collect(Collectors.toList()));
+        requisitionService.add(dto2);
 
     requisitionProcessService.create(req1);
     requisitionProcessService.create(req2);

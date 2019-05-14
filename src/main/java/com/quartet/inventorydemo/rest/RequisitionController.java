@@ -18,20 +18,13 @@ import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import com.quartet.inventorydemo.util.UUIDString;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,7 +35,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
@@ -73,16 +65,8 @@ public class RequisitionController {
   // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> createRequisition(@RequestBody RequisitionDTO requisitionDTO) {
-    String login = requisitionDTO.getLogin();
-    Date creationDate = requisitionDTO.getCreationDate();
-    String description = requisitionDTO.getDescription();
-    Date dueDate = requisitionDTO.getDueDate();
-    String status = requisitionDTO.getStatus();
-    String holderUUID = requisitionDTO.getHolderUUID();
-    List<AddUpdatePositionDTO> inventoryPositions = requisitionDTO.getInventoryPositions();
-
     Requisition newRequisition =
-        requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(holderUUID), inventoryPositions);
+        requisitionService.add(requisitionDTO);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
@@ -290,39 +274,6 @@ public class RequisitionController {
                     "Holder with id " + holder + "is not found."));
             currentRequisition.setHolder(toSet);
           }
-          /*
-          Map<String, Integer> positionsToPatch = requisitionDTO.getInventoryPositions();
-          if (!isNull(positionsToPatch)) {
-            Map<InventoryPosition, Integer> positions = positionsToPatch.entrySet()
-                .parallelStream()
-                .collect(Collectors.toMap(
-                    e -> (positionService.getByPositionID(UUID.fromString(e.getKey()))
-                .orElseThrow(() -> new ResourceNotFoundException(
-                    "Position with id " + e + "is not found."))),
-                    Entry::getValue));
-            Set<InventoryPosition> availablePositions =
-                currentRequisition
-                    .getAccount()
-                    .getHolders()
-                    .parallelStream()
-                    .flatMap(e -> e.getRoles().stream())
-                    .flatMap(e -> e.getInventoryPositions().stream())
-                .collect(Collectors.toSet());
-            if (availablePositions.containsAll(positions.keySet())) {
-              Set<Requisition_InventoryPosition> toAdd = new HashSet<>();
-              positions.forEach((key, value) -> {
-                Optional<Requisition_InventoryPosition> req =
-                    requisition_InventoryPositionService.findByRequisitionAndInventoryPosition(currentRequisition, key);
-                if (req.isPresent()){
-                  req.get().setAmount(value);
-                  requisition_InventoryPositionService.update(req.get());
-                } else {
-                  toAdd.add(new Requisition_InventoryPosition(key, currentRequisition, value));
-                }
-              });
-              currentRequisition.getRequisitionInventoryPositions().addAll(toAdd);
-            }
-          }*/
           requisitionService.update(currentRequisition);
         });
 
