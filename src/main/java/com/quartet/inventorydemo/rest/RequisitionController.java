@@ -168,6 +168,33 @@ public class RequisitionController {
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
+  @RequestMapping(value = "/{requisitionId}/positions/", method = RequestMethod.PATCH)
+  public ResponseEntity<?> updatePositionLink(
+      @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
+      @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId,
+      @RequestBody Integer amount) {
+    UUID requestId = UUID.fromString(requisitionId);
+    UUID posId = UUID.fromString(positionId);
+    Requisition requisition = requisitionService.getById(requestId).orElseThrow(
+        () -> new ResourceNotFoundException("Requisition with id " + requestId + " is not found!"));
+    InventoryPosition position = positionService.getByPositionID(posId).orElseThrow(
+        () -> new ResourceNotFoundException("Position with id " + posId + " is not found!"));
+    Optional<Requisition_InventoryPosition> validation = requisition
+        .getRequisitionInventoryPositions()
+        .stream()
+        .filter(e -> e.getInventoryPosition().equals(position))
+        .findFirst();
+
+    if (validation.isPresent()) {
+      validation.get().setAmount(amount);
+      requisition_InventoryPositionService.update(validation.get());
+    } else {
+      throw new UpdateNotSupportedException("Trying to add an already existing link!");
+    }
+
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
+
   @RequestMapping(value = "/{requisitionId}/positions/{positionId}", method = RequestMethod.DELETE)
   public ResponseEntity<?> removePositionsLinkById(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
