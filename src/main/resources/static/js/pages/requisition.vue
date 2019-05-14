@@ -51,23 +51,22 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-button v-if="form.status == 'REVIEW_NEEDED'" @click="setStatusApproved">Approve</b-button>
+      <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
 
       <b-button
-        v-if="form.status == 'REVIEW_NEEDED'"
+        v-if="clarificationAllowed"
         @click="setStatusRequiredClarification"
       >Require Clarification</b-button>
 
-      <b-button v-if="form.status == 'REVIEW_NEEDED'" @click="setStatusRejected">Reject</b-button>
+      <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
 
-      <b-button v-if="form.status == 'APPROVED'" @click="setStatusCompleted">Complete</b-button>
+      <b-button v-if="createAllowed" @click="setStatusCompleted">Complete</b-button>
 
-      <b-button
-        v-if="form.status == 'REQUIRED_CLARIFICATION'"
-        @click="setStatusCompletedChanges"
-      >Complete Changes</b-button>
+      <b-button v-if="completeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
 
-      <b-button v-if="form.status == 'NEW'" @click="createRequisition">Create</b-button>
+      <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
+
+      <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
 
       <h2>Requested Positions</h2>
 
@@ -107,6 +106,9 @@ module.exports = {
     };
   },
   computed: {
+    isStaff: function() {
+      return (isStaff = ["staff", "admin"].includes(this.storage.user.role));
+    },
     changesAllowed: function() {
       if (!this.storage.user) {
         return false;
@@ -117,6 +119,34 @@ module.exports = {
       const isStaff = ["staff", "admin"].includes(this.storage.user.role);
 
       return isNew || needsClarification || isStaff;
+    },
+    updateAllowed: function() {
+      const isNew = this.form.status == "NEW";
+      const isCompleted = this.form.status == "COMPLETED";
+      const isApproved = this.form.status == "APPROVED";
+
+      return (!isNew || !isCompleted || !isApproved) && isStaff;
+    },
+    approveAllowed: function() {
+      const reviewNeeded = this.form.status == "REVIEW_NEEDED";
+
+      return reviewNeeded && this.isStaff;
+    },
+    rejectAllowed: function() {
+      const reviewNeeded = this.form.status == "REVIEW_NEEDED";
+
+      return reviewNeeded && this.isStaff;
+    },
+    clarificationAllowed: function() {
+      const reviewNeeded = this.form.status == "REVIEW_NEEDED";
+
+      return reviewNeeded && this.isStaff;
+    },
+    completeAllowed: function() {},
+    createAllowed: function() {
+      const isNew = this.form.status == "NEW";
+
+      return isNew;
     }
   },
   methods: {
