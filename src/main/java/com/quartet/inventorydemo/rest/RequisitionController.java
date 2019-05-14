@@ -101,8 +101,16 @@ public class RequisitionController {
             e.getDescription(),
             e.getHolder().getName(),
             e.getHolder().getId().toString(),
-            Collections.emptyMap()
-        )).collect(Collectors.toList());
+            e.getRequisitionInventoryPositions()
+                .parallelStream()
+                .collect(Collectors.toMap(x -> x.getInventoryPosition().getId().toString(),
+                    Requisition_InventoryPosition::getAmount)),
+            e.getRequisitionInventoryPositions()
+                .parallelStream()
+                .map(x -> x.getInventoryPosition().getName())
+            .collect(Collectors.toSet()))
+        )
+            .collect(Collectors.toList());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -123,7 +131,14 @@ public class RequisitionController {
         requisition.getDescription(),
         requisition.getHolder().getName(),
         requisition.getHolder().getId().toString(),
-        Collections.emptyMap());
+        requisition.getRequisitionInventoryPositions()
+            .parallelStream()
+            .collect(Collectors.toMap(x -> x.getInventoryPosition().getId().toString(),
+                Requisition_InventoryPosition::getAmount)),
+        requisition.getRequisitionInventoryPositions()
+            .parallelStream()
+            .map(x -> x.getInventoryPosition().getName())
+            .collect(Collectors.toSet()));
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -165,9 +180,8 @@ public class RequisitionController {
     }
     Requisition_InventoryPosition linkToAdd = new Requisition_InventoryPosition(position, requisition, addUpdatePositionDTO.getAmount());
     requisition.getRequisitionInventoryPositions().add(linkToAdd);
-    addUpdatePositionDTO.setName(position.getName());
     requisitionService.update(requisition);
-    return new ResponseEntity<>(addUpdatePositionDTO, HttpStatus.CREATED);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @RequestMapping(value = "/{requisitionId}/positions/{positionId}", method = RequestMethod.PATCH)

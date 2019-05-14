@@ -11,7 +11,6 @@ public class AddUpdatePositionDTO {
   public AddUpdatePositionDTO(String id, Integer amount, String name) {
     this.id = id;
     this.amount = amount;
-    this.name = name;
   }
 
   public String getId() {
@@ -28,13 +27,5 @@ public class AddUpdatePositionDTO {
 
   public void setAmount(Integer amount) {
     this.amount = amount;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 }
