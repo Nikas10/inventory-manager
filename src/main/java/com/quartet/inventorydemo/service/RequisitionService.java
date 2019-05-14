@@ -26,7 +26,7 @@ public interface RequisitionService {
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
       @NotNull @Valid UUID holderId,
-      @NotEmpty @Valid Map<String, Integer> stringInventoryPositionUUIDs);
+      @NotEmpty @Valid Map<String, Integer> inventoryPositions);
 
   Requisition update(@NotNull @Valid Requisition requisition);
 

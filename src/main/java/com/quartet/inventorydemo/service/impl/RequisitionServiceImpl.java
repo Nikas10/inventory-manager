@@ -67,10 +67,10 @@ public class RequisitionServiceImpl implements RequisitionService {
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
       @NotNull @Valid UUID holderId,
-      @NotEmpty @Valid Map<String, Integer> stringInventoryPositions) {
+      @NotEmpty @Valid Map<String, Integer> inventoryPositions) {
 
     Set<UUID> inventoryPositionUUIDs = new HashSet<>();
-    for (String currentUUID: stringInventoryPositions.keySet()) {
+    for (String currentUUID: inventoryPositions.keySet()) {
       inventoryPositionUUIDs.add(UUID.fromString(currentUUID));
     }
 

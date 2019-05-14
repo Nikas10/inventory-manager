@@ -4,7 +4,6 @@ package com.quartet.inventorydemo;
 import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 
-import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -25,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -175,7 +175,9 @@ public class SampleFiller implements InitializingBean {
             dueDate,
             "REVIEW_NEEDED",
             holder1.getId(),
-            stringPositionIds);
+            stringPositionIds.
+                parallelStream()
+                .collect(Collectors.toMap(e -> e, e -> 1)));
     Requisition req2 =
         requisitionService.add(
             user2.getLogin(),
@@ -184,7 +186,9 @@ public class SampleFiller implements InitializingBean {
             dueDate,
             "REJECTED",
             holder1.getId(),
-            stringPositionIds);
+            stringPositionIds
+                .parallelStream()
+                .collect(Collectors.toMap(e -> e, e -> 1)));
 
     requisitionProcessService.create(req1);
     requisitionProcessService.create(req2);
