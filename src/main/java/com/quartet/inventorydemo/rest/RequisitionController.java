@@ -4,6 +4,8 @@ import static java.util.Objects.isNull;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.model.Account;
+import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
@@ -15,7 +17,10 @@ import com.quartet.inventorydemo.util.UUIDString;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -61,17 +66,16 @@ public class RequisitionController {
   // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "/new", method = RequestMethod.POST)
   public ResponseEntity<?> createRequisition(@RequestBody RequisitionDTO requisitionDTO) {
-
     String login = requisitionDTO.getLogin();
     Date creationDate = requisitionDTO.getCreationDate();
     String description = requisitionDTO.getDescription();
     Date dueDate = requisitionDTO.getDueDate();
     String status = requisitionDTO.getStatus();
     String holderUUID = requisitionDTO.getHolderUUID();
-    List<String> inventoryPositionUUIDs = requisitionDTO.getInventoryPositionUUIDs();
+    Map<String, Integer> inventoryPositions = requisitionDTO.getInventoryPositions();
 
     Requisition newRequisition =
-        requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(holderUUID), inventoryPositionUUIDs);
+        requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(holderUUID), inventoryPositions);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
@@ -90,7 +94,7 @@ public class RequisitionController {
             e.getDescription(),
             e.getHolder().getName(),
             e.getHolder().getId().toString(),
-            Collections.emptyList()
+            Collections.emptyMap()
         )).collect(Collectors.toList());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
@@ -112,7 +116,7 @@ public class RequisitionController {
         requisition.getDescription(),
         requisition.getHolder().getName(),
         requisition.getHolder().getId().toString(),
-        Collections.emptyList());
+        Collections.emptyMap());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -210,8 +214,59 @@ public class RequisitionController {
                 break;
             }
           }
-
-          // TODO: Обработать остальные изменения
+          String assignedLogin = requisitionDTO.getAssignedTo();
+          if (StringUtils.isNotBlank(assignedLogin)) {
+            Account assignedTo = accountService.getByLogin(assignedLogin)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "User with name " + assignedLogin + "is not found."));
+            currentRequisition.setAssignedtoAccount(assignedTo);
+          }
+          String description = requisitionDTO.getDescription();
+          if (StringUtils.isNotBlank(description)) {
+            currentRequisition.setDescription(description);
+          }
+          Date dueDate = requisitionDTO.getDueDate();
+          if (!isNull(dueDate)) {
+            currentRequisition.setDueDate(dueDate);
+          }
+          String holder = requisitionDTO.getHolderUUID();
+          if (StringUtils.isNotBlank(holder)) {
+            Holder toSet = currentRequisition.getAccount()
+                .getHolders()
+                .stream()
+                .filter(entry -> entry.getId().equals(UUID.fromString(holder)))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "Holder with id " + holder + "is not found."));
+            currentRequisition.setHolder(toSet);
+          }
+          Map<String, Integer> positionsToPatch = requisitionDTO.getInventoryPositions();
+          if (!isNull(positionsToPatch)) {
+            Map<InventoryPosition, Integer> positions = positionsToPatch.entrySet()
+                .parallelStream()
+                .collect(Collectors.toMap(
+                    e -> (positionService.getByPositionID(UUID.fromString(e.getKey()))
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "Position with id " + e + "is not found."))),
+                    Entry::getValue));
+            Set<InventoryPosition> availablePositions =
+                currentRequisition
+                    .getAccount()
+                    .getHolders()
+                    .parallelStream()
+                    .flatMap(e -> e.getRoles().stream())
+                    .flatMap(e -> e.getInventoryPositions().stream())
+                .collect(Collectors.toSet());
+            if (availablePositions.containsAll(positions.keySet())) {
+              currentRequisition.setRequisitionInventoryPositions(
+                  positions.entrySet()
+                      .parallelStream()
+                      .map(e -> new Requisition_InventoryPosition(e.getKey(), currentRequisition, e.getValue()))
+                  .collect(Collectors.toSet())
+              );
+            }
+          }
+          requisitionService.update(currentRequisition);
         });
 
     return new ResponseEntity<>(HttpStatus.OK);
