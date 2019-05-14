@@ -79,7 +79,7 @@ public class RequisitionController {
     Date dueDate = requisitionDTO.getDueDate();
     String status = requisitionDTO.getStatus();
     String holderUUID = requisitionDTO.getHolderUUID();
-    Map<String, Integer> inventoryPositions = requisitionDTO.getInventoryPositions();
+    List<AddUpdatePositionDTO> inventoryPositions = requisitionDTO.getInventoryPositions();
 
     Requisition newRequisition =
         requisitionService.add(login, creationDate, description, dueDate, status, UUID.fromString(holderUUID), inventoryPositions);
@@ -103,13 +103,14 @@ public class RequisitionController {
             e.getHolder().getId().toString(),
             e.getRequisitionInventoryPositions()
                 .parallelStream()
-                .collect(Collectors.toMap(x -> x.getInventoryPosition().getId().toString(),
-                    Requisition_InventoryPosition::getAmount)),
-            e.getRequisitionInventoryPositions()
-                .parallelStream()
-                .map(x -> x.getInventoryPosition().getName())
-            .collect(Collectors.toSet()))
-        )
+                .map(x -> new AddUpdatePositionDTO(
+                    x.getInventoryPosition().getId().toString(),
+                    x.getAmount(),
+                    x.getInventoryPosition().getName(),
+                    x.getInventoryPosition().getDescription()
+                ))
+                .collect(Collectors.toList())
+        ))
             .collect(Collectors.toList());
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
@@ -133,12 +134,13 @@ public class RequisitionController {
         requisition.getHolder().getId().toString(),
         requisition.getRequisitionInventoryPositions()
             .parallelStream()
-            .collect(Collectors.toMap(x -> x.getInventoryPosition().getId().toString(),
-                Requisition_InventoryPosition::getAmount)),
-        requisition.getRequisitionInventoryPositions()
-            .parallelStream()
-            .map(x -> x.getInventoryPosition().getName())
-            .collect(Collectors.toSet()));
+            .map(x -> new AddUpdatePositionDTO(
+                x.getInventoryPosition().getId().toString(),
+                x.getAmount(),
+                x.getInventoryPosition().getName(),
+                x.getInventoryPosition().getDescription()
+            ))
+            .collect(Collectors.toList()));
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -188,7 +190,7 @@ public class RequisitionController {
   public ResponseEntity<?> updatePositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
       @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId,
-      @RequestBody Integer amount) {
+      @RequestBody AddUpdatePositionDTO amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
@@ -202,7 +204,7 @@ public class RequisitionController {
         .findFirst();
 
     if (validation.isPresent()) {
-      validation.get().setAmount(amount);
+      validation.get().setAmount(amount.getAmount());
       requisition_InventoryPositionService.update(validation.get());
     } else {
       throw new UpdateNotSupportedException("Trying to add an already existing link!");
@@ -288,6 +290,7 @@ public class RequisitionController {
                     "Holder with id " + holder + "is not found."));
             currentRequisition.setHolder(toSet);
           }
+          /*
           Map<String, Integer> positionsToPatch = requisitionDTO.getInventoryPositions();
           if (!isNull(positionsToPatch)) {
             Map<InventoryPosition, Integer> positions = positionsToPatch.entrySet()
@@ -319,7 +322,7 @@ public class RequisitionController {
               });
               currentRequisition.getRequisitionInventoryPositions().addAll(toAdd);
             }
-          }
+          }*/
           requisitionService.update(currentRequisition);
         });
 

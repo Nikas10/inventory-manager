@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotAvailableException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
@@ -67,11 +68,11 @@ public class RequisitionServiceImpl implements RequisitionService {
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
       @NotNull @Valid UUID holderId,
-      @NotEmpty @Valid Map<String, Integer> inventoryPositions) {
+      @NotEmpty @Valid List<AddUpdatePositionDTO> inventoryPositions) {
 
     Set<UUID> inventoryPositionUUIDs = new HashSet<>();
-    for (String currentUUID: inventoryPositions.keySet()) {
-      inventoryPositionUUIDs.add(UUID.fromString(currentUUID));
+    for (AddUpdatePositionDTO currentUUID: inventoryPositions) {
+      inventoryPositionUUIDs.add(UUID.fromString(currentUUID.getId()));
     }
 
     Optional<Holder> optionalHolder = holderService.getByHolderID(holderId);

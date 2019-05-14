@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo;
 
 
+import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 
@@ -154,10 +155,10 @@ public class SampleFiller implements InitializingBean {
     accountService.addHolder(staff.getLogin(), holder4.getId());
     accountService.addHolder(staff.getLogin(), holder5.getId());
 
-    ArrayList<String> stringPositionIds = new ArrayList<>();
-    stringPositionIds.add(inventoryPosition1.getId().toString());
-    stringPositionIds.add(inventoryPosition2.getId().toString());
-    stringPositionIds.add(inventoryPosition3.getId().toString());
+    ArrayList<InventoryPosition> stringPositionIds = new ArrayList<>();
+    stringPositionIds.add(inventoryPosition1);
+    stringPositionIds.add(inventoryPosition2);
+    stringPositionIds.add(inventoryPosition3);
 
     HashSet<UUID> roleIds = new HashSet<>();
     roleIds.add(role1.getId());
@@ -177,7 +178,8 @@ public class SampleFiller implements InitializingBean {
             holder1.getId(),
             stringPositionIds.
                 parallelStream()
-                .collect(Collectors.toMap(e -> e, e -> 1)));
+                .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+                .collect(Collectors.toList()));
     Requisition req2 =
         requisitionService.add(
             user2.getLogin(),
@@ -186,9 +188,10 @@ public class SampleFiller implements InitializingBean {
             dueDate,
             "REJECTED",
             holder1.getId(),
-            stringPositionIds
-                .parallelStream()
-                .collect(Collectors.toMap(e -> e, e -> 1)));
+            stringPositionIds.
+                parallelStream()
+                .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+                .collect(Collectors.toList()));
 
     requisitionProcessService.create(req1);
     requisitionProcessService.create(req2);
