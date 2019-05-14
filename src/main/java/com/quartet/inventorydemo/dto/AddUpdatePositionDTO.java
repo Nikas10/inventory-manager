@@ -17,7 +17,7 @@ public class AddUpdatePositionDTO {
   public AddUpdatePositionDTO() {
   }
 
-  public AddUpdatePositionDTO(String id, Integer amount, String name) {
+  public AddUpdatePositionDTO(String id, Integer amount) {
     this.id = id;
     this.amount = amount;
   }
