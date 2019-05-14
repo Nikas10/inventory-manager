@@ -1,10 +1,12 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.util.IdNull;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -26,7 +28,7 @@ public interface RequisitionService {
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
       @NotNull @Valid UUID holderId,
-      @NotEmpty @Valid List<String> stringInventoryPositionUUIDs);
+      @NotEmpty @Valid List<AddUpdatePositionDTO> inventoryPositions);
 
   Requisition update(@NotNull @Valid Requisition requisition);
 

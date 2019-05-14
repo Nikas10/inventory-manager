@@ -1,8 +1,10 @@
 package com.quartet.inventorydemo;
 
+
+import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
-import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
+
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -100,6 +103,7 @@ public class SampleFiller implements InitializingBean {
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
 
+
     requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), new RequirementValueUpdateDTO("requirement value 1"));
     requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), new RequirementValueUpdateDTO("requirement value 1 (2)"));
     requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), new RequirementValueUpdateDTO( "requirement value 1"));
@@ -151,10 +155,10 @@ public class SampleFiller implements InitializingBean {
     accountService.addHolder(staff.getLogin(), holder4.getId());
     accountService.addHolder(staff.getLogin(), holder5.getId());
 
-    ArrayList<String> stringPositionIds = new ArrayList<>();
-    stringPositionIds.add(inventoryPosition1.getId().toString());
-    stringPositionIds.add(inventoryPosition2.getId().toString());
-    stringPositionIds.add(inventoryPosition3.getId().toString());
+    ArrayList<InventoryPosition> stringPositionIds = new ArrayList<>();
+    stringPositionIds.add(inventoryPosition1);
+    stringPositionIds.add(inventoryPosition2);
+    stringPositionIds.add(inventoryPosition3);
 
     HashSet<UUID> roleIds = new HashSet<>();
     roleIds.add(role1.getId());
@@ -172,7 +176,10 @@ public class SampleFiller implements InitializingBean {
             dueDate,
             "REVIEW_NEEDED",
             holder1.getId(),
-            stringPositionIds);
+            stringPositionIds.
+                parallelStream()
+                .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+                .collect(Collectors.toList()));
     Requisition req2 =
         requisitionService.add(
             user2.getLogin(),
@@ -181,7 +188,10 @@ public class SampleFiller implements InitializingBean {
             dueDate,
             "REJECTED",
             holder1.getId(),
-            stringPositionIds);
+            stringPositionIds.
+                parallelStream()
+                .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+                .collect(Collectors.toList()));
 
     requisitionProcessService.create(req1);
     requisitionProcessService.create(req2);

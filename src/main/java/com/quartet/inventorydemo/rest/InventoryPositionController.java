@@ -97,8 +97,8 @@ public class InventoryPositionController {
       value = "/{positionId}/requirements/{requirementId}",
       method = RequestMethod.POST)
   public ResponseEntity<?> createRequirementValue(
-      @PathVariable("positionID") String stringPositionID,
-      @PathVariable("requirementID") String stringRequirementID,
+      @PathVariable("positionId") String stringPositionID,
+      @PathVariable("requirementId") String stringRequirementID,
       @RequestBody RequirementValueUpdateDTO requirementValueUpdateDTO) {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
@@ -112,8 +112,8 @@ public class InventoryPositionController {
       value = "/{positionId}/requirements/{requirementId}",
       method = RequestMethod.PATCH)
   public ResponseEntity<?> updateRequirementValue(
-      @PathVariable("positionID") String stringPositionID,
-      @PathVariable("requirementID") String stringRequirementID,
+      @PathVariable("positionId") String stringPositionID,
+      @PathVariable("requirementId") String stringRequirementID,
       @RequestBody RequirementValueUpdateDTO requirementValueUpdateDTO) {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
