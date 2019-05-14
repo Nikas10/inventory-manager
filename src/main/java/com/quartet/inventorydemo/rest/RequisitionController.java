@@ -168,10 +168,10 @@ public class RequisitionController {
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
-  @RequestMapping(value = "/{requisitionId}/positions/", method = RequestMethod.PATCH)
+  @RequestMapping(value = "/{requisitionId}/positions/{positionId}", method = RequestMethod.PATCH)
   public ResponseEntity<?> updatePositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
-      @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId,
+      @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId,
       @RequestBody Integer amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
