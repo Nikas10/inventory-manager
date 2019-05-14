@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.service.impl;
 
+import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotAvailableException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
@@ -10,12 +11,12 @@ import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RequisitionRepository;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
-import com.quartet.inventorydemo.service.InventoryItemService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -67,11 +68,11 @@ public class RequisitionServiceImpl implements RequisitionService {
       @NotNull @Valid Date dueDate,
       @NotNull @Valid String status,
       @NotNull @Valid UUID holderId,
-      @NotEmpty @Valid List<String> stringInventoryPositionUUIDs) {
+      @NotEmpty @Valid List<AddUpdatePositionDTO> inventoryPositions) {
 
     Set<UUID> inventoryPositionUUIDs = new HashSet<>();
-    for (String currentUUID: stringInventoryPositionUUIDs) {
-      inventoryPositionUUIDs.add(UUID.fromString(currentUUID));
+    for (AddUpdatePositionDTO currentUUID: inventoryPositions) {
+      inventoryPositionUUIDs.add(UUID.fromString(currentUUID.getId()));
     }
 
     Optional<Holder> optionalHolder = holderService.getByHolderID(holderId);

@@ -2,6 +2,8 @@ package com.quartet.inventorydemo.dto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class RequisitionDTO {
 
@@ -14,11 +16,13 @@ public class RequisitionDTO {
   private String description;
   private String holderName;
   private String holderUUID;
-  private List<String> inventoryPositionUUIDs;
+  private List<AddUpdatePositionDTO> inventoryPositions;
+
+
 
   public RequisitionDTO(String id, String login, String assignedTo, String status,
       Date creationDate, Date dueDate, String description, String holderName, String holderUUID,
-      List<String> inventoryPositionUUIDs) {
+      List<AddUpdatePositionDTO> inventoryPositionNames) {
     this.id = id;
     this.assignedTo = assignedTo;
     this.login = login;
@@ -28,7 +32,7 @@ public class RequisitionDTO {
     this.description = description;
     this.holderName = holderName;
     this.holderUUID = holderUUID;
-    this.inventoryPositionUUIDs = inventoryPositionUUIDs;
+    this.inventoryPositions = inventoryPositionNames;
   }
 
   private RequisitionDTO() {
@@ -78,12 +82,12 @@ public class RequisitionDTO {
 
   public void setHolderName(String holderName) {this.holderName = holderName;}
 
-  public List<String> getInventoryPositionUUIDs() {
-    return inventoryPositionUUIDs;
+  public List<AddUpdatePositionDTO> getInventoryPositions() {
+    return inventoryPositions;
   }
 
-  public void setInventoryPositionUUIDs(
-      List<String> inventoryPositionUUIDs) {
-    this.inventoryPositionUUIDs = inventoryPositionUUIDs;
+  public void setInventoryPositions(
+      List<AddUpdatePositionDTO> inventoryPositions) {
+    this.inventoryPositions = inventoryPositions;
   }
 }
