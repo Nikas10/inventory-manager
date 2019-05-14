@@ -1,6 +1,8 @@
 package com.quartet.inventorydemo.rest;
 
 import static java.util.Objects.isNull;
+
+import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -146,10 +148,9 @@ public class RequisitionController {
   @RequestMapping(value = "/{requisitionId}/positions/", method = RequestMethod.POST)
   public ResponseEntity<?> addNewPositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
-      @RequestParam("positionId") @NotBlank @Valid @UUIDString String positionId,
-      @RequestBody Integer amount) {
+      @RequestBody AddUpdatePositionDTO addUpdatePositionDTO) {
     UUID requestId = UUID.fromString(requisitionId);
-    UUID posId = UUID.fromString(positionId);
+    UUID posId = UUID.fromString(addUpdatePositionDTO.getId());
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
         () -> new ResourceNotFoundException("Requisition with id " + requestId + " is not found!"));
     InventoryPosition position = positionService.getByPositionID(posId).orElseThrow(
@@ -162,10 +163,11 @@ public class RequisitionController {
     if (validation.isPresent()) {
       throw new UpdateNotSupportedException("Trying to add an already existing link!");
     }
-    Requisition_InventoryPosition linkToAdd = new Requisition_InventoryPosition(position, requisition, amount);
+    Requisition_InventoryPosition linkToAdd = new Requisition_InventoryPosition(position, requisition, addUpdatePositionDTO.getAmount());
     requisition.getRequisitionInventoryPositions().add(linkToAdd);
+    addUpdatePositionDTO.setName(position.getName());
     requisitionService.update(requisition);
-    return new ResponseEntity<>(HttpStatus.CREATED);
+    return new ResponseEntity<>(addUpdatePositionDTO, HttpStatus.CREATED);
   }
 
   @RequestMapping(value = "/{requisitionId}/positions/{positionId}", method = RequestMethod.PATCH)
