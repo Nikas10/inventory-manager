@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
-import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
+import com.quartet.inventorydemo.dto.RequisitionDTO;
+import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotAvailableException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
@@ -13,15 +14,13 @@ import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequisitionService;
-import java.util.Date;
+import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,17 +36,21 @@ public class RequisitionServiceImpl implements RequisitionService {
   private final AccountService accountService;
   private final HolderService holderService;
   private final InventoryPositionService inventoryPositionService;
+  private final Requisition_InventoryPositionService requisition_InventoryPositionService;
 
   @Autowired
   public RequisitionServiceImpl(
       @Qualifier("RequisitionRepository") final RequisitionRepository requisitionRepository,
       @Qualifier("AccountService") final AccountService accountService,
       @Qualifier("HolderService") final HolderService holderService,
-      @Qualifier("InventoryPositionService") final InventoryPositionService inventoryPositionService) {
+      @Qualifier("InventoryPositionService") final InventoryPositionService inventoryPositionService,
+      @Qualifier("Requisition_InventoryPositionService")
+    final Requisition_InventoryPositionService requisition_InventoryPositionService) {
     this.requisitionRepository = requisitionRepository;
     this.accountService = accountService;
     this.holderService = holderService;
     this.inventoryPositionService = inventoryPositionService;
+    this.requisition_InventoryPositionService = requisition_InventoryPositionService;
   }
 
   @Override
@@ -56,48 +59,38 @@ public class RequisitionServiceImpl implements RequisitionService {
   }
 
   @Override
-  public Optional<Requisition> getById(@NotNull @Valid UUID id) {
-    return requisitionRepository.getById(id);
+  public Requisition getById(@NotNull @Valid UUID id) {
+    Optional<Requisition> optionalRequisition = requisitionRepository.getById(id);
+    Requisition requisition = optionalRequisition.orElseThrow(() -> new ResourceNotFoundException("Requisition with id "
+                                                                                                  + id
+                                                                                                  + " is not found!"));
+    return requisition;
   }
 
   @Override
   public Requisition add(
-      @NotNull @Valid String login,
-      @NotNull @Valid Date creationDate,
-      @NotNull @Valid String description,
-      @NotNull @Valid Date dueDate,
-      @NotNull @Valid String status,
-      @NotNull @Valid UUID holderId,
-      @NotEmpty @Valid List<AddUpdatePositionDTO> inventoryPositions) {
-
-    Set<UUID> inventoryPositionUUIDs = new HashSet<>();
-    for (AddUpdatePositionDTO currentUUID: inventoryPositions) {
-      inventoryPositionUUIDs.add(UUID.fromString(currentUUID.getId()));
-    }
-
-    Optional<Holder> optionalHolder = holderService.getByHolderID(holderId);
-    Holder accountHolder = optionalHolder.orElseThrow(
-        () -> new ResourceNotFoundException("Holder with id: " + holderId + " does not exist."));
-
-    Set<UUID> availableHolderPositionsIds = getHolderInventoryPositionsIds(accountHolder);
-
-    checkPositionsExistance(inventoryPositionUUIDs);
-
-    checkPositionsAvailability(availableHolderPositionsIds, inventoryPositionUUIDs);
-
-    Optional<Account> optionalAccount = accountService.getByLogin(login);
-
-    Requisition requisitionToAdd =
-        new Requisition(
-            optionalAccount.orElseThrow(
-                () -> new ResourceNotFoundException("Account with login: " + login + " not found")),
-            status,
-            creationDate,
-            dueDate,
-            description,
-            accountHolder);
-
-    return requisitionRepository.saveAndFlush(requisitionToAdd);
+      @NotNull @Valid RequisitionDTO requisitionDTO) {
+    Holder accountHolder = holderService
+        .getByHolderID(UUID.fromString(requisitionDTO.getHolderUUID()))
+        .orElseThrow(
+        () -> new ResourceNotFoundException("Holder with id: "
+            + requisitionDTO.getHolderUUID() + " does not exist."));
+    Account account = accountService.getByLogin(requisitionDTO.getLogin())
+        .orElseThrow(
+        () ->  new ResourceNotFoundException("Account with login: "
+            + requisitionDTO.getLogin() + " does not exist."));
+    Requisition requisitionToAdd = requisitionRepository.saveAndFlush(new Requisition(
+            account,
+            requisitionDTO.getStatus(),
+            requisitionDTO.getCreationDate(),
+            requisitionDTO.getDueDate(),
+            requisitionDTO.getDescription(),
+            accountHolder));
+    List<RequisitionInventoryPositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
+    requisitionToAdd.getRequisitionInventoryPositions()
+        .addAll(requisition_InventoryPositionService
+            .addAllByInventory(requisitionToAdd, positionsToPatch));
+    return requisitionToAdd;
   }
 
   @Override
