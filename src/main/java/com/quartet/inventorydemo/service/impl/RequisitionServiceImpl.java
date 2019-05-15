@@ -83,16 +83,13 @@ public class RequisitionServiceImpl implements RequisitionService {
         .orElseThrow(
         () ->  new ResourceNotFoundException("Account with login: "
             + requisitionDTO.getLogin() + " does not exist."));
-    Requisition savedRequisition = requisitionRepository.saveAndFlush(new Requisition(
+    Requisition requisitionToAdd = requisitionRepository.saveAndFlush(new Requisition(
             account,
             requisitionDTO.getStatus(),
             requisitionDTO.getCreationDate(),
             requisitionDTO.getDueDate(),
             requisitionDTO.getDescription(),
             accountHolder));
-    Requisition requisitionToAdd = requisitionRepository.findById(savedRequisition.getId())
-        .orElseThrow(() ->  new ResourceNotFoundException("Requisition with id: "
-            + savedRequisition.getId() + " does not exist."));
     List<RequisitionInventoryPositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
     if (!isNull(positionsToPatch)) {
       Map<InventoryPosition, Integer> positions = positionsToPatch
@@ -114,10 +111,11 @@ public class RequisitionServiceImpl implements RequisitionService {
         Set<Requisition_InventoryPosition> toAdd = new HashSet<>();
         positions.forEach((key, value) ->
             toAdd.add(new Requisition_InventoryPosition(key, requisitionToAdd, value)));
-        requisitionToAdd.setRequisitionInventoryPositions(toAdd);
+        requisition_InventoryPositionService.addAll(toAdd);
+        requisitionToAdd.getRequisitionInventoryPositions().addAll(toAdd);
       }
     }
-    return requisitionRepository.saveAndFlush(requisitionToAdd);
+    return requisitionToAdd;
   }
 
   @Override

@@ -2,13 +2,13 @@ package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
-import com.quartet.inventorydemo.model.InventoryPosition;
-import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import com.quartet.inventorydemo.repository.Requisition_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
+import java.util.Collection;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,5 +75,10 @@ public class Requisition_InventoryPositionServiceImpl implements
                     + " not found.")
                 )
         );
+  }
+
+  @Override
+  public void addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks) {
+    requisition_inventoryPositionRepo.saveAll(positionLinks);
   }
 }
