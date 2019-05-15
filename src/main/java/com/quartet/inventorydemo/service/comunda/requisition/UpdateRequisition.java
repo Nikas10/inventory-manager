@@ -19,10 +19,7 @@ public final class UpdateRequisition {
     String idString = execution.getProcessBusinessKey();
     UUID id = UUID.fromString(idString);
 
-    Optional<Requisition> optionalRequisition = requisitionService.getById(id);
-    optionalRequisition.orElseThrow(
-        () -> new ResourceNotFoundException("Requisition with id: " + id + " not found."));
-    Requisition requisitionToUpdate = optionalRequisition.get();
+    Requisition requisitionToUpdate = requisitionService.getById(id);
     requisitionToUpdate.setStatus(status);
     requisitionService.update(requisitionToUpdate);
   }

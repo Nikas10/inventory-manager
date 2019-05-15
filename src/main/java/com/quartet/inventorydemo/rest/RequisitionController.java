@@ -190,25 +190,11 @@ public class RequisitionController {
   public ResponseEntity<?> updatePositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
       @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId,
-      @RequestBody AddUpdatePositionDTO amount) {
+      @RequestBody AddUpdatePositionDTO addUpdatePositionDTO) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
-    Requisition requisition = requisitionService.getById(requestId);
-    InventoryPosition position = positionService.getByPositionID(posId).orElseThrow(
-        () -> new ResourceNotFoundException("Position with id " + posId + " is not found!"));
-    Optional<Requisition_InventoryPosition> validation = requisition
-        .getRequisitionInventoryPositions()
-        .stream()
-        .filter(e -> e.getInventoryPosition().equals(position))
-        .findFirst();
-
-    if (validation.isPresent()) {
-      validation.get().setAmount(amount.getAmount());
-      requisition_InventoryPositionService.update(validation.get());
-    } else {
-      throw new UpdateNotSupportedException("Trying to add an already existing link!");
-    }
-
+    Integer amount = addUpdatePositionDTO.getAmount();
+    requisition_InventoryPositionService.update(requestId, posId, amount);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
