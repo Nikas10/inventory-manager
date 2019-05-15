@@ -9,7 +9,7 @@ import com.quartet.inventorydemo.repository.Requisition_InventoryPositionReposit
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
-import com.sun.istack.NotNull;
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -47,9 +47,10 @@ public class Requisition_InventoryPositionServiceImpl implements
     return requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(position, requisition);
   }
 
+  @Override
   public void update(@NotNull @Valid UUID requisitionId,
-      @NotNull @Valid UUID positionId,
-      @NotNull @Valid Integer amount) {
+                     @NotNull @Valid UUID positionId,
+                     @NotNull @Valid Integer amount) {
 
     Requisition requisition = requisitionService.getById(requisitionId);
     InventoryPosition position = positionService.getByPositionID(positionId).orElseThrow(
@@ -66,5 +67,18 @@ public class Requisition_InventoryPositionServiceImpl implements
     } else {
       throw new UpdateNotSupportedException("Trying to add an already existing link!");
     }
+  }
+
+  @Override
+  public void remove(@NotNull @Valid UUID requisitionId, @NotNull @Valid UUID positionId) {
+    Optional<Requisition_InventoryPosition> optionalRequisition_inventoryPosition =
+        requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId);
+
+    optionalRequisition_inventoryPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: "
+                                                                                          + positionId
+                                                                                          + " for requisition with id: "
+                                                                                          + requisitionId
+                                                                                          + " not found."));
+    requisition_inventoryPositionRepo.delete(optionalRequisition_inventoryPosition.get());
   }
 }

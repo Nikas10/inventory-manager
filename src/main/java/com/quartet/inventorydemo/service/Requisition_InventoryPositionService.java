@@ -9,7 +9,10 @@ import javax.validation.constraints.NotNull;
 public interface Requisition_InventoryPositionService {
 
   Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(UUID requisition, UUID position);
+
   void update(@NotNull @Valid UUID requisitionId,
               @NotNull @Valid UUID positionId,
               @NotNull @Valid Integer amount);
+
+  void remove(@NotNull @Valid UUID requisition, @NotNull @Valid UUID position);
 }

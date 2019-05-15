@@ -197,18 +197,7 @@ public class RequisitionController {
       @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
-    Requisition requisition = requisitionService.getById(requestId);
-    InventoryPosition position = positionService.getByPositionID(posId).orElseThrow(
-        () -> new ResourceNotFoundException("Position with id " + posId + " is not found!"));
-    Requisition_InventoryPosition linkToRemove = requisition
-        .getRequisitionInventoryPositions()
-        .stream()
-        .filter(e -> e.getInventoryPosition().equals(position))
-        .findFirst()
-        .orElseThrow(() -> new ResourceNotFoundException(
-            "Link between requisition and position does not exist!"));
-    requisition.getRequisitionInventoryPositions().remove(linkToRemove);
-    requisitionService.update(requisition);
+    requisition_InventoryPositionService.remove(requestId, posId);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
