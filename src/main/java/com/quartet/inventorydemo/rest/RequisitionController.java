@@ -17,6 +17,7 @@ import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import com.quartet.inventorydemo.util.UUIDString;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +68,17 @@ public class RequisitionController {
     Requisition newRequisition =
         requisitionService.add(requisitionDTO);
     requisitionProcessService.create(newRequisition);
-    return new ResponseEntity<>(newRequisition, HttpStatus.OK);
+    RequisitionInventoryPositionDTO requisitionInventoryPositionDTO = new RequisitionInventoryPositionDTO();
+    List<RequisitionInventoryPositionDTO> requisition_inventoryPositionDTOs = new ArrayList<>();
+    for (Requisition_InventoryPosition current: newRequisition.getRequisitionInventoryPositions()) {
+      requisition_inventoryPositionDTOs.add(
+          new RequisitionInventoryPositionDTO(current.getInventoryPosition().getId().toString(),
+                                              current.getAmount(),
+                                              current.getInventoryPosition().getName(),
+                                              current.getInventoryPosition().getDescription()));
+    }
+    requisitionInventoryPositionDTO.setAmount(requisitionDTO.getInventoryPositions().get(0).getAmount());
+    return new ResponseEntity<>(requisition_inventoryPositionDTOs, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -175,8 +186,8 @@ public class RequisitionController {
       @RequestBody RequisitionInventoryPositionDTO amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
-    Integer amount = addUpdatePositionDTO.getAmount();
-    requisition_InventoryPositionService.update(requestId, posId, amount);
+    Integer amountVal = amount.getAmount();
+    requisition_InventoryPositionService.update(requestId, posId, amountVal);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
@@ -207,54 +218,8 @@ public class RequisitionController {
       @RequestBody RequisitionDTO requisitionDTO) {
     UUID reqId = UUID.fromString(id);
     Requisition original = requisitionService.getById(reqId);
-
-          if (!oldStatus.equalsIgnoreCase(newStatus)) {
-            switch (newStatus.toUpperCase()) {
-              case "APPROVED":
-                requisitionProcessService.approve(currentRequisition);
-                break;
-              case "REJECTED":
-                requisitionProcessService.reject(currentRequisition);
-                break;
-              case "REQUIRE_CLARIFICATION":
-                requisitionProcessService.requestClarification(currentRequisition, "");
-                break;
-              case "REVIEW_NEEDED":
-                requisitionProcessService.makeChanges(currentRequisition);
-                break;
-              case "COMPLETED":
-                requisitionProcessService.complete(currentRequisition);
-                break;
-            }
-          }
-          String assignedLogin = requisitionDTO.getAssignedTo();
-          if (StringUtils.isNotBlank(assignedLogin)) {
-            Account assignedTo = accountService.getByLogin(assignedLogin)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                    "User with name " + assignedLogin + "is not found."));
-            currentRequisition.setAssignedtoAccount(assignedTo);
-          }
-          String description = requisitionDTO.getDescription();
-          if (StringUtils.isNotBlank(description)) {
-            currentRequisition.setDescription(description);
-          }
-          Date dueDate = requisitionDTO.getDueDate();
-          if (!isNull(dueDate)) {
-            currentRequisition.setDueDate(dueDate);
-          }
-          String holder = requisitionDTO.getHolderUUID();
-          if (StringUtils.isNotBlank(holder)) {
-            Holder toSet = currentRequisition.getAccount()
-                .getHolders()
-                .stream()
-                .filter(entry -> entry.getId().equals(UUID.fromString(holder)))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(
-                    "Holder with id " + holder + "is not found."));
-            currentRequisition.setHolder(toSet);
-          }
-          requisitionService.update(currentRequisition);
-        });
+    String oldStatus = original.getStatus();
+    String newStatus = requisitionDTO.getStatus();
 
     if (!oldStatus.equalsIgnoreCase(newStatus)) {
       switch (newStatus.toUpperCase()) {
