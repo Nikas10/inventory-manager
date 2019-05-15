@@ -2,7 +2,6 @@ package com.quartet.inventorydemo.rest;
 
 import static java.util.Objects.isNull;
 
-import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -87,7 +86,7 @@ public class RequisitionController {
             e.getHolder().getId().toString(),
             e.getRequisitionInventoryPositions()
                 .parallelStream()
-                .map(x -> new AddUpdatePositionDTO(
+                .map(x -> new RequisitionInventoryPositionDTO(
                     x.getInventoryPosition().getId().toString(),
                     x.getAmount(),
                     x.getInventoryPosition().getName(),
@@ -118,7 +117,7 @@ public class RequisitionController {
         requisition.getHolder().getId().toString(),
         requisition.getRequisitionInventoryPositions()
             .parallelStream()
-            .map(x -> new AddUpdatePositionDTO(
+            .map(x -> new RequisitionInventoryPositionDTO(
                 x.getInventoryPosition().getId().toString(),
                 x.getAmount(),
                 x.getInventoryPosition().getName(),
@@ -139,9 +138,10 @@ public class RequisitionController {
             .parallelStream()
             .map(e -> new RequisitionInventoryPositionDTO(
             e.getInventoryPosition().getId().toString(),
+            e.getAmount(),
             e.getInventoryPosition().getName(),
-            e.getInventoryPosition().getDescription(),
-            e.getAmount()))
+            e.getInventoryPosition().getDescription()
+            ))
             .collect(Collectors.toList());
     return new ResponseEntity<>(requestedItems, HttpStatus.OK);
   }
@@ -149,7 +149,7 @@ public class RequisitionController {
   @RequestMapping(value = "/{requisitionId}/positions/", method = RequestMethod.POST)
   public ResponseEntity<?> addNewPositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
-      @RequestBody AddUpdatePositionDTO addUpdatePositionDTO) {
+      @RequestBody RequisitionInventoryPositionDTO addUpdatePositionDTO) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(addUpdatePositionDTO.getId());
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(
@@ -174,7 +174,7 @@ public class RequisitionController {
   public ResponseEntity<?> updatePositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
       @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId,
-      @RequestBody AddUpdatePositionDTO amount) {
+      @RequestBody RequisitionInventoryPositionDTO amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
     Requisition requisition = requisitionService.getById(requestId).orElseThrow(

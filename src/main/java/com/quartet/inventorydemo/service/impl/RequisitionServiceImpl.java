@@ -1,8 +1,8 @@
 package com.quartet.inventorydemo.service.impl;
 
 import static java.util.Objects.isNull;
-import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
+import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotAvailableException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
@@ -89,7 +89,7 @@ public class RequisitionServiceImpl implements RequisitionService {
     Requisition requisitionToAdd = requisitionRepository.findById(savedRequisition.getId())
         .orElseThrow(() ->  new ResourceNotFoundException("Requisition with id: "
             + savedRequisition.getId() + " does not exist."));
-    List<AddUpdatePositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
+    List<RequisitionInventoryPositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
     if (!isNull(positionsToPatch)) {
       Map<InventoryPosition, Integer> positions = positionsToPatch
           .parallelStream()
@@ -97,7 +97,7 @@ public class RequisitionServiceImpl implements RequisitionService {
               e -> (inventoryPositionService.getByPositionID(UUID.fromString(e.getId()))
           .orElseThrow(() -> new ResourceNotFoundException(
               "Position with id " + e + "is not found."))),
-              AddUpdatePositionDTO::getAmount));
+              RequisitionInventoryPositionDTO::getAmount));
       Set<InventoryPosition> availablePositions =
           requisitionToAdd
               .getAccount()
@@ -108,9 +108,8 @@ public class RequisitionServiceImpl implements RequisitionService {
           .collect(Collectors.toSet());
       if (availablePositions.containsAll(positions.keySet())) {
         Set<Requisition_InventoryPosition> toAdd = new HashSet<>();
-        positions.forEach((key, value) -> {
-          toAdd.add(new Requisition_InventoryPosition(key, requisitionToAdd, value));
-        });
+        positions.forEach((key, value) ->
+            toAdd.add(new Requisition_InventoryPosition(key, requisitionToAdd, value)));
         requisitionToAdd.setRequisitionInventoryPositions(toAdd);
       }
     }

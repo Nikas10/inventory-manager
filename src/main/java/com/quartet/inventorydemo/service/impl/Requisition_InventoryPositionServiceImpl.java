@@ -1,11 +1,10 @@
 package com.quartet.inventorydemo.service.impl;
 
-import com.quartet.inventorydemo.model.InventoryPosition;
-import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import com.quartet.inventorydemo.repository.Requisition_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +21,9 @@ public class Requisition_InventoryPositionServiceImpl implements
   Requisition_InventoryPositionRepository requisition_inventoryPositionRepo;
 
   @Override
-  public Optional<Requisition_InventoryPosition> findByRequisitionAndInventoryPosition(
-      Requisition requisition, InventoryPosition position) {
-    return requisition_inventoryPositionRepo.findByInventoryPositionAndRequisition(position, requisition);
+  public Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(
+      UUID requisition, UUID position) {
+    return requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(position, requisition);
   }
 
   public void update(Requisition_InventoryPosition requisition_inventoryPosition) {

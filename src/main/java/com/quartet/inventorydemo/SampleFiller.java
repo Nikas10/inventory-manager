@@ -1,11 +1,11 @@
 package com.quartet.inventorydemo;
 
 
-import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 
 import com.quartet.inventorydemo.dto.RequisitionDTO;
+import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -180,7 +180,7 @@ public class SampleFiller implements InitializingBean {
         holder1.getId().toString(),
         stringPositionIds.
             parallelStream()
-            .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
             .collect(Collectors.toList()));
 
     RequisitionDTO dto2 = new RequisitionDTO(null,
@@ -194,7 +194,7 @@ public class SampleFiller implements InitializingBean {
         holder1.getId().toString(),
         stringPositionIds.
             parallelStream()
-            .map(e -> new AddUpdatePositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
             .collect(Collectors.toList()));
 
     Requisition req1 =
