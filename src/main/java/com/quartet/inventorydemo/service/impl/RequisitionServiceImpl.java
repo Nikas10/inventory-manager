@@ -56,8 +56,12 @@ public class RequisitionServiceImpl implements RequisitionService {
   }
 
   @Override
-  public Optional<Requisition> getById(@NotNull @Valid UUID id) {
-    return requisitionRepository.getById(id);
+  public Requisition getById(@NotNull @Valid UUID id) {
+    Optional<Requisition> optionalRequisition = requisitionRepository.getById(id);
+    Requisition requisition = optionalRequisition.orElseThrow(() -> new ResourceNotFoundException("Requisition with id "
+                                                                                                  + id
+                                                                                                  + " is not found!"));
+    return requisition;
   }
 
   @Override

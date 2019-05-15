@@ -19,7 +19,7 @@ public interface RequisitionService {
   Collection<Requisition> getAll();
 
   @Validated(IdNull.class)
-  Optional<Requisition> getById(@NotNull @Valid UUID id);
+  Requisition getById(@NotNull @Valid UUID id);
 
   Requisition add(
       @NotNull @Valid String login,
