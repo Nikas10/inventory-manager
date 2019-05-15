@@ -2,7 +2,6 @@ package com.quartet.inventorydemo.rest;
 
 import static java.util.Objects.isNull;
 
-import com.quartet.inventorydemo.dto.AddUpdatePositionDTO;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
@@ -18,20 +17,13 @@ import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import com.quartet.inventorydemo.util.UUIDString;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,7 +34,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
@@ -73,18 +64,8 @@ public class RequisitionController {
   // @PreAuthorize("hasAuthority('USER')")
   @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> createRequisition(@RequestBody RequisitionDTO requisitionDTO) {
-    String login = requisitionDTO.getLogin();
-    Date creationDate = requisitionDTO.getCreationDate();
-    String description = requisitionDTO.getDescription();
-    Date dueDate = requisitionDTO.getDueDate();
-    String status = requisitionDTO.getStatus();
-    String holderUUID = requisitionDTO.getHolderUUID();
-    List<AddUpdatePositionDTO> inventoryPositions = requisitionDTO.getInventoryPositions();
-
     Requisition newRequisition =
-        requisitionService
-            .add(login, creationDate, description, dueDate, status, UUID.fromString(holderUUID),
-                inventoryPositions);
+        requisitionService.add(requisitionDTO);
     requisitionProcessService.create(newRequisition);
     return new ResponseEntity<>(newRequisition, HttpStatus.OK);
   }
@@ -105,7 +86,7 @@ public class RequisitionController {
             e.getHolder().getId().toString(),
             e.getRequisitionInventoryPositions()
                 .parallelStream()
-                .map(x -> new AddUpdatePositionDTO(
+                .map(x -> new RequisitionInventoryPositionDTO(
                     x.getInventoryPosition().getId().toString(),
                     x.getAmount(),
                     x.getInventoryPosition().getName(),
@@ -135,7 +116,7 @@ public class RequisitionController {
         requisition.getHolder().getId().toString(),
         requisition.getRequisitionInventoryPositions()
             .parallelStream()
-            .map(x -> new AddUpdatePositionDTO(
+            .map(x -> new RequisitionInventoryPositionDTO(
                 x.getInventoryPosition().getId().toString(),
                 x.getAmount(),
                 x.getInventoryPosition().getName(),
@@ -154,10 +135,11 @@ public class RequisitionController {
         requisition.getRequisitionInventoryPositions()
             .parallelStream()
             .map(e -> new RequisitionInventoryPositionDTO(
-                e.getInventoryPosition().getId().toString(),
-                e.getInventoryPosition().getName(),
-                e.getInventoryPosition().getDescription(),
-                e.getAmount()))
+            e.getInventoryPosition().getId().toString(),
+            e.getAmount(),
+            e.getInventoryPosition().getName(),
+            e.getInventoryPosition().getDescription()
+            ))
             .collect(Collectors.toList());
     return new ResponseEntity<>(requestedItems, HttpStatus.OK);
   }
@@ -165,7 +147,7 @@ public class RequisitionController {
   @RequestMapping(value = "/{requisitionId}/positions/", method = RequestMethod.POST)
   public ResponseEntity<?> addNewPositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
-      @RequestBody AddUpdatePositionDTO addUpdatePositionDTO) {
+      @RequestBody RequisitionInventoryPositionDTO addUpdatePositionDTO) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(addUpdatePositionDTO.getId());
     Requisition requisition = requisitionService.getById(requestId);
@@ -190,7 +172,7 @@ public class RequisitionController {
   public ResponseEntity<?> updatePositionLink(
       @PathVariable("requisitionId") @NotBlank @Valid @UUIDString String requisitionId,
       @PathVariable("positionId") @NotBlank @Valid @UUIDString String positionId,
-      @RequestBody AddUpdatePositionDTO addUpdatePositionDTO) {
+      @RequestBody RequisitionInventoryPositionDTO amount) {
     UUID requestId = UUID.fromString(requisitionId);
     UUID posId = UUID.fromString(positionId);
     Integer amount = addUpdatePositionDTO.getAmount();
@@ -226,8 +208,53 @@ public class RequisitionController {
     UUID reqId = UUID.fromString(id);
     Requisition original = requisitionService.getById(reqId);
 
-    String oldStatus = original.getStatus();
-    String newStatus = requisitionDTO.getStatus();
+          if (!oldStatus.equalsIgnoreCase(newStatus)) {
+            switch (newStatus.toUpperCase()) {
+              case "APPROVED":
+                requisitionProcessService.approve(currentRequisition);
+                break;
+              case "REJECTED":
+                requisitionProcessService.reject(currentRequisition);
+                break;
+              case "REQUIRE_CLARIFICATION":
+                requisitionProcessService.requestClarification(currentRequisition, "");
+                break;
+              case "REVIEW_NEEDED":
+                requisitionProcessService.makeChanges(currentRequisition);
+                break;
+              case "COMPLETED":
+                requisitionProcessService.complete(currentRequisition);
+                break;
+            }
+          }
+          String assignedLogin = requisitionDTO.getAssignedTo();
+          if (StringUtils.isNotBlank(assignedLogin)) {
+            Account assignedTo = accountService.getByLogin(assignedLogin)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "User with name " + assignedLogin + "is not found."));
+            currentRequisition.setAssignedtoAccount(assignedTo);
+          }
+          String description = requisitionDTO.getDescription();
+          if (StringUtils.isNotBlank(description)) {
+            currentRequisition.setDescription(description);
+          }
+          Date dueDate = requisitionDTO.getDueDate();
+          if (!isNull(dueDate)) {
+            currentRequisition.setDueDate(dueDate);
+          }
+          String holder = requisitionDTO.getHolderUUID();
+          if (StringUtils.isNotBlank(holder)) {
+            Holder toSet = currentRequisition.getAccount()
+                .getHolders()
+                .stream()
+                .filter(entry -> entry.getId().equals(UUID.fromString(holder)))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(
+                    "Holder with id " + holder + "is not found."));
+            currentRequisition.setHolder(toSet);
+          }
+          requisitionService.update(currentRequisition);
+        });
 
     if (!oldStatus.equalsIgnoreCase(newStatus)) {
       switch (newStatus.toUpperCase()) {

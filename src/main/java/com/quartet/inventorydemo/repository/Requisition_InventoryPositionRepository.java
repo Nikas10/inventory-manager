@@ -1,13 +1,11 @@
 package com.quartet.inventorydemo.repository;
 
-import com.quartet.inventorydemo.model.InventoryPosition;
-import com.quartet.inventorydemo.model.Requirement;
-import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import com.quartet.inventorydemo.model.id.Requisition_InventoryPositionId;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +17,6 @@ public interface Requisition_InventoryPositionRepository
     return new HashSet<>(findAll());
   }
 
-  Optional<Requisition_InventoryPosition> findByInventoryPositionAndRequisition(InventoryPosition position, Requisition requisition);
+  Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(UUID position, UUID requisition);
 
 }
