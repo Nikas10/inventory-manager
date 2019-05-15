@@ -1,13 +1,22 @@
 package com.quartet.inventorydemo.service.impl;
 
+import static java.util.Objects.isNull;
+import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
+import com.quartet.inventorydemo.model.InventoryPosition;
+import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import com.quartet.inventorydemo.repository.Requisition_InventoryPositionRepository;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
@@ -78,7 +87,36 @@ public class Requisition_InventoryPositionServiceImpl implements
   }
 
   @Override
-  public void addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks) {
-    requisition_inventoryPositionRepo.saveAll(positionLinks);
+  public Collection<Requisition_InventoryPosition> addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks) {
+    return requisition_inventoryPositionRepo.saveAll(positionLinks);
+  }
+
+  @Override
+  public Collection<Requisition_InventoryPosition> addAllByInventory(@NotBlank @Valid Requisition requisitionToAdd,
+      @NotBlank @Valid Collection<RequisitionInventoryPositionDTO> positionsToPatch) {
+    if (!isNull(positionsToPatch)) {
+      Map<InventoryPosition, Integer> positions = positionsToPatch
+          .parallelStream()
+          .collect(Collectors.toMap(
+              e -> (positionService.getByPositionID(UUID.fromString(e.getId()))
+                  .orElseThrow(() -> new ResourceNotFoundException(
+                      "Position with id " + e + "is not found."))),
+              RequisitionInventoryPositionDTO::getAmount));
+      Set<InventoryPosition> availablePositions =
+          requisitionToAdd
+              .getAccount()
+              .getHolders()
+              .parallelStream()
+              .flatMap(e -> e.getRoles().stream())
+              .flatMap(e -> e.getInventoryPositions().stream())
+              .collect(Collectors.toSet());
+      if (availablePositions.containsAll(positions.keySet())) {
+        Set<Requisition_InventoryPosition> toAdd = new HashSet<>();
+        positions.forEach((key, value) ->
+            toAdd.add(new Requisition_InventoryPosition(key, requisitionToAdd, value)));
+        return this.addAll(toAdd);
+      }
+    }
+    return Collections.emptyList();
   }
 }

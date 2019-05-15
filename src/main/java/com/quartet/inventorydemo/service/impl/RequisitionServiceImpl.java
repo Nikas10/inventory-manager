@@ -1,6 +1,5 @@
 package com.quartet.inventorydemo.service.impl;
 
-import static java.util.Objects.isNull;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotAvailableException;
@@ -9,7 +8,6 @@ import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requisition;
-import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.RequisitionRepository;
 import com.quartet.inventorydemo.service.AccountService;
@@ -19,11 +17,9 @@ import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,30 +87,9 @@ public class RequisitionServiceImpl implements RequisitionService {
             requisitionDTO.getDescription(),
             accountHolder));
     List<RequisitionInventoryPositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
-    if (!isNull(positionsToPatch)) {
-      Map<InventoryPosition, Integer> positions = positionsToPatch
-          .parallelStream()
-          .collect(Collectors.toMap(
-              e -> (inventoryPositionService.getByPositionID(UUID.fromString(e.getId()))
-          .orElseThrow(() -> new ResourceNotFoundException(
-              "Position with id " + e + "is not found."))),
-              RequisitionInventoryPositionDTO::getAmount));
-      Set<InventoryPosition> availablePositions =
-          requisitionToAdd
-              .getAccount()
-              .getHolders()
-              .parallelStream()
-              .flatMap(e -> e.getRoles().stream())
-              .flatMap(e -> e.getInventoryPositions().stream())
-          .collect(Collectors.toSet());
-      if (availablePositions.containsAll(positions.keySet())) {
-        Set<Requisition_InventoryPosition> toAdd = new HashSet<>();
-        positions.forEach((key, value) ->
-            toAdd.add(new Requisition_InventoryPosition(key, requisitionToAdd, value)));
-        requisition_InventoryPositionService.addAll(toAdd);
-        requisitionToAdd.getRequisitionInventoryPositions().addAll(toAdd);
-      }
-    }
+    requisitionToAdd.getRequisitionInventoryPositions()
+        .addAll(requisition_InventoryPositionService
+            .addAllByInventory(requisitionToAdd, positionsToPatch));
     return requisitionToAdd;
   }
 

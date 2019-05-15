@@ -1,5 +1,7 @@
 package com.quartet.inventorydemo.service;
 
+import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
+import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import java.util.Collection;
 import java.util.Optional;
@@ -18,5 +20,8 @@ public interface Requisition_InventoryPositionService {
 
   void remove(@NotNull @Valid UUID requisition, @NotNull @Valid UUID position);
 
-  void addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks);
+  Collection<Requisition_InventoryPosition> addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks);
+
+  Collection<Requisition_InventoryPosition> addAllByInventory(@NotBlank @Valid Requisition requisitionToAdd,
+      @NotBlank @Valid Collection<RequisitionInventoryPositionDTO> positionsToAdd);
 }
