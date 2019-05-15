@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+
 import javax.validation.constraints.NotNull;
 
 public interface Requisition_InventoryPositionService {
@@ -20,8 +20,8 @@ public interface Requisition_InventoryPositionService {
 
   void remove(@NotNull @Valid UUID requisition, @NotNull @Valid UUID position);
 
-  Collection<Requisition_InventoryPosition> addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks);
+  Collection<Requisition_InventoryPosition> addAll(@NotNull @Valid Collection<Requisition_InventoryPosition> positionLinks);
 
-  Collection<Requisition_InventoryPosition> addAllByInventory(@NotBlank @Valid Requisition requisitionToAdd,
-      @NotBlank @Valid Collection<RequisitionInventoryPositionDTO> positionsToAdd);
+  Collection<Requisition_InventoryPosition> addAllByInventory(@NotNull @Valid Requisition requisitionToAdd,
+      @NotNull @Valid Collection<RequisitionInventoryPositionDTO> positionsToAdd);
 }

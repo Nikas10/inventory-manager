@@ -3,11 +3,14 @@ package com.quartet.inventorydemo.rest;
 import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
+import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.util.UUIDString;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -208,5 +211,12 @@ public class AccountController {
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAllAccounts() {
     return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{id}/availablePositions/", method = RequestMethod.GET)
+  public ResponseEntity<?> getAvailablePositions(@PathVariable("id") String stringAccountId) {
+    UUID accountId = UUID.fromString(stringAccountId);
+    Set<InventoryPosition> availablePositions = accountService.getAvailablePositions(accountId);
+    return new ResponseEntity<>(availablePositions, HttpStatus.OK);
   }
 }
