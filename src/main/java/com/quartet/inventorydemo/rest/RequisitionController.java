@@ -78,7 +78,17 @@ public class RequisitionController {
                                               current.getInventoryPosition().getDescription()));
     }
     requisitionInventoryPositionDTO.setAmount(requisitionDTO.getInventoryPositions().get(0).getAmount());
-    return new ResponseEntity<>(requisition_inventoryPositionDTOs, HttpStatus.OK);
+    RequisitionDTO resultRequisitionDTO = new RequisitionDTO(newRequisition.getId().toString(),
+                                                             newRequisition.getAccount().getLogin(),
+                                                             null,
+                                                             newRequisition.getStatus(),
+                                                             newRequisition.getCreationDate(),
+                                                             newRequisition.getDueDate(),
+                                                             newRequisition.getDescription(),
+                                                             newRequisition.getHolder().getName(),
+                                                             newRequisition.getHolder().getId().toString(),
+                                                             requisition_inventoryPositionDTOs);
+    return new ResponseEntity<>(resultRequisitionDTO, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)

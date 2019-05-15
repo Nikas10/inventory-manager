@@ -52,14 +52,8 @@ public class Requisition_InventoryPositionServiceImpl implements
                      @NotNull @Valid UUID positionId,
                      @NotNull @Valid Integer amount) {
 
-    Requisition requisition = requisitionService.getById(requisitionId);
-    InventoryPosition position = positionService.getByPositionID(positionId).orElseThrow(
-        () -> new ResourceNotFoundException("Position with id " + positionId + " is not found!"));
-    Optional<Requisition_InventoryPosition> validation = requisition
-        .getRequisitionInventoryPositions()
-        .stream()
-        .filter(e -> e.getInventoryPosition().equals(position))
-        .findFirst();
+    Optional<Requisition_InventoryPosition> validation =
+        requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId);
 
     if (validation.isPresent()) {
       validation.get().setAmount(amount);
@@ -71,14 +65,15 @@ public class Requisition_InventoryPositionServiceImpl implements
 
   @Override
   public void remove(@NotNull @Valid UUID requisitionId, @NotNull @Valid UUID positionId) {
-    Optional<Requisition_InventoryPosition> optionalRequisition_inventoryPosition =
-        requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId);
-
-    optionalRequisition_inventoryPosition.orElseThrow(() -> new ResourceNotFoundException("Position with id: "
-                                                                                          + positionId
-                                                                                          + " for requisition with id: "
-                                                                                          + requisitionId
-                                                                                          + " not found."));
-    requisition_inventoryPositionRepo.delete(optionalRequisition_inventoryPosition.get());
+    requisition_inventoryPositionRepo
+        .delete(requisition_inventoryPositionRepo
+                .findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Position with id: "
+                    + positionId
+                    + " for requisition with id: "
+                    + requisitionId
+                    + " not found.")
+                )
+        );
   }
 }
