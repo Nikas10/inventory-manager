@@ -60,15 +60,19 @@
 
       <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
 
-      <b-button v-if="createAllowed" @click="setStatusCompleted">Complete</b-button>
+      <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
 
-      <b-button v-if="completeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
+      <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
 
       <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
 
       <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
 
       <h2>Requested Positions</h2>
+
+      <b-form-input v-model="newPosition.amount" type="number" min="0"></b-form-input>
+      <b-form-select v-model="newPosition.id" :options="positionOptions"></b-form-select>
+      <b-button>Add position</b-button>
 
       <b-table small :items="positions" :fields="positionsFields"></b-table>
     </b-container>
@@ -102,12 +106,34 @@ module.exports = {
         }
       },
       requisition: {},
-      positions: []
+      positions: [],
+      newPosition: {
+        amount: 0,
+        id: "0000-0001"
+      },
+      availablePositions: [
+        {
+          id: "0000-0001",
+          name: "Pos 1"
+        },
+        {
+          id: "0000-0002",
+          name: "Pos 2"
+        },
+        {
+          id: "0000-0003",
+          name: "Pos 3"
+        }
+      ]
     };
   },
   computed: {
     isStaff: function() {
-      return (isStaff = ["staff", "admin"].includes(this.storage.user.role));
+      if (!this.storage.user) {
+        return false;
+      }
+
+      return ["staff", "admin"].includes(this.storage.user.role);
     },
     changesAllowed: function() {
       if (!this.storage.user) {
@@ -116,16 +142,15 @@ module.exports = {
 
       const isNew = this.form.status == "NEW";
       const needsClarification = this.form.status == "REQUIRED_CLARIFICATION";
-      const isStaff = ["staff", "admin"].includes(this.storage.user.role);
 
-      return isNew || needsClarification || isStaff;
+      return isNew || needsClarification || this.isStaff;
     },
     updateAllowed: function() {
       const isNew = this.form.status == "NEW";
       const isCompleted = this.form.status == "COMPLETED";
       const isApproved = this.form.status == "APPROVED";
 
-      return (!isNew || !isCompleted || !isApproved) && isStaff;
+      return (!isNew || !isCompleted || !isApproved) && this.isStaff;
     },
     approveAllowed: function() {
       const reviewNeeded = this.form.status == "REVIEW_NEEDED";
@@ -143,10 +168,17 @@ module.exports = {
       return reviewNeeded && this.isStaff;
     },
     completeAllowed: function() {},
+    completeChangeAllowed: function() {},
     createAllowed: function() {
       const isNew = this.form.status == "NEW";
 
       return isNew;
+    },
+    positionOptions: function() {
+      var a = [];
+      return this.availablePositions.map(function(pos) {
+        return { value: pos.id, text: pos.name };
+      });
     }
   },
   methods: {
@@ -169,6 +201,7 @@ module.exports = {
       if (this.$route.params.id != "new") {
         this.loadRequisition();
         this.loadPositions();
+        this.loadAvailablePositions();
       }
     },
     loadRequisition: function() {
@@ -192,6 +225,10 @@ module.exports = {
         .then(function(response) {
           self.positions = response.data;
         });
+    },
+    loadAvailablePositions: function() {
+      // TODO GET /api/accounts/{id}/availablePositions/
+      // TODO присвоить amount.id первый id из запроса
     },
     setStatusApproved: function() {
       const self = this;
@@ -241,6 +278,13 @@ module.exports = {
       this.$server
         .post("/requisitions/", this.form)
         .then(function(response) {});
+    },
+    addNewPosition: function() {
+      // TODO сделать копию positions, чтобы потом по разнице определять какие запросы нужно отправить
+      // TODO добавлять новые записи в копию
+    },
+    updateRequisition: function() {
+      // TODO
     }
   },
   mounted: function() {
