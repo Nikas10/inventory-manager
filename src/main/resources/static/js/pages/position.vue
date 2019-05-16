@@ -20,6 +20,10 @@
             placeholder="Description"
           ></b-form-textarea>
         </b-form-group>
+        <b-form-group label="Is bundle?">
+          <b-form-checkbox id="bundle" v-model="form.bundle"></b-form-checkbox>
+        </b-form-group>
+
         <b-button v-if="changesAllowed" v-on:click="saveInventoryPosition">Save Changes</b-button>
       </b-form>
 
@@ -27,13 +31,16 @@
         <h2>Requirements</h2>
         <b-table small :items="requirements" :fields="requirementsFields"></b-table>
 
-        <h2>Bundle Parts</h2>
-        <b-table small :items="bundleParts" :fields="bundlePartsFields">
-          <template slot="name" slot-scope="data">
-            <b-link :to="'/positions/' + data.item.stringPositionId">{{data.value}}</b-link>
-          </template>
-        </b-table>
+        <b-container v-if="orig.bundle">
+          <h2>Bundle Parts</h2>
+          <b-table small :items="newBundleParts" :fields="bundlePartsFields">
+            <template slot="positionName" slot-scope="data">
+              <b-link :to="'/positions/' + data.item.stringPositionId">{{data.value}}</b-link>
+            </template>
+          </b-table>
+        </b-container>
       </b-container>
+
     </b-container>
   </c-default-page>
 </template>
@@ -46,10 +53,15 @@ module.exports = {
   props: ["storage"],
   data: function() {
     return {
+      orig: {
+        name: "",
+        description: "",
+        bundle: false
+      },
       form: {
         name: "",
         description: "",
-        bunde: false
+        bundle: false
       },
       requirementsFields: {
         name: {
@@ -72,7 +84,9 @@ module.exports = {
         }
       },
       requirements: [],
-      bundleParts: []
+      newRequirements: [],
+      bundleParts: [],
+      newBundleParts: []
     };
   },
   computed: {
@@ -85,19 +99,22 @@ module.exports = {
     }
   },
   methods: {
-    loadPage: function() {
-      this.loadInventoryPosition();
-      this.loadRequirements();
-      this.loadBundleParts();
+    loadPage: async function() {
+      if (this.$route.params.id !== "new") {
+        await this.loadInventoryPosition();
+      }
+      await this.loadRequirements();
+      await this.loadBundleParts();
     },
-    loadInventoryPosition() {
+    loadInventoryPosition: async function() {
       const self = this;
       const positionId = this.$route.params.id;
 
       return this.$server
         .get("/positions/" + positionId)
         .then(function(response) {
-          self.form = { ...self.form, ...response.data };
+          self.orig = { ...self.orig, ...response.data };
+          self.form = deepClone(self.orig);
         })
         .catch(function(error) {
           var response = error.response;
@@ -108,17 +125,20 @@ module.exports = {
           }
         });
     },
-    saveInventoryPosition: function() {
+    saveInventoryPosition: async function() {
+      const self = this;
       const positionId = this.$route.params.id;
+      let body = objDiff(this.orig, this.form);
+      console.log(this.orig);
+      console.log(this.form);
 
       return this.$server
-        .patch("/positions/" + positionId, {
-          name: this.form.name,
-          description: this.form.description
-        })
-        .then(function(response) {});
+        .patch("/positions/" + positionId, body)
+        .then(function(response) {
+          self.loadInventoryPosition();
+        });
     },
-    loadRequirements: function() {
+    loadRequirements: async function() {
       const self = this;
       const positionId = this.$route.params.id;
 
@@ -126,24 +146,26 @@ module.exports = {
         .get("/positions/" + positionId + "/requirements/")
         .then(function(response) {
           self.requirements = response.data;
+          self.newRequirements = deepClone(self.requirements);
         })
         .catch(function(error) {
           // TODO
         });
     },
-    loadBundleParts: function() {
+    loadBundleParts: async function() {
       const self = this;
       const positionId = this.$route.params.id;
 
       return this.$server
         .get("/positions/" + positionId + "/bundleParts/")
         .then(function(response) {
-          self.requirements = response.data;
+          self.bundleParts = response.data;
+          self.newBundleParts = deepClone(self.bundleParts);
         })
         .catch(function(error) {
           // TODO
         });
-    },
+    }
   },
   mounted: function() {
     this.loadPage();

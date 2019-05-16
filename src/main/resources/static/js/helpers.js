@@ -6,7 +6,7 @@ function objDiff(from, to) {
     const diff = {};
 
     Object.entries(to).map(function ([key, value]) {
-        if (from[key] && from[key] != value) {
+        if (from.hasOwnProperty(key) && from[key] != value) {
             diff[key] = value;
         }
     });
