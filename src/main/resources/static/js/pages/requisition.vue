@@ -77,12 +77,12 @@
         <b-col>
           <b-form-select v-model="newPosition.id" :options="positionOptions"></b-form-select>
         </b-col>
-        <b-button variant="primary" @click="addPosition">Add position</b-button>
+        <b-button variant="primary" @click="addNewPosition">Add position</b-button>
       </b-form>
 
       <br>
 
-      <b-table small :items="addNewPosition" :fields="positionsFields"></b-table>
+      <b-table small :items="positions" :fields="positionsFields"></b-table>
     </b-container>
   </c-default-page>
 </template>
