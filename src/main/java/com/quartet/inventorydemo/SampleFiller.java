@@ -11,6 +11,7 @@ import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requirement;
 import com.quartet.inventorydemo.model.Requisition;
+import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
@@ -21,8 +22,10 @@ import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.service.RequirementValueService;
 import com.quartet.inventorydemo.service.RequisitionProcessService;
 import com.quartet.inventorydemo.service.RequisitionService;
+import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import com.quartet.inventorydemo.service.RoleService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
@@ -57,6 +60,8 @@ public class SampleFiller implements InitializingBean {
   private InventoryItemService inventoryItemService;
   @Autowired
   private Bundle_InventoryPositionService bundle_inventoryPositionService;
+  @Autowired
+  private Requisition_InventoryPositionService requisition_inventoryPositionService;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -204,5 +209,13 @@ public class SampleFiller implements InitializingBean {
 
     requisitionProcessService.create(req1);
     requisitionProcessService.create(req2);
+
+    Requisition_InventoryPosition reqInvPos1 = new Requisition_InventoryPosition(inventoryPosition1, req1, 7);
+    Requisition_InventoryPosition reqInvPos2 = new Requisition_InventoryPosition(inventoryPosition2, req1, 11);
+
+    req1.getRequisitionInventoryPositions().add(reqInvPos1);
+    req1.getRequisitionInventoryPositions().add(reqInvPos2);
+
+    requisitionService.update(req1);
   }
 }
