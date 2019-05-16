@@ -3,78 +3,86 @@
     <b-container>
       <h1>Requisition</h1>
 
-      <b-form-group label="Description:">
-        <b-form-textarea
-          id="description"
-          :disabled="!changesAllowed"
-          v-model="form.description"
-          required
-          placeholder="Description"
-        ></b-form-textarea>
+      <b-form>
+        <b-form-group label="Description:">
+          <b-form-textarea
+            id="description"
+            :disabled="!changesAllowed"
+            v-model="form.description"
+            required
+            placeholder="Description"
+          ></b-form-textarea>
+        </b-form-group>
+
+        <b-form-group label="Creator:">
+          <b-form-input id="creator" disabled v-model="form.login" required placeholder="Creator"></b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Assigned To:">
+          <b-form-input
+            id="assigned"
+            disabled
+            v-model="form.assigned"
+            required
+            placeholder="Assigned"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Status:">
+          <b-form-input id="status" disabled v-model="form.status" required placeholder="Status"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Due Date:">
+          <b-form-input
+            id="dueDate"
+            :disabled="!changesAllowed"
+            v-model="form.dueDate"
+            type="date"
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Creation Date:">
+          <b-form-input
+            id="creationDate"
+            :disabled="!changesAllowed"
+            v-model="form.creationDate"
+            type="date"
+            required
+          ></b-form-input>
+        </b-form-group>
+      </b-form>
+
+      <b-form-group>
+        <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
+
+        <b-button
+          v-if="clarificationAllowed"
+          @click="setStatusRequiredClarification"
+        >Require Clarification</b-button>
+
+        <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
+
+        <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
+
+        <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
+
+        <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
+
+        <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
       </b-form-group>
-
-      <b-form-group label="Creator:">
-        <b-form-input id="creator" disabled v-model="form.login" required placeholder="Creator"></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Assigned To:">
-        <b-form-input
-          id="assigned"
-          disabled
-          v-model="form.assigned"
-          required
-          placeholder="Assigned"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Status:">
-        <b-form-input id="status" disabled v-model="form.status" required placeholder="Status"></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Due Date:">
-        <b-form-input
-          id="dueDate"
-          :disabled="!changesAllowed"
-          v-model="form.dueDate"
-          type="date"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Creation Date:">
-        <b-form-input
-          id="creationDate"
-          :disabled="!changesAllowed"
-          v-model="form.creationDate"
-          type="date"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
-
-      <b-button
-        v-if="clarificationAllowed"
-        @click="setStatusRequiredClarification"
-      >Require Clarification</b-button>
-
-      <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
-
-      <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
-
-      <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
-
-      <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
-
-      <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
-
       <h2>Requested Positions</h2>
 
-      <b-form-input v-model="newPosition.amount" type="number" min="0"></b-form-input>
-      <b-form-select v-model="newPosition.id" :options="positionOptions"></b-form-select>
-      <b-button>Add position</b-button>
+      <b-form inline>
+        <b-form-input v-model="newPosition.amount" type="number" min="1"></b-form-input>
+        <b-col>
+          <b-form-select v-model="newPosition.id" :options="positionOptions"></b-form-select>
+        </b-col>
+        <b-button variant="primary" @click="addPosition">Add position</b-button>
+      </b-form>
 
-      <b-table small :items="positions" :fields="positionsFields"></b-table>
+      <br>
+
+      <b-table small :items="addNewPosition" :fields="positionsFields"></b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -96,19 +104,23 @@ module.exports = {
         assigned: ""
       },
       positionsFields: {
+        amount: {
+          label: "Amount",
+          sortable: true
+        },
         name: {
           label: "Name",
           sortable: true
         },
-        amount: {
-          label: "Amount",
+        actions: {
+          label: "Actions",
           sortable: true
         }
       },
       requisition: {},
       positions: [],
       newPosition: {
-        amount: 0,
+        amount: 1,
         id: "0000-0001"
       },
       availablePositions: [
