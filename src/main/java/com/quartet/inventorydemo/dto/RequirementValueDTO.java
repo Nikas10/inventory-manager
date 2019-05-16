@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.dto;
 import java.util.UUID;
 
 public class RequirementValueDTO {
+
   String value;
   String name;
   UUID requirementId;

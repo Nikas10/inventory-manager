@@ -1,7 +1,6 @@
 package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.dto.HolderDTO;
-import com.quartet.inventorydemo.dto.InventoryItemDTO;
 import com.quartet.inventorydemo.dto.InventoryItemDTOFromHolder;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryPosition;

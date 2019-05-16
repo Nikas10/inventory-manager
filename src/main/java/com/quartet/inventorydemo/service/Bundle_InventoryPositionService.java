@@ -2,9 +2,7 @@ package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.dto.BundlePartsDTO;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
-import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
-import com.quartet.inventorydemo.model.RequirementValue;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;

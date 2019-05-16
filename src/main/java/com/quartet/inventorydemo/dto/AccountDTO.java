@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.dto;
 
 public class AccountDTO {
+
   private String firstName;
   private String middleName;
   private String lastName;

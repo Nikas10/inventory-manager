@@ -99,10 +99,6 @@ public class Requisition extends History {
   private Requisition() {
   }
 
-  public Set<Requisition_InventoryPosition> getRequisitionInventoryPositions() {
-    return requisitionInventoryPositions;
-  }
-
   public Requisition(
       @NotNull(message = "Account must be not null") Account account,
       Account assignedtoAccount,
@@ -138,6 +134,15 @@ public class Requisition extends History {
     this.holder = holder;
   }
 
+  public Set<Requisition_InventoryPosition> getRequisitionInventoryPositions() {
+    return requisitionInventoryPositions;
+  }
+
+  public void setRequisitionInventoryPositions(
+      Set<Requisition_InventoryPosition> requisitionInventoryPositions) {
+    this.requisitionInventoryPositions = requisitionInventoryPositions;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -165,9 +170,13 @@ public class Requisition extends History {
     return id;
   }
 
-  public Holder getHolder() {return holder;}
+  public Holder getHolder() {
+    return holder;
+  }
 
-  public void setHolder(Holder holder) {this.holder = holder;}
+  public void setHolder(Holder holder) {
+    this.holder = holder;
+  }
 
   public Account getAccount() {
     return account;
@@ -218,10 +227,5 @@ public class Requisition extends History {
 
   public void setDescription(@NotNull(message = "Description can not be null") String description) {
     this.description = description;
-  }
-
-  public void setRequisitionInventoryPositions(
-      Set<Requisition_InventoryPosition> requisitionInventoryPositions) {
-    this.requisitionInventoryPositions = requisitionInventoryPositions;
   }
 }

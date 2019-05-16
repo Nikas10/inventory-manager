@@ -18,7 +18,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -196,9 +195,10 @@ public class AccountServiceImpl implements AccountService {
   }
 
   private void checkHolderExistence(Set<Holder> accountHolders, Collection<Holder> holdersToAdd) {
-    for (Holder currentHolder: holdersToAdd) {
+    for (Holder currentHolder : holdersToAdd) {
       if (accountHolders.contains(currentHolder)) {
-        throw new ResourceAlreadyExistsException("Holder with id: " + currentHolder.getId() + " already exists at specified account.");
+        throw new ResourceAlreadyExistsException(
+            "Holder with id: " + currentHolder.getId() + " already exists at specified account.");
       }
     }
   }

@@ -5,7 +5,6 @@ import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
-import com.quartet.inventorydemo.model.Bundle_InventoryPosition;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.RequirementValue;
 import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
@@ -40,8 +39,7 @@ public class InventoryPositionController {
       @Qualifier("InventoryPositionService") final InventoryPositionService positionService,
       @Qualifier("RequirementService") final RequirementService requirementService,
       @Qualifier("RequirementValueService") final RequirementValueService requirementValueService,
-      @Qualifier("Bundle_InventoryPositionService")
-      final Bundle_InventoryPositionService bundle_inventoryPositionService) {
+      @Qualifier("Bundle_InventoryPositionService") final Bundle_InventoryPositionService bundle_inventoryPositionService) {
     this.bundle_inventoryPositionService = bundle_inventoryPositionService;
     this.positionService = positionService;
     this.requirementService = requirementService;
@@ -118,7 +116,8 @@ public class InventoryPositionController {
     UUID positionID = UUID.fromString(stringPositionID);
     UUID requirementID = UUID.fromString(stringRequirementID);
 
-    RequirementValue newProperty = requirementValueService.update(positionID, requirementID, requirementValueUpdateDTO);
+    RequirementValue newProperty = requirementValueService
+        .update(positionID, requirementID, requirementValueUpdateDTO);
 
     return new ResponseEntity<>(newProperty, HttpStatus.OK);
   }
@@ -151,7 +150,8 @@ public class InventoryPositionController {
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService.add(bundleId, partId, bundle_inventoryPositionDTO);
+    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService
+        .add(bundleId, partId, bundle_inventoryPositionDTO);
     return new ResponseEntity<>(bundlePartsDTO, HttpStatus.OK);
   }
 
@@ -164,7 +164,8 @@ public class InventoryPositionController {
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService.update(bundleId, partId, bundle_inventoryPositionDTO);
+    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService
+        .update(bundleId, partId, bundle_inventoryPositionDTO);
     return new ResponseEntity<>(bundlePartsDTO, HttpStatus.OK);
   }
 
@@ -193,7 +194,8 @@ public class InventoryPositionController {
     if (!bundle.isPresent() || !partOfBundle.isPresent()) {
       throw new ResourceNotFoundException("Requested bundle or position are not found!");
     } else {
-      Integer bundlePartAmount = bundle_inventoryPositionService.getAmount(bundle.get(), partOfBundle.get());
+      Integer bundlePartAmount = bundle_inventoryPositionService
+          .getAmount(bundle.get(), partOfBundle.get());
       return new ResponseEntity<>(bundlePartAmount, HttpStatus.OK);
     }
   }
@@ -201,10 +203,11 @@ public class InventoryPositionController {
   @RequestMapping(
       value = "/{positionId}/bundleParts/",
       method = RequestMethod.GET)
-  public ResponseEntity<?> getBundleFirstLevelContents (
+  public ResponseEntity<?> getBundleFirstLevelContents(
       @PathVariable("positionId") String stringPositionID) {
     UUID bundleId = UUID.fromString(stringPositionID);
-    List<InventoryPosition> result = bundle_inventoryPositionService.getBundleFirstLevelContents(bundleId);
+    List<InventoryPosition> result = bundle_inventoryPositionService
+        .getBundleFirstLevelContents(bundleId);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

@@ -48,7 +48,8 @@ public class InventoryItemController {
     Optional<InventoryItem> item = inventoryItemService.getByInventoryPositionIdInStorage(uuid);
     InventoryItem result =
         item.orElseThrow(
-            () -> new ResourceNotFoundException("inventory item by position with id: " + uuid + "not found in storage"));
+            () -> new ResourceNotFoundException(
+                "inventory item by position with id: " + uuid + "not found in storage"));
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
@@ -59,10 +60,13 @@ public class InventoryItemController {
       @PathVariable("uuid") @UUIDString @Valid String positionId) {
     UUID uuid = UUID.fromString(positionId);
     UUID holder = UUID.fromString(holderId);
-    Optional<InventoryItem> item = inventoryItemService.getByInventoryPositionIdAndHolderId(uuid, holder);
+    Optional<InventoryItem> item = inventoryItemService
+        .getByInventoryPositionIdAndHolderId(uuid, holder);
     InventoryItem result =
         item.orElseThrow(
-            () -> new ResourceNotFoundException("inventory item by position with id: " + uuid + " and holder "+ holder +"not found"));
+            () -> new ResourceNotFoundException(
+                "inventory item by position with id: " + uuid + " and holder " + holder
+                    + "not found"));
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

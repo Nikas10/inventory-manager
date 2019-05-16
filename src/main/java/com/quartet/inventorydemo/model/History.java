@@ -1,5 +1,6 @@
 package com.quartet.inventorydemo.model;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
@@ -16,11 +17,11 @@ public abstract class History {
 
   @Column(name = "jpa_auditing_created_date", nullable = false, updatable = false)
   @CreatedDate
-  private long createdDate;
+  private Date createdDate;
 
   @Column(name = "jpa_auditing_record_modified_date")
   @LastModifiedDate
-  private long modifiedDate;
+  private Date modifiedDate;
 
   @Column(name = "jpa_auditing_created_by")
   @CreatedBy

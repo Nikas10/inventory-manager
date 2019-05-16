@@ -44,8 +44,7 @@ public class RequisitionServiceImpl implements RequisitionService {
       @Qualifier("AccountService") final AccountService accountService,
       @Qualifier("HolderService") final HolderService holderService,
       @Qualifier("InventoryPositionService") final InventoryPositionService inventoryPositionService,
-      @Qualifier("Requisition_InventoryPositionService")
-    final Requisition_InventoryPositionService requisition_InventoryPositionService) {
+      @Qualifier("Requisition_InventoryPositionService") final Requisition_InventoryPositionService requisition_InventoryPositionService) {
     this.requisitionRepository = requisitionRepository;
     this.accountService = accountService;
     this.holderService = holderService;
@@ -61,9 +60,10 @@ public class RequisitionServiceImpl implements RequisitionService {
   @Override
   public Requisition getById(@NotNull @Valid UUID id) {
     Optional<Requisition> optionalRequisition = requisitionRepository.getById(id);
-    Requisition requisition = optionalRequisition.orElseThrow(() -> new ResourceNotFoundException("Requisition with id "
-                                                                                                  + id
-                                                                                                  + " is not found!"));
+    Requisition requisition = optionalRequisition
+        .orElseThrow(() -> new ResourceNotFoundException("Requisition with id "
+            + id
+            + " is not found!"));
     return requisition;
   }
 
@@ -73,21 +73,22 @@ public class RequisitionServiceImpl implements RequisitionService {
     Holder accountHolder = holderService
         .getByHolderID(UUID.fromString(requisitionDTO.getHolderUUID()))
         .orElseThrow(
-        () -> new ResourceNotFoundException("Holder with id: "
-            + requisitionDTO.getHolderUUID() + " does not exist."));
+            () -> new ResourceNotFoundException("Holder with id: "
+                + requisitionDTO.getHolderUUID() + " does not exist."));
     Account account = accountService.getByLogin(requisitionDTO.getLogin())
         .orElseThrow(
-        () ->  new ResourceNotFoundException("Account with login: "
-            + requisitionDTO.getLogin() + " does not exist."));
+            () -> new ResourceNotFoundException("Account with login: "
+                + requisitionDTO.getLogin() + " does not exist."));
     Requisition requisitionToAdd = requisitionRepository.saveAndFlush(new Requisition(
-            account,
-            requisitionDTO.getStatus(),
-            requisitionDTO.getCreationDate(),
-            requisitionDTO.getDueDate(),
-            requisitionDTO.getDescription(),
-            accountHolder));
+        account,
+        requisitionDTO.getStatus(),
+        requisitionDTO.getCreationDate(),
+        requisitionDTO.getDueDate(),
+        requisitionDTO.getDescription(),
+        accountHolder));
     List<RequisitionInventoryPositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
-    requisitionToAdd.setRequisitionInventoryPositions(new HashSet<>()); //nullpointer exception without this line
+    requisitionToAdd.setRequisitionInventoryPositions(
+        new HashSet<>()); //nullpointer exception without this line
     requisitionToAdd.getRequisitionInventoryPositions()
         .addAll(requisition_InventoryPositionService
             .addAllByInventory(requisitionToAdd, positionsToPatch));
@@ -103,10 +104,10 @@ public class RequisitionServiceImpl implements RequisitionService {
   public void remove(@NotNull @Valid Requisition requisition) {
   }
 
-  private Set<UUID> getHolderInventoryPositionsIds(Holder holder){
+  private Set<UUID> getHolderInventoryPositionsIds(Holder holder) {
     Set<InventoryPosition> allPositions = new HashSet<>();
 
-    for (Role currentRole: holder.getRoles()) {
+    for (Role currentRole : holder.getRoles()) {
       allPositions.addAll(currentRole.getInventoryPositions());
     }
 
@@ -118,16 +119,20 @@ public class RequisitionServiceImpl implements RequisitionService {
   }
 
   private void checkPositionsExistance(Set<UUID> positionsIDs) {
-    for (UUID currentId :positionsIDs) {
-      Optional<InventoryPosition> currentPosition = inventoryPositionService.getByPositionID(currentId);
-      currentPosition.orElseThrow(() -> new ResourceNotFoundException("Positon with id: " + currentId + " not found."));
+    for (UUID currentId : positionsIDs) {
+      Optional<InventoryPosition> currentPosition = inventoryPositionService
+          .getByPositionID(currentId);
+      currentPosition.orElseThrow(
+          () -> new ResourceNotFoundException("Positon with id: " + currentId + " not found."));
     }
   }
 
-  private void checkPositionsAvailability(Set<UUID> availablePositions, Set<UUID> requestedPositions) {
-    for (UUID currentId: requestedPositions) {
+  private void checkPositionsAvailability(Set<UUID> availablePositions,
+      Set<UUID> requestedPositions) {
+    for (UUID currentId : requestedPositions) {
       if (!availablePositions.contains(currentId)) {
-        throw new ResourceNotAvailableException("Inventory position with id:" + currentId + " is not available.");
+        throw new ResourceNotAvailableException(
+            "Inventory position with id:" + currentId + " is not available.");
       }
     }
   }

@@ -7,21 +7,23 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
-
 import javax.validation.constraints.NotNull;
 
 public interface Requisition_InventoryPositionService {
 
-  Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(UUID requisition, UUID position);
+  Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(
+      UUID requisition, UUID position);
 
   void update(@NotNull @Valid UUID requisitionId,
-              @NotNull @Valid UUID positionId,
-              @NotNull @Valid Integer amount);
+      @NotNull @Valid UUID positionId,
+      @NotNull @Valid Integer amount);
 
   void remove(@NotNull @Valid UUID requisition, @NotNull @Valid UUID position);
 
-  Collection<Requisition_InventoryPosition> addAll(@NotNull @Valid Collection<Requisition_InventoryPosition> positionLinks);
+  Collection<Requisition_InventoryPosition> addAll(
+      @NotNull @Valid Collection<Requisition_InventoryPosition> positionLinks);
 
-  Collection<Requisition_InventoryPosition> addAllByInventory(@NotNull @Valid Requisition requisitionToAdd,
+  Collection<Requisition_InventoryPosition> addAllByInventory(
+      @NotNull @Valid Requisition requisitionToAdd,
       @NotNull @Valid Collection<RequisitionInventoryPositionDTO> positionsToAdd);
 }

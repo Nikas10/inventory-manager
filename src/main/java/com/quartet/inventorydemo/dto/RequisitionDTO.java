@@ -17,7 +17,6 @@ public class RequisitionDTO {
   private List<RequisitionInventoryPositionDTO> inventoryPositions;
 
 
-
   public RequisitionDTO(String id, String login, String assignedTo, String status,
       Date creationDate, Date dueDate, String description, String holderName, String holderUUID,
       List<RequisitionInventoryPositionDTO> inventoryPositionNames) {
@@ -36,13 +35,21 @@ public class RequisitionDTO {
   private RequisitionDTO() {
   }
 
-  public void setId(String id) {this.id = id;}
+  public String getId() {
+    return id;
+  }
 
-  public String getId() {return id;}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-  public String getAssignedTo() {return assignedTo;}
+  public String getAssignedTo() {
+    return assignedTo;
+  }
 
-  public void setAssignedTo(String assignedTo) {this.assignedTo = assignedTo;}
+  public void setAssignedTo(String assignedTo) {
+    this.assignedTo = assignedTo;
+  }
 
   public String getLogin() {
     return login;
@@ -76,9 +83,13 @@ public class RequisitionDTO {
     this.holderUUID = holderUUID;
   }
 
-  public String getHolderName() {return holderName;}
+  public String getHolderName() {
+    return holderName;
+  }
 
-  public void setHolderName(String holderName) {this.holderName = holderName;}
+  public void setHolderName(String holderName) {
+    this.holderName = holderName;
+  }
 
   public List<RequisitionInventoryPositionDTO> getInventoryPositions() {
     return inventoryPositions;

@@ -65,11 +65,10 @@ public class RequirementValueServiceImpl implements RequirementValueService {
               + "already exists.");
     }
 
-
-
     if (!"".equals(requirementValueUpdateDTO.getRequirementValue()) &&
         (requirementValueUpdateDTO.getRequirementValue() != null)) {
-      RequirementValue newRequirementValue = new RequirementValue(requirement, position, requirementValueUpdateDTO.getRequirementValue());
+      RequirementValue newRequirementValue = new RequirementValue(requirement, position,
+          requirementValueUpdateDTO.getRequirementValue());
       newRequirementValue.setValue(requirementValueUpdateDTO.getRequirementValue());
       return requirementValueRepo.saveAndFlush(newRequirementValue);
     }

@@ -4,7 +4,6 @@ import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.util.IdNull;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

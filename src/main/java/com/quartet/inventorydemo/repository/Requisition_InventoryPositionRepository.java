@@ -17,6 +17,7 @@ public interface Requisition_InventoryPositionRepository
     return new HashSet<>(findAll());
   }
 
-  Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(UUID position, UUID requisition);
+  Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(UUID position,
+      UUID requisition);
 
 }

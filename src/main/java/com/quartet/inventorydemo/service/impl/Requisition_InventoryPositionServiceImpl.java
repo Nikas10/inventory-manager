@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.service.impl;
 
 import static java.util.Objects.isNull;
+
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
@@ -15,13 +16,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -33,8 +33,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Transactional
 public class Requisition_InventoryPositionServiceImpl implements
-    Requisition_InventoryPositionService
-{
+    Requisition_InventoryPositionService {
 
   private final Requisition_InventoryPositionRepository requisition_inventoryPositionRepo;
   private final RequisitionService requisitionService;
@@ -53,16 +52,18 @@ public class Requisition_InventoryPositionServiceImpl implements
   @Override
   public Optional<Requisition_InventoryPosition> findByInventoryPosition_IdAndRequisition_Id(
       UUID requisition, UUID position) {
-    return requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(position, requisition);
+    return requisition_inventoryPositionRepo
+        .findByInventoryPosition_IdAndRequisition_Id(position, requisition);
   }
 
   @Override
   public void update(@NotNull @Valid UUID requisitionId,
-                     @NotNull @Valid UUID positionId,
-                     @NotNull @Valid Integer amount) {
+      @NotNull @Valid UUID positionId,
+      @NotNull @Valid Integer amount) {
 
     Optional<Requisition_InventoryPosition> validation =
-        requisition_inventoryPositionRepo.findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId);
+        requisition_inventoryPositionRepo
+            .findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId);
 
     if (validation.isPresent()) {
       validation.get().setAmount(amount);
@@ -76,23 +77,25 @@ public class Requisition_InventoryPositionServiceImpl implements
   public void remove(@NotNull @Valid UUID requisitionId, @NotNull @Valid UUID positionId) {
     requisition_inventoryPositionRepo
         .delete(requisition_inventoryPositionRepo
-                .findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Position with id: "
-                    + positionId
-                    + " for requisition with id: "
-                    + requisitionId
-                    + " not found.")
-                )
+            .findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId)
+            .orElseThrow(() -> new ResourceNotFoundException("Position with id: "
+                + positionId
+                + " for requisition with id: "
+                + requisitionId
+                + " not found.")
+            )
         );
   }
 
   @Override
-  public Collection<Requisition_InventoryPosition> addAll(@NotNull @Valid Collection<Requisition_InventoryPosition> positionLinks) {
+  public Collection<Requisition_InventoryPosition> addAll(
+      @NotNull @Valid Collection<Requisition_InventoryPosition> positionLinks) {
     return requisition_inventoryPositionRepo.saveAll(positionLinks);
   }
 
   @Override
-  public Collection<Requisition_InventoryPosition> addAllByInventory(@NotNull @Valid Requisition requisitionToAdd,
+  public Collection<Requisition_InventoryPosition> addAllByInventory(
+      @NotNull @Valid Requisition requisitionToAdd,
       @NotNull @Valid Collection<RequisitionInventoryPositionDTO> positionsToPatch) {
     if (!isNull(positionsToPatch)) {
       Map<InventoryPosition, Integer> positions = positionsToPatch

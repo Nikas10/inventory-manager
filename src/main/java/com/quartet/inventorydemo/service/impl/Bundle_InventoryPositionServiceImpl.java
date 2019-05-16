@@ -94,7 +94,8 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
         new Bundle_InventoryPosition(position, bundle, bundle_inventoryPositionDTO.getAmount());
     bundle_InventoryPositionRepo.saveAndFlush(newBundleInventoryPosition);
 
-    return new BundlePartsDTO(position.getName(), position.getId().toString(), bundle_inventoryPositionDTO.getAmount().toString());
+    return new BundlePartsDTO(position.getName(), position.getId().toString(),
+        bundle_inventoryPositionDTO.getAmount().toString());
   }
 
   @Override
@@ -137,7 +138,8 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
     toChange.setAmount(bundle_inventoryPositionDTO.getAmount());
     bundle_InventoryPositionRepo.saveAndFlush(toChange);
 
-    return new BundlePartsDTO(position.getName(), position.getId().toString(), bundle_inventoryPositionDTO.getAmount().toString());
+    return new BundlePartsDTO(position.getName(), position.getId().toString(),
+        bundle_inventoryPositionDTO.getAmount().toString());
   }
 
   @Override

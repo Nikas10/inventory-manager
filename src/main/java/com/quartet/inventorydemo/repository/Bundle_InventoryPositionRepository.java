@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface Bundle_InventoryPositionRepository
     extends JpaRepository<Bundle_InventoryPosition, Bundle_InventoryPositionId> {
 
- Optional<Bundle_InventoryPosition> findByInventoryPositionAndBundlePosition(
+  Optional<Bundle_InventoryPosition> findByInventoryPositionAndBundlePosition(
       InventoryPosition inventoryPosition, InventoryPosition bundlePosition);
 
   List<Bundle_InventoryPosition> findByInventoryPosition(InventoryPosition inventoryPosition);

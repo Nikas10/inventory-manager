@@ -89,15 +89,13 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
             () -> new ResourceNotFoundException("Position with id: " + id + " not found"));
 
     if ((positionDTO.getDescription() != null) &&
-        (!"".equals(positionDTO.getDescription())))
-    {
+        (!"".equals(positionDTO.getDescription()))) {
       positionToModify.setDescription(
           positionDTO.getDescription());  //TODO check if string valid and throw exception
     }
 
     if ((positionDTO.getName() != null) &&
-        (!"".equals(positionDTO.getName())))
-    {
+        (!"".equals(positionDTO.getName()))) {
       positionToModify.setName(positionDTO.getName());  //TODO check uniqueness
     }
 
