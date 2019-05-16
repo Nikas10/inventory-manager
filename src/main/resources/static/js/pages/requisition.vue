@@ -93,16 +93,39 @@
       <h2>Requested Positions</h2>
 
       <b-form inline>
-        <b-form-input v-model="forms.position.amount" type="number" min="1"></b-form-input>
+        <b-form-input
+          :disabled="!forms.position.id"
+          v-model="forms.position.amount"
+          type="number"
+          min="1"
+        ></b-form-input>
         <b-col>
-          <b-form-select v-model="forms.position.id" :options="positionOptions"></b-form-select>
+          <b-form-select
+            :disabled="!forms.position.id"
+            v-model="forms.position.id"
+            :options="positionOptions"
+          ></b-form-select>
         </b-col>
-        <b-button variant="primary" @click="addNewPosition">Add position</b-button>
+        <b-button
+          variant="primary"
+          :disabled="!forms.position.id"
+          @click="addNewPosition"
+        >Add position</b-button>
       </b-form>
 
       <br>
 
-      <b-table small :items="newPositions" :fields="positionsFields"></b-table>
+      <b-table small :items="newPositions" :fields="positionsFields">
+        <template slot="amount" slot-scope="data">
+          <b-form-input
+            :disabled="!changesAllowed"
+            v-model="data.item.amount"
+            size="sm"
+            type="number"
+            min="1"
+          ></b-form-input>
+        </template>
+      </b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -150,20 +173,7 @@ module.exports = {
       requisition: {},
       positions: [],
       newPositions: [],
-      availablePositions: [
-        {
-          id: "0000-0001",
-          name: "Pos 1"
-        },
-        {
-          id: "0000-0002",
-          name: "Pos 2"
-        },
-        {
-          id: "0000-0003",
-          name: "Pos 3"
-        }
-      ],
+      availablePositions: [],
       availableHolders: []
     };
   },
@@ -187,11 +197,11 @@ module.exports = {
       return isNew || needsClarification || this.isStaff;
     },
     updateAllowed: function() {
-      const isNew = this.forms.requisition.status == "NEW";
-      const isCompleted = this.forms.requisition.status == "COMPLETED";
-      const isApproved = this.forms.requisition.status == "APPROVED";
+      const requiredClarification =
+        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
+      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
 
-      return (!isNew || !isCompleted || !isApproved) && this.isStaff;
+      return (requiredClarification || reviewNeeded) && this.isStaff;
     },
     approveAllowed: function() {
       const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
@@ -243,9 +253,11 @@ module.exports = {
       return year + "-" + month + "-" + day;
     },
     loadPage: async function() {
-      if (this.$route.params.id != "new") {
-        await this.loadRequisition();
+      if (this.$route.params.id == "new") {
+        this.forms.requisition.login = this.storage.user.login;
+      } else {
         this.loadPositions();
+        await this.loadRequisition();
       }
 
       await this.loadHolders();
