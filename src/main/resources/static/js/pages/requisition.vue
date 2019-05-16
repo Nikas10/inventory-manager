@@ -368,9 +368,15 @@ module.exports = {
     createRequisition: function() {
       const self = this;
 
-      this.$server
-        .post("/requisitions/", this.forms.requisition)
-        .then(function(response) {});
+      const req = {
+        ...this.forms.requisition,
+        inventoryPositions: this.newPositions
+      };
+      console.log(req);
+
+      this.$server.post("/requisitions/", req).then(function(response) {
+        self.$router.push("/requisitions/" + response.data.id);
+      });
     },
     addNewPosition: function() {
       // TODO сделать копию positions, чтобы потом по разнице определять какие запросы нужно отправить
