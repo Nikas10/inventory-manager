@@ -3,78 +3,98 @@
     <b-container>
       <h1>Requisition</h1>
 
-      <b-form-group label="Description:">
-        <b-form-textarea
-          id="description"
-          :disabled="!changesAllowed"
-          v-model="form.description"
-          required
-          placeholder="Description"
-        ></b-form-textarea>
+      <b-form>
+        <b-form-group label="Description:">
+          <b-form-textarea
+            id="description"
+            :disabled="!changesAllowed"
+            v-model="forms.requisition.description"
+            required
+            placeholder="Description"
+          ></b-form-textarea>
+        </b-form-group>
+
+        <b-form-group label="Creator:">
+          <b-form-input
+            id="creator"
+            disabled
+            v-model="forms.requisition.login"
+            required
+            placeholder="Creator"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Assigned To:">
+          <b-form-input
+            id="assigned"
+            disabled
+            v-model="forms.requisition.assigned"
+            required
+            placeholder="Assigned"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Status:">
+          <b-form-input
+            id="status"
+            disabled
+            v-model="forms.requisition.status"
+            required
+            placeholder="Status"
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group label="Due Date:">
+          <b-form-input
+            id="dueDate"
+            :disabled="!changesAllowed"
+            v-model="forms.requisition.dueDate"
+            type="date"
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group label="Creation Date:">
+          <b-form-input
+            id="creationDate"
+            :disabled="!changesAllowed"
+            v-model="forms.requisition.creationDate"
+            type="date"
+            required
+          ></b-form-input>
+        </b-form-group>
+      </b-form>
+
+      <b-form-group>
+        <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
+
+        <b-button
+          v-if="clarificationAllowed"
+          @click="setStatusRequiredClarification"
+        >Require Clarification</b-button>
+
+        <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
+
+        <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
+
+        <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
+
+        <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
+
+        <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
       </b-form-group>
-
-      <b-form-group label="Creator:">
-        <b-form-input id="creator" disabled v-model="form.login" required placeholder="Creator"></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Assigned To:">
-        <b-form-input
-          id="assigned"
-          disabled
-          v-model="form.assigned"
-          required
-          placeholder="Assigned"
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Status:">
-        <b-form-input id="status" disabled v-model="form.status" required placeholder="Status"></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Due Date:">
-        <b-form-input
-          id="dueDate"
-          :disabled="!changesAllowed"
-          v-model="form.dueDate"
-          type="date"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-form-group label="Creation Date:">
-        <b-form-input
-          id="creationDate"
-          :disabled="!changesAllowed"
-          v-model="form.creationDate"
-          type="date"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
-
-      <b-button
-        v-if="clarificationAllowed"
-        @click="setStatusRequiredClarification"
-      >Require Clarification</b-button>
-
-      <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
-
-      <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
-
-      <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
-
-      <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
-
-      <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
-
       <h2>Requested Positions</h2>
 
-      <b-form-input v-model="newPosition.amount" type="number" min="0"></b-form-input>
-      <b-form-select v-model="newPosition.id" :options="positionOptions"></b-form-select>
-      <b-button>Add position</b-button>
+      <b-form inline>
+        <b-form-input v-model="forms.position.amount" type="number" min="1"></b-form-input>
+        <b-col>
+          <b-form-select v-model="forms.position.id" :options="positionOptions"></b-form-select>
+        </b-col>
+        <b-button variant="primary" @click="addNewPosition">Add position</b-button>
+      </b-form>
 
-      <b-table small :items="positions" :fields="positionsFields"></b-table>
+      <br>
+
+      <b-table small :items="newPositions" :fields="positionsFields"></b-table>
     </b-container>
   </c-default-page>
 </template>
@@ -87,30 +107,41 @@ module.exports = {
   props: ["storage"],
   data: function() {
     return {
-      form: {
-        description: "",
-        login: "",
-        status: "NEW",
-        creationDate: this.formatDate(Date.now()),
-        dueDate: this.formatDate(new Date().setDate(new Date().getDate() + 14)),
-        assigned: ""
+      forms: {
+        requisition: {
+          description: "",
+          login: "",
+          status: "NEW",
+          creationDate: this.formatDate(Date.now()),
+          dueDate: this.formatDate(
+            new Date().setDate(new Date().getDate() + 14)
+          ),
+          assigned: "",
+          holderName: "",
+          holderUUID: ""
+        },
+        position: {
+          amount: 1,
+          id: "0000-0001"
+        }
       },
       positionsFields: {
+        amount: {
+          label: "Amount",
+          sortable: true
+        },
         name: {
           label: "Name",
           sortable: true
         },
-        amount: {
-          label: "Amount",
+        actions: {
+          label: "Actions",
           sortable: true
         }
       },
       requisition: {},
       positions: [],
-      newPosition: {
-        amount: 0,
-        id: "0000-0001"
-      },
+      newPositions: [],
       availablePositions: [
         {
           id: "0000-0001",
@@ -124,7 +155,8 @@ module.exports = {
           id: "0000-0003",
           name: "Pos 3"
         }
-      ]
+      ],
+      availableHolders: [],
     };
   },
   computed: {
@@ -140,37 +172,38 @@ module.exports = {
         return false;
       }
 
-      const isNew = this.form.status == "NEW";
-      const needsClarification = this.form.status == "REQUIRED_CLARIFICATION";
+      const isNew = this.forms.requisition.status == "NEW";
+      const needsClarification =
+        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
 
       return isNew || needsClarification || this.isStaff;
     },
     updateAllowed: function() {
-      const isNew = this.form.status == "NEW";
-      const isCompleted = this.form.status == "COMPLETED";
-      const isApproved = this.form.status == "APPROVED";
+      const isNew = this.forms.requisition.status == "NEW";
+      const isCompleted = this.forms.requisition.status == "COMPLETED";
+      const isApproved = this.forms.requisition.status == "APPROVED";
 
       return (!isNew || !isCompleted || !isApproved) && this.isStaff;
     },
     approveAllowed: function() {
-      const reviewNeeded = this.form.status == "REVIEW_NEEDED";
+      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
 
       return reviewNeeded && this.isStaff;
     },
     rejectAllowed: function() {
-      const reviewNeeded = this.form.status == "REVIEW_NEEDED";
+      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
 
       return reviewNeeded && this.isStaff;
     },
     clarificationAllowed: function() {
-      const reviewNeeded = this.form.status == "REVIEW_NEEDED";
+      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
 
       return reviewNeeded && this.isStaff;
     },
     completeAllowed: function() {},
     completeChangeAllowed: function() {},
     createAllowed: function() {
-      const isNew = this.form.status == "NEW";
+      const isNew = this.forms.requisition.status == "NEW";
 
       return isNew;
     },
@@ -179,6 +212,9 @@ module.exports = {
       return this.availablePositions.map(function(pos) {
         return { value: pos.id, text: pos.name };
       });
+    },
+    holdersOptions: function() {
+
     }
   },
   methods: {
@@ -201,7 +237,8 @@ module.exports = {
       if (this.$route.params.id != "new") {
         this.loadRequisition();
         this.loadPositions();
-        this.loadAvailablePositions();
+        this.loadHolders();
+        //this.loadAvailablePositions();
       }
     },
     loadRequisition: function() {
@@ -211,24 +248,58 @@ module.exports = {
       this.$server
         .get("/requisitions/" + requisitonId)
         .then(function(response) {
-          self.form = response.data;
-          self.form.dueDate = self.formatDate(response.data.dueDate);
-          self.form.creationDate = self.formatDate(response.data.creationDate);
+          self.forms.requisition = response.data;
+          self.forms.requisition.dueDate = self.formatDate(
+            response.data.dueDate
+          );
+          self.forms.requisition.creationDate = self.formatDate(
+            response.data.creationDate
+          );
         });
     },
-    loadPositions: function() {
+    loadHolders: function() {
+      const self = this;
+      const username = this.storage.user.user;
+
+      if(this.$route.params.id != "new") {
+        this.availableHolders = [{
+          //id
+        }]
+        return;
+      }
+
+      this.get('/users/' + username + '/holders/').then(function(response) {
+        self.availableHolders = response.data
+
+      })
+    },
+    loadPositions: async function() {
       const self = this;
       const requisitonId = this.$route.params.id;
 
-      this.$server
+      await this.$server
         .get("/requisitions/" + requisitonId + "/positions/")
         .then(function(response) {
           self.positions = response.data;
+          self.newPositions = deepClone(self.positions);
         });
+      await this.loadAvailablePositions();
     },
-    loadAvailablePositions: function() {
+    loadAvailablePositions: async function() {
       // TODO GET /api/accounts/{id}/availablePositions/
       // TODO присвоить amount.id первый id из запроса
+
+      const self = this;
+
+      // TODO Заменить на холдера
+      const holderId = this.storage.user.login;
+
+      return this.$server
+        .get("/accounts/" + holderId + "/availablePositions/")
+        .then(function(response) {
+          self.availablePositions = response.data;
+          self.forms.position.id = self.availablePositions[0];
+        });
     },
     setStatusApproved: function() {
       const self = this;
@@ -276,12 +347,18 @@ module.exports = {
       const self = this;
 
       this.$server
-        .post("/requisitions/", this.form)
+        .post("/requisitions/", this.forms.requisition)
         .then(function(response) {});
     },
     addNewPosition: function() {
       // TODO сделать копию positions, чтобы потом по разнице определять какие запросы нужно отправить
-      // TODO добавлять новые записи в копию
+      const position = {
+        amount: this.forms.position.amount,
+        name: this.forms.position.name,
+        id: this.forms.position.id
+      };
+
+      this.newPositions.push(position);
     },
     updateRequisition: function() {
       // TODO

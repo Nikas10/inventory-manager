@@ -25,7 +25,7 @@
 
 <body>
 <div id="app">
-  <router-view :storage="storage"></router-view>
+  <router-view v-if="ready" :storage="storage"></router-view>
 </div>
 
 <script src="js/router.js"></script>
@@ -41,11 +41,16 @@ Vue.prototype.$server = axios.create({
   baseURL: baseURL + "api"
 });
 
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 window.app = new Vue({
   router,
   el: "#app",
   data: function() {
     return {
+      ready: false,
       storage: {
         user: null,
         pages: [
@@ -114,22 +119,18 @@ window.app = new Vue({
     unsetToken() {
       delete axios.defaults.headers.common["Authorization"];
     },
-    loadUser() {
+    async loadUser() {
       var self = this;
-      var promiseLoadUser = this.$server
-        .get("/accounts/me")
-        .then(function(response) {
-          self.storage.user = {
-            login: response.data.login,
-            email: response.data.email,
-            firstName: response.data.firstName,
-            middleName: response.data.middleName,
-            lastName: response.data.lastName,
-            role: response.data.role
-          };
-          // TODO Добавить перенаправление на другую страницу
-        });
-      return promiseLoadUser;
+      return this.$server.get("/accounts/me").then(function(response) {
+        self.storage.user = {
+          login: response.data.login,
+          email: response.data.email,
+          firstName: response.data.firstName,
+          middleName: response.data.middleName,
+          lastName: response.data.lastName,
+          role: response.data.role
+        };
+      });
     },
     auth(login, password, callback) {
       const self = this;
@@ -165,13 +166,16 @@ window.app = new Vue({
       //eraseCookie("auth");
     }
   },
-  mounted() {
+  async mounted() {
     let tokenString = localStorage.getItem("token");
     if (tokenString) {
       let token = JSON.parse(tokenString);
       console.log(token);
       this.setToken(token.access_token);
-      this.loadUser();
+      
+      await this.loadUser();
+
+      this.ready = true;
     }
   }
 });
