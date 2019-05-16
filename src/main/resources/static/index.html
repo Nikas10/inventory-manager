@@ -21,6 +21,8 @@
 
   <script src="js/libs/vue-router.min.js"></script>
   <script src="js/libs/http-vue-loader.js"></script>
+
+  <script src="js/helpers.js"></script>
 </head>
 
 <body>
@@ -40,10 +42,6 @@ var clientSecret = "inventory";
 Vue.prototype.$server = axios.create({
   baseURL: baseURL + "api"
 });
-
-function deepClone(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
 
 window.app = new Vue({
   router,
@@ -172,10 +170,10 @@ window.app = new Vue({
       let token = JSON.parse(tokenString);
       console.log(token);
       this.setToken(token.access_token);
-      
+
       await this.loadUser();
     }
-    
+
     this.ready = true;
   }
 });
