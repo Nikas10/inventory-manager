@@ -1,7 +1,7 @@
 <template>
   <c-default-page :storage="storage">
     <b-container well>
-      <h1>Report for user {{storage.user.login}}</h1>
+      <h1>{{'Report' + (storage.user ? ' for user' + storage.user.login : "")}}</h1>
       <b-card>
         <div id="rep"></div>
       </b-card>
@@ -20,6 +20,10 @@ module.exports = {
   },
   methods: {
     loadReport: function() {
+      if (!this.storage.user) {
+        return;
+      }
+      
       this.$server.get("report").then(function(response) {
         document.getElementById("rep").innerHTML = response.data;
       });
