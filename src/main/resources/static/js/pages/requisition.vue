@@ -67,22 +67,25 @@
       </b-form>
 
       <b-form-group>
-        <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
+        <b-button v-if="approveAllowed" @click="updateRequisition('APPROVED')">Approve</b-button>
 
         <b-button
           v-if="clarificationAllowed"
-          @click="setStatusRequiredClarification"
+          @click="updateRequisition('REQUIRED_CLARIFICATION')"
         >Require Clarification</b-button>
 
-        <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
+        <b-button v-if="rejectAllowed" @click="updateRequisition('REJECTED')">Reject</b-button>
 
-        <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
+        <b-button v-if="completeAllowed" @click="updateRequisition('COMPLETED')">Complete</b-button>
 
-        <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
+        <b-button
+          v-if="completeChangeAllowed"
+          @click="updateRequisition('REVIEW_NEEDED')"
+        >Complete Changes</b-button>
 
         <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
 
-        <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
+        <b-button v-if="updateAllowed" @click="updateRequisition()">Update</b-button>
 
         <b-button @click="updatePositions">TEST</b-button>
       </b-form-group>
@@ -330,74 +333,15 @@ module.exports = {
           self.forms.position.id = self.availablePositions[0];
         });
     },
-    setStatusApproved: function() {
+    updateRequisition: function(status) {
       const self = this;
       const requisitonId = this.$route.params.id;
 
-      const req = {
-        ...objDiff(this.orig.requisition, this.forms.requisition),
-        status: "APPROVED"
-      };
+      let req = { ...objDiff(this.orig.requisition, this.forms.requisition) };
 
-      this.$server
-        .patch("/requisitions/" + requisitonId, req)
-        .then(function(response) {
-          self.$router.go();
-        });
-    },
-    setStatusRequiredClarification: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      const req = {
-        ...objDiff(this.orig.requisition, this.forms.requisition),
-        status: "REQUIRED_CLARIFICATION"
-      };
-
-      this.$server
-        .patch("/requisitions/" + requisitonId, req)
-        .then(function(response) {
-          self.$router.go();
-        });
-    },
-    setStatusRejected: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      const req = {
-        ...objDiff(this.orig.requisition, this.forms.requisition),
-        status: "REJECTED"
-      };
-
-      this.$server
-        .patch("/requisitions/" + requisitonId, req)
-        .then(function(response) {
-          self.$router.go();
-        });
-    },
-    setStatusCompleted: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      const req = {
-        ...objDiff(this.orig.requisition, this.forms.requisition),
-        status: "COMPLETED"
-      };
-
-      this.$server
-        .patch("/requisitions/" + requisitonId, req)
-        .then(function(response) {
-          self.$router.go();
-        });
-    },
-    setStatusCompletedChanges: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      const req = {
-        ...objDiff(this.orig.requisition, this.forms.requisition),
-        status: "REVIEW_NEEDED"
-      };
+      if (status) {
+        req = { ...req, status: status };
+      }
 
       this.$server
         .patch("/requisitions/" + requisitonId, req)
@@ -435,17 +379,6 @@ module.exports = {
       const index = this.newPositions.indexOf(position);
 
       this.newPositions.splice(index, 1);
-    },
-    updateRequisition: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      this.$server
-        .patch(
-          "/requisitions/" + requisitonId,
-          objDiff(this.orig.requisition, this.forms.requisition)
-        )
-        .then(function(response) {});
     },
     updatePositions: async function() {
       const self = this;
