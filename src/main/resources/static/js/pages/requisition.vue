@@ -217,7 +217,7 @@ module.exports = {
     },
     positionOptions: function() {
       return this.availablePositions.map(function(pos) {
-        return { value: pos.id, text: pos.name };
+        return { value: pos, text: pos.name };
       });
     },
     holdersOptions: function() {
@@ -246,10 +246,10 @@ module.exports = {
       if (this.$route.params.id != "new") {
         await this.loadRequisition();
         this.loadPositions();
-
-        //this.loadAvailablePositions();
       }
-      this.loadHolders();
+
+      await this.loadHolders();
+      //await this.loadAvailablePositions();
     },
     loadRequisition: async function() {
       const self = this;
@@ -267,7 +267,7 @@ module.exports = {
           );
         });
     },
-    loadHolders: function() {
+    loadHolders: async function() {
       const self = this;
       const username = this.storage.user.login;
 
@@ -285,6 +285,7 @@ module.exports = {
             name: this.forms.requisition.holderName
           }
         ];
+        return Promise.resolve();
       }
     },
     loadPositions: async function() {
@@ -297,11 +298,10 @@ module.exports = {
           self.positions = response.data;
           self.newPositions = deepClone(self.positions);
         });
-      await this.loadAvailablePositions();
     },
     loadAvailablePositions: async function() {
       const self = this;
-      const holderId = this.forms.requisitions.holderUUID;
+      const holderId = this.forms.requisition.holderUUID;
 
       return this.$server
         .get("/holders/" + holderId + "/availablePositions/")
@@ -363,8 +363,8 @@ module.exports = {
       // TODO сделать копию positions, чтобы потом по разнице определять какие запросы нужно отправить
       const position = {
         amount: this.forms.position.amount,
-        name: this.forms.position.name,
-        id: this.forms.position.id
+        name: this.forms.position.id.name,
+        id: this.forms.position.id.id
       };
 
       this.newPositions.push(position);
@@ -381,7 +381,9 @@ module.exports = {
       this.loadPage();
     },
     "forms.requisition.holderUUID": function(to, from) {
-      this.loadHolders();
+      //this.loadHolders();
+      this.loadAvailablePositions();
+
       this.newPositions = [];
     }
   }
