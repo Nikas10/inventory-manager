@@ -155,7 +155,8 @@ module.exports = {
           id: "0000-0003",
           name: "Pos 3"
         }
-      ]
+      ],
+      availableHolders: [],
     };
   },
   computed: {
@@ -211,6 +212,9 @@ module.exports = {
       return this.availablePositions.map(function(pos) {
         return { value: pos.id, text: pos.name };
       });
+    },
+    holdersOptions: function() {
+
     }
   },
   methods: {
@@ -233,6 +237,7 @@ module.exports = {
       if (this.$route.params.id != "new") {
         this.loadRequisition();
         this.loadPositions();
+        this.loadHolders();
         //this.loadAvailablePositions();
       }
     },
@@ -251,6 +256,22 @@ module.exports = {
             response.data.creationDate
           );
         });
+    },
+    loadHolders: function() {
+      const self = this;
+      const username = this.storage.user.user;
+
+      if(this.$route.params.id != "new") {
+        this.availableHolders = [{
+          //id
+        }]
+        return;
+      }
+
+      this.get('/users/' + username + '/holders/').then(function(response) {
+        self.availableHolders = response.data
+
+      })
     },
     loadPositions: async function() {
       const self = this;
