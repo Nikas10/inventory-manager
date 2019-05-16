@@ -18,12 +18,12 @@ public interface RequirementValueService {
   RequirementValue add(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO);
+      @NotNull @Valid RequirementValueUpdateDTO requirementValueUpdateDTO);
 
   RequirementValue update(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO);
+      @NotNull @Valid RequirementValueUpdateDTO requirementValueUpdateDTO);
 
   Collection<RequirementValue> getRequirementsValues(@NotNull @Valid UUID positionID);
 

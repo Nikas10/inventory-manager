@@ -43,7 +43,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   public RequirementValue add(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO) {
+      @NotNull @Valid RequirementValueUpdateDTO requirementValueUpdateDTO) {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
@@ -80,7 +80,7 @@ public class RequirementValueServiceImpl implements RequirementValueService {
   public RequirementValue update(
       @NotNull @Valid UUID positionID,
       @NotNull @Valid UUID requirementID,
-      @NotNull @NotNull RequirementValueUpdateDTO requirementValueUpdateDTO) {
+      @NotNull @Valid RequirementValueUpdateDTO requirementValueUpdateDTO) {
     Optional<InventoryPosition> optionalPosition = positionRepo.findById(positionID);
     Optional<Requirement> optionalRequirement = requirementRepo.findById(requirementID);
 
