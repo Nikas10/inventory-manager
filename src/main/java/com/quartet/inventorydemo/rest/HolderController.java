@@ -8,6 +8,7 @@ import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
+import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
 import com.quartet.inventorydemo.service.InventoryItemService;
@@ -169,5 +170,12 @@ public class HolderController {
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public ResponseEntity<?> getAllHolders() {
     return new ResponseEntity<>(holderService.getAll(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/{id}/availablePositions/", method = RequestMethod.GET)
+  public ResponseEntity<?> getAvailablePositions(@PathVariable("id") String stringHolderId) {
+    UUID holderId = UUID.fromString(stringHolderId);
+    Set<InventoryPosition> availablePositions = holderService.getAvailablePositions(holderId);
+    return new ResponseEntity<>(availablePositions, HttpStatus.OK);
   }
 }

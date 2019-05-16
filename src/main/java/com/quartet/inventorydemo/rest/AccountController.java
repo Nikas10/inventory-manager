@@ -212,11 +212,4 @@ public class AccountController {
   public ResponseEntity<?> getAllAccounts() {
     return new ResponseEntity<>(accountService.getAll(), HttpStatus.OK);
   }
-
-  @RequestMapping(value = "/{id}/availablePositions/", method = RequestMethod.GET)
-  public ResponseEntity<?> getAvailablePositions(@PathVariable("id") String stringAccountId) {
-    UUID accountId = UUID.fromString(stringAccountId);
-    Set<InventoryPosition> availablePositions = accountService.getAvailablePositions(accountId);
-    return new ResponseEntity<>(availablePositions, HttpStatus.OK);
-  }
 }

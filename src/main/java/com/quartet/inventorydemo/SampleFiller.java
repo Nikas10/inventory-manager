@@ -136,6 +136,7 @@ public class SampleFiller implements InitializingBean {
     roleService.addInventoryPosition(role1.getId(), inventoryPosition1.getId());
     roleService.addInventoryPosition(role1.getId(), inventoryPosition2.getId());
     roleService.addInventoryPosition(role1.getId(), inventoryPosition3.getId());
+    roleService.addInventoryPosition(role2.getId(), inventoryPosition4.getId());
 
     inventoryItemService.addToStorage(inventoryPosition1.getId(), new AmountDTO(400));
     inventoryItemService.addToStorage(inventoryPosition2.getId(), new AmountDTO(400));
@@ -191,7 +192,7 @@ public class SampleFiller implements InitializingBean {
     RequisitionDTO dto2 = new RequisitionDTO(null,
         user2.getLogin(),
         null,
-        "REJECTED",
+        "REVIEW_NEEDED",
         creationDate,
         dueDate,
         "user2 req 1.",
@@ -204,18 +205,35 @@ public class SampleFiller implements InitializingBean {
 
     Requisition req1 =
         requisitionService.add(dto1);
-    Requisition req2 =
-        requisitionService.add(dto2);
+
 
     requisitionProcessService.create(req1);
-    requisitionProcessService.create(req2);
+
 
     Requisition_InventoryPosition reqInvPos1 = new Requisition_InventoryPosition(inventoryPosition1, req1, 7);
     Requisition_InventoryPosition reqInvPos2 = new Requisition_InventoryPosition(inventoryPosition2, req1, 11);
+    Requisition_InventoryPosition reqInvPos4 = new Requisition_InventoryPosition(inventoryPosition3, req1, 2);
+    Requisition_InventoryPosition reqInvPos7 = new Requisition_InventoryPosition(inventoryPosition4, req1, 4);
 
     req1.getRequisitionInventoryPositions().add(reqInvPos1);
     req1.getRequisitionInventoryPositions().add(reqInvPos2);
+    req1.getRequisitionInventoryPositions().add(reqInvPos4);
+    req1.getRequisitionInventoryPositions().add(reqInvPos7);
 
     requisitionService.update(req1);
+
+    Requisition req2 =
+        requisitionService.add(dto2);
+    requisitionProcessService.create(req2);
+
+    Requisition_InventoryPosition reqInvPos3 = new Requisition_InventoryPosition(inventoryPosition2, req2, 9);
+    Requisition_InventoryPosition reqInvPos5 = new Requisition_InventoryPosition(inventoryPosition3, req2, 11);
+    Requisition_InventoryPosition reqInvPos6 = new Requisition_InventoryPosition(inventoryPosition1, req2, 3);
+
+    req2.getRequisitionInventoryPositions().add(reqInvPos3);
+    req2.getRequisitionInventoryPositions().add(reqInvPos5);
+    req2.getRequisitionInventoryPositions().add(reqInvPos6);
+
+    requisitionService.update(req2);
   }
 }
