@@ -1,19 +1,33 @@
 <template>
   <c-default-page :storage="storage">
     <b-container>
-      <h1>Requisitions</h1>
-      <b-button to="/requisitions/new">Create New</b-button>
-
-      <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
-      <b-table small :items="requisitions" :fields="fields">
-        <template slot="holderName" slot-scope="data">
-          <b-link :to="'/holders/' + data.item.holderUUID">{{data.value}}</b-link>
-        </template>
-        <template slot="id" slot-scope="data">
-          <b-link :to="'/requisitions/' + data.item.id">{{data.value}}</b-link>
-        </template>
-        <template slot="creationDate" slot-scope="data">{{formatDate(data.value) }}</template>
-      </b-table>
+      <b-row>
+        <b-col>
+          <h1>Requisitions</h1>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="8">
+          <b-form-group>
+            <b-button variant="primary" block to="/requisitions/new">Create New</b-button>
+          </b-form-group>
+          <b-table small :items="requisitions" :fields="fields">
+            <template slot="holderName" slot-scope="data">
+              <b-link :to="'/holders/' + data.item.holderUUID">{{data.value}}</b-link>
+            </template>
+            <template slot="id" slot-scope="data">
+              <b-link :to="'/requisitions/' + data.item.id">{{data.value}}</b-link>
+            </template>
+            <template slot="creationDate" slot-scope="data">{{formatDate(data.value) }}</template>
+          </b-table>
+        </b-col>
+        <b-col>
+          <h4>Filtering</h4>
+          <b-form-group>
+            <b-form-select v-model="filter.scope" :options="filterOptions"></b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
     </b-container>
   </c-default-page>
 </template>
