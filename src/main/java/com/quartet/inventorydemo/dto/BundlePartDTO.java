@@ -1,15 +1,15 @@
 package com.quartet.inventorydemo.dto;
 
-public class BundlePartsDTO {
+public class BundlePartDTO {
 
   String positionName;
   String stringPositionId;
   String amount;
 
-  public BundlePartsDTO() {
+  public BundlePartDTO() {
   }
 
-  public BundlePartsDTO(String positionName, String stringPositionId, String amount) {
+  public BundlePartDTO(String positionName, String stringPositionId, String amount) {
     this.positionName = positionName;
     this.stringPositionId = stringPositionId;
     this.amount = amount;
