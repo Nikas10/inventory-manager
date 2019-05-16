@@ -55,7 +55,7 @@
           <b-form-input
             id="dueDate"
             :disabled="!changesAllowed"
-            v-model="forms.requisition.dueDate"
+            v-model="dueDate"
             type="date"
             required
           ></b-form-input>
@@ -65,7 +65,7 @@
           <b-form-input
             id="creationDate"
             :disabled="!changesAllowed"
-            v-model="forms.requisition.creationDate"
+            v-model="creationDate"
             type="date"
             required
           ></b-form-input>
@@ -149,10 +149,8 @@ module.exports = {
           description: "",
           login: "",
           status: "NEW",
-          creationDate: this.formatDate(Date.now()),
-          dueDate: this.formatDate(
-            new Date().setDate(new Date().getDate() + 14)
-          ),
+          creationDate: Date.now(),
+          dueDate: new Date().setDate(new Date().getDate() + 14),
           assigned: "",
           holderName: "",
           holderUUID: ""
@@ -176,7 +174,9 @@ module.exports = {
           sortable: true
         }
       },
-      requisition: {},
+      orig: {
+        requisition: {}
+      },
       positions: [],
       newPositions: [],
       availablePositions: [],
@@ -184,6 +184,22 @@ module.exports = {
     };
   },
   computed: {
+    dueDate: {
+      get: function() {
+        return formatDate(this.forms.requisition.dueDate);
+      },
+      set: function(value) {
+        this.forms.requisition.dueDate = unformatDate(value);
+      }
+    },
+    creationDate: {
+      get: function() {
+        return formatDate(this.forms.requisition.creationDate);
+      },
+      set: function(value) {
+        this.forms.requisition.creationDate = unformatDate(value);
+      }
+    },
     isStaff: function() {
       if (!this.storage.user) {
         return false;
@@ -243,21 +259,6 @@ module.exports = {
     }
   },
   methods: {
-    appendZeroes: function(n) {
-      if (n <= 9) {
-        return "0" + n;
-      }
-      return n;
-    },
-    formatDate(string) {
-      let date = new Date(string);
-
-      let year = date.getFullYear();
-      let month = this.appendZeroes(date.getMonth() + 1);
-      let day = this.appendZeroes(date.getDate());
-
-      return year + "-" + month + "-" + day;
-    },
     loadPage: async function() {
       if (this.$route.params.id == "new") {
         this.forms.requisition.login = this.storage.user.login;
@@ -276,7 +277,8 @@ module.exports = {
       return this.$server
         .get("/requisitions/" + requisitonId)
         .then(function(response) {
-          self.forms.requisition = response.data;
+          self.orig.requisition = response.data;
+          self.forms.requisition = deepClone(response.data);
           self.forms.requisition.dueDate = self.formatDate(
             response.data.dueDate
           );
@@ -397,7 +399,14 @@ module.exports = {
       this.newPositions.splice(index, 1);
     },
     updateRequisition: function() {
-      // TODO
+      const self = this;
+      const requisitonId = this.$route.params.id;
+
+      console.log(objDiff(this.orig.requisition, this.forms.requisition));
+      /*
+      this.$server
+        .patch("/requisitions/" + requisitonId)
+        .then(function(response) {});*/
     },
     updatePositions: async function() {
       const self = this;
