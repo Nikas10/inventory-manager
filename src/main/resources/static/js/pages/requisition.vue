@@ -197,11 +197,11 @@ module.exports = {
       return isNew || needsClarification || this.isStaff;
     },
     updateAllowed: function() {
-      const isNew = this.forms.requisition.status == "NEW";
-      const isCompleted = this.forms.requisition.status == "COMPLETED";
-      const isApproved = this.forms.requisition.status == "APPROVED";
+      const requiredClarification =
+        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
+      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
 
-      return (!isNew || !isCompleted || !isApproved) && this.isStaff;
+      return (requiredClarification || reviewNeeded) && this.isStaff;
     },
     approveAllowed: function() {
       const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
