@@ -28,7 +28,7 @@ public class RequirementController {
     this.requirementService = requirementService;
   }
 
-  @RequestMapping(value = "/new", method = RequestMethod.POST)
+  @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> createRequirement(@RequestBody Requirement requirement) {
     Requirement newRequirement = requirementService.add(requirement);
 

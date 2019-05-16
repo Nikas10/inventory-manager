@@ -47,7 +47,7 @@ public class Bundle_InventoryPositionServiceImpl implements Bundle_InventoryPosi
   public Integer getAmount(InventoryPosition bundle, InventoryPosition partOfInventoryPosition) {
     Optional<Bundle_InventoryPosition> optionalBundleContents =
         bundle_InventoryPositionRepo.findByInventoryPositionAndBundlePosition(
-            bundle, partOfInventoryPosition);
+            partOfInventoryPosition, bundle);
 
     Bundle_InventoryPosition bundleContents = optionalBundleContents.orElseThrow(
         () ->
