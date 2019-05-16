@@ -174,7 +174,6 @@ window.app = new Vue({
     let tokenString = localStorage.getItem("token");
     if (tokenString) {
       let token = JSON.parse(tokenString);
-      console.log(token);
       this.setToken(token.access_token);
 
       await this.loadUser();

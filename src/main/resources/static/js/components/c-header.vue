@@ -63,7 +63,6 @@ module.exports = {
       // TODO Добавить перенаправление на стартовую страницу
     },
     loadHeaderComponent: function() {
-      console.log(this.storage);
       // Clone
       if (this.storage && this.storage.user && this.storage.user.login) {
         this.userLogin = this.storage.user.login;

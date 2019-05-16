@@ -146,7 +146,6 @@ module.exports = {
     },
     removeHolder: function(holderId) {
       // TODO Отправить запрос на удаление связки, после этого обновить холдеров
-      console.log(holderId);
     }
   },
   mounted: function() {
