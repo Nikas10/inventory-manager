@@ -24,7 +24,14 @@
           <b-form-checkbox id="bundle" v-model="form.bundle"></b-form-checkbox>
         </b-form-group>
 
-        <b-button v-if="changesAllowed" v-on:click="saveInventoryPosition">Save Changes</b-button>
+        <b-button
+          v-if="changesAllowed && this.$route.params.id !== 'new' "
+          v-on:click="saveInventoryPosition"
+        >Save Changes</b-button>
+        <b-button
+          v-if="changesAllowed && this.$route.params.id === 'new' "
+          v-on:click="createInventoryPosition"
+        >Save Changes</b-button>
       </b-form>
 
       <b-container v-if="this.$route.params.id !== 'new' ">
@@ -40,7 +47,6 @@
           </b-table>
         </b-container>
       </b-container>
-
     </b-container>
   </c-default-page>
 </template>
@@ -102,9 +108,9 @@ module.exports = {
     loadPage: async function() {
       if (this.$route.params.id !== "new") {
         await this.loadInventoryPosition();
+        await this.loadRequirements();
+        await this.loadBundleParts();
       }
-      await this.loadRequirements();
-      await this.loadBundleParts();
     },
     loadInventoryPosition: async function() {
       const self = this;
@@ -129,13 +135,25 @@ module.exports = {
       const self = this;
       const positionId = this.$route.params.id;
       let body = objDiff(this.orig, this.form);
-      console.log(this.orig);
-      console.log(this.form);
 
       return this.$server
         .patch("/positions/" + positionId, body)
         .then(function(response) {
           self.loadInventoryPosition();
+        });
+    },
+    createInventoryPosition: async function() {
+      const self = this;
+      const positionId = this.$route.params.id;
+
+      return this.$server
+        .post("/positions/", {
+          name: self.form.name,
+          description: self.form.description,
+          bundle: self.form.bundle
+        })
+        .then(function(response) {
+          //TODO redirect
         });
     },
     loadRequirements: async function() {
