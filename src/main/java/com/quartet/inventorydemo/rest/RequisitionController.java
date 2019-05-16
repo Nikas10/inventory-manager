@@ -222,7 +222,7 @@ public class RequisitionController {
     String oldStatus = original.getStatus();
     String newStatus = requisitionDTO.getStatus();
 
-    if (!oldStatus.equalsIgnoreCase(newStatus)) {
+    if (newStatus != null && !oldStatus.equalsIgnoreCase(newStatus)) {
       switch (newStatus.toUpperCase()) {
         case "APPROVED":
           requisitionProcessService.approve(original);
