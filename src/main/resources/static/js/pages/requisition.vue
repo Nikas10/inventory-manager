@@ -253,9 +253,11 @@ module.exports = {
       return year + "-" + month + "-" + day;
     },
     loadPage: async function() {
-      if (this.$route.params.id != "new") {
-        await this.loadRequisition();
+      if (this.$route.params.id == "new") {
+        this.forms.requisition.login = this.storage.user.login;
+      } else {
         this.loadPositions();
+        await this.loadRequisition();
       }
 
       await this.loadHolders();
