@@ -279,12 +279,6 @@ module.exports = {
         .then(function(response) {
           self.orig.requisition = response.data;
           self.forms.requisition = deepClone(response.data);
-          self.forms.requisition.dueDate = self.formatDate(
-            response.data.dueDate
-          );
-          self.forms.requisition.creationDate = self.formatDate(
-            response.data.creationDate
-          );
         });
     },
     loadHolders: async function() {
