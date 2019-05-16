@@ -5,6 +5,7 @@ import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
+import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.repository.AccountRepository;
 import com.quartet.inventorydemo.service.AccountService;
 import com.quartet.inventorydemo.service.HolderService;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -155,6 +157,22 @@ public class AccountServiceImpl implements AccountService {
         -> new ResourceNotFoundException("Holder with id: " + holderId + " is not found"));
     accountWithHolders.getHolders().remove(holder);
     return accountRepository.saveAndFlush(accountWithHolders);
+  }
+
+  @Override
+  public Set<InventoryPosition> getAvailablePositions(@NotNull @Valid UUID accountId) {
+    Account selectedAccount = accountRepository.findById(accountId)
+        .orElseThrow(() -> new ResourceNotFoundException("Account with id: "
+            + accountId
+            + "not found.")
+        );
+
+    Set<InventoryPosition> availablePositions = selectedAccount.getHolders()
+        .parallelStream()
+        .flatMap(e -> e.getRoles().stream())
+        .flatMap(e -> e.getInventoryPositions().stream())
+        .collect(Collectors.toSet());
+    return availablePositions;
   }
 
   private boolean isExists(@NotNull @Valid Account account) {

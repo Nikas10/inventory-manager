@@ -2,6 +2,7 @@ package com.quartet.inventorydemo.service;
 
 import com.quartet.inventorydemo.dto.AccountDTO;
 import com.quartet.inventorydemo.model.Account;
+import com.quartet.inventorydemo.model.InventoryPosition;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -32,4 +33,6 @@ public interface AccountService {
   Account addHolder(@NotBlank @Valid String login, @NotNull @Valid UUID holderId);
 
   Account removeHolder(@NotBlank @Valid String login, @NotNull @Valid UUID holderId);
+
+  Set<InventoryPosition> getAvailablePositions(@NotNull @Valid UUID accountId);
 }
