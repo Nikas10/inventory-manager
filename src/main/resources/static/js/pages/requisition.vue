@@ -345,9 +345,16 @@ module.exports = {
       const self = this;
       const requisitonId = this.$route.params.id;
 
+      const req = {
+        ...this.forms.requisition,
+        status: "REJECTED"
+      };
+
       this.$server
-        .patch("/requisitions/" + requisitonId, { status: "REJECTED" })
-        .then(function(response) {});
+        .patch("/requisitions/" + requisitonId, req)
+        .then(function(response) {
+          self.$router.go();
+        });
     },
     setStatusCompleted: function() {
       const self = this;
@@ -372,7 +379,6 @@ module.exports = {
         ...this.forms.requisition,
         inventoryPositions: this.newPositions
       };
-      console.log(req);
 
       this.$server.post("/requisitions/", req).then(function(response) {
         self.$router.push("/requisitions/" + response.data.id);
