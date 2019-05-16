@@ -62,13 +62,7 @@
         </b-form-group>
 
         <b-form-group label="Creation Date:">
-          <b-form-input
-            id="creationDate"
-            :disabled="!changesAllowed"
-            v-model="creationDate"
-            type="date"
-            required
-          ></b-form-input>
+          <b-form-input id="creationDate" disabled v-model="creationDate" type="date" required></b-form-input>
         </b-form-group>
       </b-form>
 
@@ -396,11 +390,12 @@ module.exports = {
       const self = this;
       const requisitonId = this.$route.params.id;
 
-      console.log(objDiff(this.orig.requisition, this.forms.requisition));
-      /*
       this.$server
-        .patch("/requisitions/" + requisitonId)
-        .then(function(response) {});*/
+        .patch(
+          "/requisitions/" + requisitonId,
+          objDiff(this.orig.requisition, this.forms.requisition)
+        )
+        .then(function(response) {});
     },
     updatePositions: async function() {
       const self = this;
