@@ -2,6 +2,7 @@ package com.quartet.inventorydemo;
 
 
 import com.quartet.inventorydemo.dto.AmountDTO;
+import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
@@ -103,6 +104,18 @@ public class SampleFiller implements InitializingBean {
     InventoryPosition inventoryPosition5 =
         inventoryPositionService.add(
             "inventory position name 5", "inventory position description 5", false);
+
+    InventoryPosition inventoryPosition6 =
+        inventoryPositionService.add(
+            "inventory position name 6", "inventory position description 6", true);
+    InventoryPosition inventoryPosition7 =
+        inventoryPositionService.add(
+            "inventory position name 7", "inventory position description 7", true);
+
+    bundle_inventoryPositionService.add(inventoryPosition6.getId(), inventoryPosition1.getId(),
+        new Bundle_InventoryPositionDTO(1));
+    bundle_inventoryPositionService.add(inventoryPosition6.getId(), inventoryPosition2.getId(),
+        new Bundle_InventoryPositionDTO(2));
 
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));

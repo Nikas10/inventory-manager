@@ -23,16 +23,18 @@
         <b-button v-if="changesAllowed" v-on:click="saveInventoryPosition">Save Changes</b-button>
       </b-form>
 
-      <h2>Requirements</h2>
-      <b-table small :items="requirements" :fields="requirementsFields"></b-table>
+      <b-container v-if="this.$route.params.id !== 'new' ">
+        <h2>Requirements</h2>
+        <b-table small :items="requirements" :fields="requirementsFields"></b-table>
 
-      <!-- <h1>Bundle Parts</h1>
-      <b-table small :items="positions" :fields="fields">
-        <template slot="name" slot-scope="data">
-          <b-link :to="'/positions/' + data.item.id">{{data.value}}</b-link>
-        </template>
-      </b-table> -->
-
+        <h2>Bundle Parts</h2>
+        <b-table small :items="bundleParts" :fields="bundlePartsFields">
+          <template slot="name" slot-scope="data">
+            <b-link :to="'/positions/' + data.item.stringPositionId">{{data.value}}</b-link>
+          </template>
+        </b-table>
+      </b-container>
+    </b-container>
   </c-default-page>
 </template>
 
@@ -46,19 +48,31 @@ module.exports = {
     return {
       form: {
         name: "",
-        description: ""
+        description: "",
+        bunde: false
       },
       requirementsFields: {
-        requirement: {
+        name: {
           label: "Name",
           sortable: true
         },
-         value: {
+        value: {
           label: "Value",
           sortable: true
         }
       },
-      requirements: []
+      bundlePartsFields: {
+        positionName: {
+          label: "Name",
+          sortable: true
+        },
+        amount: {
+          label: "Ammount",
+          sortable: true
+        }
+      },
+      requirements: [],
+      bundleParts: []
     };
   },
   computed: {
@@ -74,12 +88,13 @@ module.exports = {
     loadPage: function() {
       this.loadInventoryPosition();
       this.loadRequirements();
+      this.loadBundleParts();
     },
     loadInventoryPosition() {
       const self = this;
       const positionId = this.$route.params.id;
 
-      this.$server
+      return this.$server
         .get("/positions/" + positionId)
         .then(function(response) {
           self.form = { ...self.form, ...response.data };
@@ -96,7 +111,7 @@ module.exports = {
     saveInventoryPosition: function() {
       const positionId = this.$route.params.id;
 
-      this.$server
+      return this.$server
         .patch("/positions/" + positionId, {
           name: this.form.name,
           description: this.form.description
@@ -107,8 +122,21 @@ module.exports = {
       const self = this;
       const positionId = this.$route.params.id;
 
-      this.$server
+      return this.$server
         .get("/positions/" + positionId + "/requirements/")
+        .then(function(response) {
+          self.requirements = response.data;
+        })
+        .catch(function(error) {
+          // TODO
+        });
+    },
+    loadBundleParts: function() {
+      const self = this;
+      const positionId = this.$route.params.id;
+
+      return this.$server
+        .get("/positions/" + positionId + "/bundleParts/")
         .then(function(response) {
           self.requirements = response.data;
         })
@@ -119,6 +147,6 @@ module.exports = {
   },
   mounted: function() {
     this.loadPage();
-  },
+  }
 };
 </script>
