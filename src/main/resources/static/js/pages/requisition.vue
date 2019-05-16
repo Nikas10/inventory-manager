@@ -24,6 +24,14 @@
           ></b-form-input>
         </b-form-group>
 
+        <b-form-group label="Holder:">
+          <b-form-select
+            :disabled="forms.requisition.status != 'NEW'"
+            v-model="forms.requisition.holderUUID"
+            :options="holdersOptions"
+          ></b-form-select>
+        </b-form-group>
+
         <b-form-group label="Assigned To:">
           <b-form-input
             id="assigned"
@@ -156,7 +164,7 @@ module.exports = {
           name: "Pos 3"
         }
       ],
-      availableHolders: [],
+      availableHolders: []
     };
   },
   computed: {
@@ -208,13 +216,14 @@ module.exports = {
       return isNew;
     },
     positionOptions: function() {
-      var a = [];
       return this.availablePositions.map(function(pos) {
         return { value: pos.id, text: pos.name };
       });
     },
     holdersOptions: function() {
-
+      return this.availableHolders.map(function(holder) {
+        return { value: holder.id, text: holder.name };
+      });
     }
   },
   methods: {
@@ -233,19 +242,20 @@ module.exports = {
 
       return year + "-" + month + "-" + day;
     },
-    loadPage: function() {
+    loadPage: async function() {
       if (this.$route.params.id != "new") {
-        this.loadRequisition();
+        await this.loadRequisition();
         this.loadPositions();
-        this.loadHolders();
+
         //this.loadAvailablePositions();
       }
+      this.loadHolders();
     },
-    loadRequisition: function() {
+    loadRequisition: async function() {
       const self = this;
       const requisitonId = this.$route.params.id;
 
-      this.$server
+      return this.$server
         .get("/requisitions/" + requisitonId)
         .then(function(response) {
           self.forms.requisition = response.data;
@@ -259,19 +269,23 @@ module.exports = {
     },
     loadHolders: function() {
       const self = this;
-      const username = this.storage.user.user;
+      const username = this.storage.user.login;
 
-      if(this.$route.params.id != "new") {
-        this.availableHolders = [{
-          //id
-        }]
-        return;
+      if (this.$route.params.id == "new") {
+        return this.$server
+          .get("/accounts/" + username + "/holders/")
+          .then(function(response) {
+            self.availableHolders = response.data;
+            self.forms.requisition.holderUUID = self.availableHolders[0].id;
+          });
+      } else {
+        this.availableHolders = [
+          {
+            id: this.forms.requisition.holderUUID,
+            name: this.forms.requisition.holderName
+          }
+        ];
       }
-
-      this.get('/users/' + username + '/holders/').then(function(response) {
-        self.availableHolders = response.data
-
-      })
     },
     loadPositions: async function() {
       const self = this;
