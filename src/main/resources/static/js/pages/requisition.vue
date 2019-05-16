@@ -89,6 +89,8 @@
         <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
 
         <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
+
+        <b-button @click="updatePositions">TEST</b-button>
       </b-form-group>
       <h2>Requested Positions</h2>
 
@@ -396,6 +398,65 @@ module.exports = {
     },
     updateRequisition: function() {
       // TODO
+    },
+    updatePositions: async function() {
+      const self = this;
+
+      const created = this.newPositions.filter(function(newPosition) {
+        return (
+          self.positions.findIndex(function(oldPosition) {
+            return oldPosition.id == newPosition.id;
+          }) == -1
+        );
+      });
+
+      const deleted = this.positions.filter(function(oldPosition) {
+        return (
+          self.newPositions.findIndex(function(newPosition) {
+            return oldPosition.id == newPosition.id;
+          }) == -1
+        );
+      });
+
+      const updated = this.newPositions.filter(function(newPosition) {
+        return (
+          self.positions.findIndex(function(oldPosition) {
+            return (
+              newPosition.id == oldPosition.id &&
+              newPosition.amount != oldPosition.amount
+            );
+          }) != -1
+        );
+      });
+
+      await Promise.all(updated.map(this.changePosition));
+      await Promise.all(created.map(this.createPosition));
+      await Promise.all(deleted.map(this.deletePosition));
+
+      this.positions = deepClone(this.newPositions);
+    },
+    deletePosition: async function(position) {
+      const requisitionId = this.$route.params.id;
+
+      return this.$server.delete(
+        "/requisitions/" + requisitionId + "/positions/" + position.id
+      );
+    },
+    createPosition: async function(position) {
+      const requisitionId = this.$route.params.id;
+
+      return this.$server.post(
+        "/requisitions/" + requisitionId + "/positions/",
+        position
+      );
+    },
+    changePosition: async function(position) {
+      const requisitionId = this.$route.params.id;
+
+      return this.$server.patch(
+        "/requisitions/" + requisitionId + "/positions/" + position.id,
+        position
+      );
     }
   },
   mounted: function() {
