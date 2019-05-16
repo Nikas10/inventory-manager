@@ -35,7 +35,7 @@
         <b-form-group label="Assigned To:">
           <b-form-input
             id="assigned"
-            disabled
+            :disabled="!changeOfAssignedAllowed"
             v-model="forms.requisition.assigned"
             required
             placeholder="Assigned"
@@ -201,45 +201,50 @@ module.exports = {
 
       return ["staff", "admin"].includes(this.storage.user.role);
     },
+    reviewNeeded: function() {
+      return this.forms.requisition.status == "REVIEW_NEEDED";
+    },
+    requiredClarification: function() {
+      return this.forms.requisition.status == "REQUIRED_CLARIFICATION";
+    },
+    approved: function() {
+      return this.forms.requisition.status == "APPROVED";
+    },
+    isNew: function() {
+      return this.forms.requisition.status == "NEW";
+    },
+    changeOfAssignedAllowed: function() {
+      return (
+        this.isStaff &&
+        (this.reviewNeeded || this.requiredClarification || this.approved)
+      );
+    },
+    needsClarification: function() {
+      return this.forms.requisition.status == "REQUIRED_CLARIFICATION";
+    },
     changesAllowed: function() {
       if (!this.storage.user) {
         return false;
       }
 
-      const isNew = this.forms.requisition.status == "NEW";
-      const needsClarification =
-        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
-
-      return isNew || needsClarification || this.isStaff;
+      return this.isNew || this.needsClarification || this.isStaff;
     },
     updateAllowed: function() {
-      const requiredClarification =
-        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return (requiredClarification || reviewNeeded) && this.isStaff;
+      return (this.requiredClarification || this.reviewNeeded) && this.isStaff;
     },
     approveAllowed: function() {
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return reviewNeeded && this.isStaff;
+      return this.reviewNeeded && this.isStaff;
     },
     rejectAllowed: function() {
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return reviewNeeded && this.isStaff;
+      return this.reviewNeeded && this.isStaff;
     },
     clarificationAllowed: function() {
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return reviewNeeded && this.isStaff;
+      return this.reviewNeeded && this.isStaff;
     },
     completeAllowed: function() {},
     completeChangeAllowed: function() {},
     createAllowed: function() {
-      const isNew = this.forms.requisition.status == "NEW";
-
-      return isNew;
+      return this.isNew;
     },
     positionOptions: function() {
       return this.availablePositions.map(function(pos) {
