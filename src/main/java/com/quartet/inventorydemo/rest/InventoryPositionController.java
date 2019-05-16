@@ -1,6 +1,6 @@
 package com.quartet.inventorydemo.rest;
 
-import com.quartet.inventorydemo.dto.BundlePartsDTO;
+import com.quartet.inventorydemo.dto.BundlePartDTO;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.RequirementValueDTO;
@@ -162,9 +162,9 @@ public class InventoryPositionController {
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService
+    BundlePartDTO bundlePartDTO = bundle_inventoryPositionService
         .add(bundleId, partId, bundle_inventoryPositionDTO);
-    return new ResponseEntity<>(bundlePartsDTO, HttpStatus.OK);
+    return new ResponseEntity<>(bundlePartDTO, HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -176,9 +176,9 @@ public class InventoryPositionController {
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
     UUID partId = UUID.fromString(stringRequirementID);
-    BundlePartsDTO bundlePartsDTO = bundle_inventoryPositionService
+    BundlePartDTO bundlePartDTO = bundle_inventoryPositionService
         .update(bundleId, partId, bundle_inventoryPositionDTO);
-    return new ResponseEntity<>(bundlePartsDTO, HttpStatus.OK);
+    return new ResponseEntity<>(bundlePartDTO, HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -221,15 +221,15 @@ public class InventoryPositionController {
     List<InventoryPosition> result = bundle_inventoryPositionService
         .getBundleFirstLevelContents(bundleId);
 
-    List<BundlePartsDTO> bundlePartsDTOs = new ArrayList();
+    List<BundlePartDTO> bundlePartDTOS = new ArrayList();
     InventoryPosition bundle = positionService.getByPositionID(bundleId).get();
 
     for (InventoryPosition current: result) {
       Integer amount = bundle_inventoryPositionService.getAmount(bundle, current);
-      bundlePartsDTOs.add(new BundlePartsDTO(current.getName(), current.getId().toString(), amount.toString()));
+      bundlePartDTOS.add(new BundlePartDTO(current.getName(), current.getId().toString(), amount.toString()));
     }
 
-    return new ResponseEntity<>(bundlePartsDTOs, HttpStatus.OK);
+    return new ResponseEntity<>(bundlePartDTOS, HttpStatus.OK);
   }
 
 }
