@@ -7,8 +7,10 @@ import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
+import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
+import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Role;
 import com.quartet.inventorydemo.repository.InventoryHolderRepository;
 import com.quartet.inventorydemo.service.HolderService;
@@ -18,6 +20,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -199,6 +202,21 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     getStorageHolder();
+  }
+
+  @Override
+  public Set<InventoryPosition> getAvailablePositions(@NotNull @Valid UUID holderId) {
+    Holder selectedHolder = inventoryHolderRepository.findById(holderId)
+        .orElseThrow(() -> new ResourceNotFoundException("Account with id: "
+            + holderId
+            + "not found.")
+        );
+
+    Set<InventoryPosition> availablePositions = selectedHolder.getRoles()
+        .parallelStream()
+        .flatMap(e -> e.getInventoryPositions().stream())
+        .collect(Collectors.toSet());
+    return availablePositions;
   }
 
   private void checkRolePresence(Set<Role> holderRoles, Collection<Role> rolesToAdd) {
