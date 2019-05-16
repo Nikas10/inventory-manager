@@ -247,7 +247,9 @@ module.exports = {
     completeAllowed: function() {
       return this.isStaff && this.approved;
     },
-    completeChangeAllowed: function() {},
+    completeChangeAllowed: function() {
+      return this.requiredClarification;
+    },
     createAllowed: function() {
       return this.isNew;
     },
@@ -347,11 +349,16 @@ module.exports = {
       const self = this;
       const requisitonId = this.$route.params.id;
 
+      const req = {
+        ...objDiff(this.orig.requisition, this.forms.requisition),
+        status: "REQUIRED_CLARIFICATION"
+      };
+
       this.$server
-        .patch("/requisitions/" + requisitonId, {
-          status: "REQUIRED_CLARIFICATION"
-        })
-        .then(function(response) {});
+        .patch("/requisitions/" + requisitonId, req)
+        .then(function(response) {
+          self.$router.go();
+        });
     },
     setStatusRejected: function() {
       const self = this;
@@ -387,9 +394,16 @@ module.exports = {
       const self = this;
       const requisitonId = this.$route.params.id;
 
+      const req = {
+        ...objDiff(this.orig.requisition, this.forms.requisition),
+        status: "REVIEW_NEEDED"
+      };
+
       this.$server
-        .patch("/requisitions/" + requisitonId, { status: "REVIEW_NEEDED" })
-        .then(function(response) {});
+        .patch("/requisitions/" + requisitonId, req)
+        .then(function(response) {
+          self.$router.go();
+        });
     },
     createRequisition: function() {
       const self = this;
