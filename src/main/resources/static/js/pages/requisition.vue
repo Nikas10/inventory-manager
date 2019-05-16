@@ -125,6 +125,10 @@
             min="1"
           ></b-form-input>
         </template>
+
+        <template slot="actions" slot-scope="data">
+          <b-button size="sm" @click="removePosition(data.item)">Remove</b-button>
+        </template>
       </b-table>
     </b-container>
   </c-default-page>
@@ -261,7 +265,7 @@ module.exports = {
       }
 
       await this.loadHolders();
-      //await this.loadAvailablePositions();
+      await this.loadAvailablePositions();
     },
     loadRequisition: async function() {
       const self = this;
@@ -373,13 +377,22 @@ module.exports = {
     },
     addNewPosition: function() {
       // TODO сделать копию positions, чтобы потом по разнице определять какие запросы нужно отправить
-      const position = {
+      const newPosition = {
         amount: this.forms.position.amount,
         name: this.forms.position.id.name,
         id: this.forms.position.id.id
       };
 
-      this.newPositions.push(position);
+      this.newPositions = this.newPositions.filter(function(pos) {
+        return pos.id != newPosition.id;
+      });
+
+      this.newPositions.push(newPosition);
+    },
+    removePosition: function(position) {
+      const index = this.newPositions.indexOf(position);
+
+      this.newPositions.splice(index, 1);
     },
     updateRequisition: function() {
       // TODO
@@ -394,9 +407,11 @@ module.exports = {
     },
     "forms.requisition.holderUUID": function(to, from) {
       //this.loadHolders();
-      this.loadAvailablePositions();
 
-      this.newPositions = [];
+      if (this.$route.params.id == "new") {
+        this.loadAvailablePositions();
+        this.newPositions = [];
+      }
     }
   }
 };
