@@ -49,7 +49,7 @@ public class RoleController {
   }
 
   // @PreAuthorize("hasAuthority('STAFF')")
-  @RequestMapping(value = "/new", method = RequestMethod.POST)
+  @RequestMapping(value = "/", method = RequestMethod.POST)
   public ResponseEntity<?> createRole(@RequestBody Role role) {
     Role newRole = roleService.add(role);
     return new ResponseEntity<>(newRole, HttpStatus.OK);
