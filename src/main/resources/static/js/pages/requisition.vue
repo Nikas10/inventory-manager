@@ -227,7 +227,10 @@ module.exports = {
         return false;
       }
 
-      return this.isNew || this.needsClarification || this.isStaff;
+      return (
+        this.isNew ||
+        ((this.reviewNeeded || this.needsClarification) && this.isStaff)
+      );
     },
     updateAllowed: function() {
       return (this.requiredClarification || this.reviewNeeded) && this.isStaff;
@@ -241,7 +244,9 @@ module.exports = {
     clarificationAllowed: function() {
       return this.reviewNeeded && this.isStaff;
     },
-    completeAllowed: function() {},
+    completeAllowed: function() {
+      return this.isStaff && this.approved;
+    },
     completeChangeAllowed: function() {},
     createAllowed: function() {
       return this.isNew;
@@ -327,9 +332,16 @@ module.exports = {
       const self = this;
       const requisitonId = this.$route.params.id;
 
+      const req = {
+        ...objDiff(this.orig.requisition, this.forms.requisition),
+        status: "APPROVED"
+      };
+
       this.$server
-        .patch("/requisitions/" + requisitonId, { status: "APPROVED" })
-        .then(function(response) {});
+        .patch("/requisitions/" + requisitonId, req)
+        .then(function(response) {
+          self.$router.go();
+        });
     },
     setStatusRequiredClarification: function() {
       const self = this;
@@ -346,7 +358,7 @@ module.exports = {
       const requisitonId = this.$route.params.id;
 
       const req = {
-        ...this.forms.requisition,
+        ...objDiff(this.orig.requisition, this.forms.requisition),
         status: "REJECTED"
       };
 
@@ -360,9 +372,16 @@ module.exports = {
       const self = this;
       const requisitonId = this.$route.params.id;
 
+      const req = {
+        ...objDiff(this.orig.requisition, this.forms.requisition),
+        status: "COMPLETED"
+      };
+
       this.$server
-        .patch("/requisitions/" + requisitonId, { status: "COMPLETED" })
-        .then(function(response) {});
+        .patch("/requisitions/" + requisitonId, req)
+        .then(function(response) {
+          self.$router.go();
+        });
     },
     setStatusCompletedChanges: function() {
       const self = this;
