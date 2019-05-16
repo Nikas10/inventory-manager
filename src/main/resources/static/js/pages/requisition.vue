@@ -300,16 +300,11 @@ module.exports = {
       await this.loadAvailablePositions();
     },
     loadAvailablePositions: async function() {
-      // TODO GET /api/accounts/{id}/availablePositions/
-      // TODO присвоить amount.id первый id из запроса
-
       const self = this;
-
-      // TODO Заменить на холдера
-      const holderId = this.storage.user.login;
+      const holderId = this.forms.requisitions.holderUUID;
 
       return this.$server
-        .get("/accounts/" + holderId + "/availablePositions/")
+        .get("/holders/" + holderId + "/availablePositions/")
         .then(function(response) {
           self.availablePositions = response.data;
           self.forms.position.id = self.availablePositions[0];
@@ -384,6 +379,10 @@ module.exports = {
   watch: {
     $route: function(to, from) {
       this.loadPage();
+    },
+    "forms.requisition.holderUUID": function(to, from) {
+      this.loadHolders();
+      this.newPositions = [];
     }
   }
 };
