@@ -1,13 +1,11 @@
 package com.quartet.inventorydemo.service.impl;
 
 import com.quartet.inventorydemo.dto.HolderDTO;
-import com.quartet.inventorydemo.dto.InventoryItemDTO;
 import com.quartet.inventorydemo.dto.InventoryItemDTOFromHolder;
 import com.quartet.inventorydemo.exception.DeletionNotSupportedException;
 import com.quartet.inventorydemo.exception.ResourceAlreadyExistsException;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
-import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
 import com.quartet.inventorydemo.model.InventoryItem;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -155,12 +153,13 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
 
     Set<InventoryItem> holderInventoryItems = holderWithItems.getInventoryItems();
     Collection<InventoryItemDTOFromHolder> holderItemsWithPositionName = new ArrayList<>();
-    for (InventoryItem current: holderInventoryItems) {
+    for (InventoryItem current : holderInventoryItems) {
       String positionName = current.getInventoryPosition().getName();
       UUID id = current.getInventoryPosition().getId();
       Integer amount = current.getAmount();
       String status = current.getStatus();
-      holderItemsWithPositionName.add(new InventoryItemDTOFromHolder(id, positionName, status, amount));
+      holderItemsWithPositionName
+          .add(new InventoryItemDTOFromHolder(id, positionName, status, amount));
     }
 
     return holderItemsWithPositionName;
@@ -174,14 +173,12 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
             () -> new ResourceNotFoundException("Holder with id: " + holderId + " not found"));
 
     if ((holderDTO.getName() != null) &&
-        !"".equals(holderDTO.getName()))
-    {
+        !"".equals(holderDTO.getName())) {
       holderToUpdate.setName(holderDTO.getName());
     }
 
     if ((holderDTO.getDescription() != null) &&
-        !"".equals(holderDTO.getDescription()))
-    {
+        !"".equals(holderDTO.getDescription())) {
       holderToUpdate.setDescription(holderDTO.getDescription());
     }
 
@@ -220,9 +217,10 @@ public class HolderServiceImpl implements HolderService, InitializingBean {
   }
 
   private void checkRolePresence(Set<Role> holderRoles, Collection<Role> rolesToAdd) {
-    for (Role currentRole: rolesToAdd) {
-      if(holderRoles.contains(currentRole)) {
-        throw new ResourceAlreadyExistsException("Role with id: " + currentRole.getId() + " already exists for selected holder.");
+    for (Role currentRole : rolesToAdd) {
+      if (holderRoles.contains(currentRole)) {
+        throw new ResourceAlreadyExistsException(
+            "Role with id: " + currentRole.getId() + " already exists for selected holder.");
       }
     }
   }

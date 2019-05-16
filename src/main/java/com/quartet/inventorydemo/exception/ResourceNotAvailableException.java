@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.exception;
 
 public class ResourceNotAvailableException extends RuntimeException {
+
   public ResourceNotAvailableException() {
     super();
   }

@@ -5,9 +5,9 @@ import static java.util.Objects.isNull;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
+import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.Account;
 import com.quartet.inventorydemo.model.Holder;
-import com.quartet.inventorydemo.exception.UpdateNotSupportedException;
 import com.quartet.inventorydemo.model.InventoryPosition;
 import com.quartet.inventorydemo.model.Requisition;
 import com.quartet.inventorydemo.model.Requisition_InventoryPosition;
@@ -70,24 +70,26 @@ public class RequisitionController {
     requisitionProcessService.create(newRequisition);
     RequisitionInventoryPositionDTO requisitionInventoryPositionDTO = new RequisitionInventoryPositionDTO();
     List<RequisitionInventoryPositionDTO> requisition_inventoryPositionDTOs = new ArrayList<>();
-    for (Requisition_InventoryPosition current: newRequisition.getRequisitionInventoryPositions()) {
+    for (Requisition_InventoryPosition current : newRequisition
+        .getRequisitionInventoryPositions()) {
       requisition_inventoryPositionDTOs.add(
           new RequisitionInventoryPositionDTO(current.getInventoryPosition().getId().toString(),
-                                              current.getAmount(),
-                                              current.getInventoryPosition().getName(),
-                                              current.getInventoryPosition().getDescription()));
+              current.getAmount(),
+              current.getInventoryPosition().getName(),
+              current.getInventoryPosition().getDescription()));
     }
-    requisitionInventoryPositionDTO.setAmount(requisitionDTO.getInventoryPositions().get(0).getAmount());
+    requisitionInventoryPositionDTO
+        .setAmount(requisitionDTO.getInventoryPositions().get(0).getAmount());
     RequisitionDTO resultRequisitionDTO = new RequisitionDTO(newRequisition.getId().toString(),
-                                                             newRequisition.getAccount().getLogin(),
-                                                             null,
-                                                             newRequisition.getStatus(),
-                                                             newRequisition.getCreationDate(),
-                                                             newRequisition.getDueDate(),
-                                                             newRequisition.getDescription(),
-                                                             newRequisition.getHolder().getName(),
-                                                             newRequisition.getHolder().getId().toString(),
-                                                             requisition_inventoryPositionDTOs);
+        newRequisition.getAccount().getLogin(),
+        null,
+        newRequisition.getStatus(),
+        newRequisition.getCreationDate(),
+        newRequisition.getDueDate(),
+        newRequisition.getDescription(),
+        newRequisition.getHolder().getName(),
+        newRequisition.getHolder().getId().toString(),
+        requisition_inventoryPositionDTOs);
     return new ResponseEntity<>(resultRequisitionDTO, HttpStatus.OK);
   }
 
@@ -156,10 +158,10 @@ public class RequisitionController {
         requisition.getRequisitionInventoryPositions()
             .parallelStream()
             .map(e -> new RequisitionInventoryPositionDTO(
-            e.getInventoryPosition().getId().toString(),
-            e.getAmount(),
-            e.getInventoryPosition().getName(),
-            e.getInventoryPosition().getDescription()
+                e.getInventoryPosition().getId().toString(),
+                e.getAmount(),
+                e.getInventoryPosition().getName(),
+                e.getInventoryPosition().getDescription()
             ))
             .collect(Collectors.toList());
     return new ResponseEntity<>(requestedItems, HttpStatus.OK);

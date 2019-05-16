@@ -1,6 +1,7 @@
 package com.quartet.inventorydemo.dto;
 
 public class RequirementValueUpdateDTO {
+
   private String requirementValue;
 
   public RequirementValueUpdateDTO(String requirementValue) {

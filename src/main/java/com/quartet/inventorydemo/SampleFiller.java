@@ -3,7 +3,6 @@ package com.quartet.inventorydemo;
 
 import com.quartet.inventorydemo.dto.AmountDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
-
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
 import com.quartet.inventorydemo.model.Account;
@@ -25,7 +24,6 @@ import com.quartet.inventorydemo.service.RequisitionService;
 import com.quartet.inventorydemo.service.Requisition_InventoryPositionService;
 import com.quartet.inventorydemo.service.RoleService;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
@@ -109,10 +107,12 @@ public class SampleFiller implements InitializingBean {
     Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
     Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
 
-
-    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(), new RequirementValueUpdateDTO("requirement value 1"));
-    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(), new RequirementValueUpdateDTO("requirement value 1 (2)"));
-    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(), new RequirementValueUpdateDTO( "requirement value 1"));
+    requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(),
+        new RequirementValueUpdateDTO("requirement value 1"));
+    requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(),
+        new RequirementValueUpdateDTO("requirement value 1 (2)"));
+    requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(),
+        new RequirementValueUpdateDTO("requirement value 1"));
 
     accountService.addHolder(user1.getLogin(), holder1.getId());
     accountService.addHolder(user1.getLogin(), holder2.getId());
@@ -144,11 +144,16 @@ public class SampleFiller implements InitializingBean {
     inventoryItemService.addToStorage(inventoryPosition4.getId(), new AmountDTO(400));
     inventoryItemService.addToStorage(inventoryPosition5.getId(), new AmountDTO(400));
 
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), new AmountDTO(1));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), new AmountDTO(2));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), new AmountDTO(3));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), new AmountDTO(4));
-    inventoryItemService.moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), new AmountDTO(5));
+    inventoryItemService
+        .moveFromStorageToHolder(inventoryPosition1.getId(), holder1.getId(), new AmountDTO(1));
+    inventoryItemService
+        .moveFromStorageToHolder(inventoryPosition2.getId(), holder2.getId(), new AmountDTO(2));
+    inventoryItemService
+        .moveFromStorageToHolder(inventoryPosition3.getId(), holder3.getId(), new AmountDTO(3));
+    inventoryItemService
+        .moveFromStorageToHolder(inventoryPosition4.getId(), holder4.getId(), new AmountDTO(4));
+    inventoryItemService
+        .moveFromStorageToHolder(inventoryPosition5.getId(), holder5.getId(), new AmountDTO(5));
 
     accountService.addHolder(admin.getLogin(), holder1.getId());
     accountService.addHolder(admin.getLogin(), holder2.getId());
@@ -186,7 +191,8 @@ public class SampleFiller implements InitializingBean {
         holder1.getId().toString(),
         stringPositionIds.
             parallelStream()
-            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(),
+                e.getDescription()))
             .collect(Collectors.toList()));
 
     RequisitionDTO dto2 = new RequisitionDTO(null,
@@ -200,20 +206,42 @@ public class SampleFiller implements InitializingBean {
         holder1.getId().toString(),
         stringPositionIds.
             parallelStream()
-            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(), e.getDescription()))
+            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(),
+                e.getDescription()))
+            .collect(Collectors.toList()));
+
+    RequisitionDTO dto3 = new RequisitionDTO(null,
+        user2.getLogin(),
+        null,
+        "REVIEW_NEEDED",
+        creationDate,
+        dueDate,
+        "user2 req 2.",
+        holder1.getName(),
+        holder1.getId().toString(),
+        stringPositionIds.
+            parallelStream()
+            .map(e -> new RequisitionInventoryPositionDTO(e.getId().toString(), 1, e.getName(),
+                e.getDescription()))
             .collect(Collectors.toList()));
 
     Requisition req1 =
         requisitionService.add(dto1);
-
+    Requisition req2 =
+        requisitionService.add(dto2);
+    Requisition req3 =
+        requisitionService.add(dto3);
 
     requisitionProcessService.create(req1);
 
-
-    Requisition_InventoryPosition reqInvPos1 = new Requisition_InventoryPosition(inventoryPosition1, req1, 7);
-    Requisition_InventoryPosition reqInvPos2 = new Requisition_InventoryPosition(inventoryPosition2, req1, 11);
-    Requisition_InventoryPosition reqInvPos4 = new Requisition_InventoryPosition(inventoryPosition3, req1, 2);
-    Requisition_InventoryPosition reqInvPos7 = new Requisition_InventoryPosition(inventoryPosition4, req1, 4);
+    Requisition_InventoryPosition reqInvPos1 = new Requisition_InventoryPosition(inventoryPosition1,
+        req1, 7);
+    Requisition_InventoryPosition reqInvPos2 = new Requisition_InventoryPosition(inventoryPosition2,
+        req1, 11);
+    Requisition_InventoryPosition reqInvPos4 = new Requisition_InventoryPosition(inventoryPosition3,
+        req1, 2);
+    Requisition_InventoryPosition reqInvPos7 = new Requisition_InventoryPosition(inventoryPosition4,
+        req1, 4);
 
     req1.getRequisitionInventoryPositions().add(reqInvPos1);
     req1.getRequisitionInventoryPositions().add(reqInvPos2);
@@ -222,18 +250,21 @@ public class SampleFiller implements InitializingBean {
 
     requisitionService.update(req1);
 
-    Requisition req2 =
-        requisitionService.add(dto2);
     requisitionProcessService.create(req2);
 
-    Requisition_InventoryPosition reqInvPos3 = new Requisition_InventoryPosition(inventoryPosition2, req2, 9);
-    Requisition_InventoryPosition reqInvPos5 = new Requisition_InventoryPosition(inventoryPosition3, req2, 11);
-    Requisition_InventoryPosition reqInvPos6 = new Requisition_InventoryPosition(inventoryPosition1, req2, 3);
+    Requisition_InventoryPosition reqInvPos3 = new Requisition_InventoryPosition(inventoryPosition2,
+        req2, 9);
+    Requisition_InventoryPosition reqInvPos5 = new Requisition_InventoryPosition(inventoryPosition3,
+        req2, 11);
+    Requisition_InventoryPosition reqInvPos6 = new Requisition_InventoryPosition(inventoryPosition1,
+        req2, 3);
 
     req2.getRequisitionInventoryPositions().add(reqInvPos3);
     req2.getRequisitionInventoryPositions().add(reqInvPos5);
     req2.getRequisitionInventoryPositions().add(reqInvPos6);
 
     requisitionService.update(req2);
+
+    requisitionProcessService.create(req3);
   }
 }

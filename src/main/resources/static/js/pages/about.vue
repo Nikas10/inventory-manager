@@ -10,6 +10,15 @@ module.exports = {
   props: ["storage"],
   data: function() {
     return {};
+  },
+  methods: {
+    loadReport: function() {
+      this.$server.get("report").then(function(response) {    
+      });
+    }
+  },
+  mounted: function() {
+    this.loadReport();
   }
-};
+}
 </script>

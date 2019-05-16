@@ -5,6 +5,14 @@ public class RoleDTO {
   private String name;
   private String description;
 
+  private RoleDTO() {
+  }
+
+  public RoleDTO(String name, String description) {
+    this.name = name;
+    this.description = description;
+  }
+
   public String getName() {
     return name;
   }
@@ -18,14 +26,6 @@ public class RoleDTO {
   }
 
   public void setDescription(String description) {
-    this.description = description;
-  }
-
-  private RoleDTO() {
-  }
-
-  public RoleDTO(String name, String description) {
-    this.name = name;
     this.description = description;
   }
 
