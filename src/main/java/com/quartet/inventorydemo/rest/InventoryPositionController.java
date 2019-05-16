@@ -3,6 +3,7 @@ package com.quartet.inventorydemo.rest;
 import com.quartet.inventorydemo.dto.BundlePartsDTO;
 import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.InventoryPositionDTO;
+import com.quartet.inventorydemo.dto.RequirementValueDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.exception.ResourceNotFoundException;
 import com.quartet.inventorydemo.model.InventoryPosition;
@@ -11,6 +12,8 @@ import com.quartet.inventorydemo.service.Bundle_InventoryPositionService;
 import com.quartet.inventorydemo.service.InventoryPositionService;
 import com.quartet.inventorydemo.service.RequirementService;
 import com.quartet.inventorydemo.service.RequirementValueService;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,8 +140,17 @@ public class InventoryPositionController {
   @RequestMapping(value = "/{positionId}/requirements/", method = RequestMethod.GET)
   public ResponseEntity<?> getRequirements(@PathVariable("positionId") String stringPositionID) {
     UUID positionID = UUID.fromString(stringPositionID);
-    return new ResponseEntity<>(
-        requirementValueService.getRequirementsValues(positionID), HttpStatus.OK);
+
+    Collection<RequirementValue> bufRequirementValue = requirementValueService.getRequirementsValues(positionID);
+    List<RequirementValueDTO> result = new ArrayList<>();
+
+    for (RequirementValue current: bufRequirementValue) {
+      result.add(new RequirementValueDTO(current.getValue(),
+                                         current.getInventoryPosition().getName(),
+                                         current.getRequirement().getId()));
+    }
+
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -208,7 +220,16 @@ public class InventoryPositionController {
     UUID bundleId = UUID.fromString(stringPositionID);
     List<InventoryPosition> result = bundle_inventoryPositionService
         .getBundleFirstLevelContents(bundleId);
-    return new ResponseEntity<>(result, HttpStatus.OK);
+
+    List<BundlePartsDTO> bundlePartsDTOs = new ArrayList();
+    InventoryPosition bundle = positionService.getByPositionID(bundleId).get();
+
+    for (InventoryPosition current: result) {
+      Integer amount = bundle_inventoryPositionService.getAmount(bundle, current);
+      bundlePartsDTOs.add(new BundlePartsDTO(current.getName(), current.getId().toString(), amount.toString()));
+    }
+
+    return new ResponseEntity<>(bundlePartsDTOs, HttpStatus.OK);
   }
 
 }
