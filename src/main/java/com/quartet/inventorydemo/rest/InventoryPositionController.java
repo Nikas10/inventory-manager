@@ -157,7 +157,7 @@ public class InventoryPositionController {
       value = "/{positionId}/bundleParts/{partId}",
       method = RequestMethod.POST)
   public ResponseEntity<?> addBundleParts(
-      @PathVariable("bundleId") String stringPositionID,
+      @PathVariable("positionId") String stringPositionID,
       @PathVariable("partId") String stringRequirementID,
       @RequestBody Bundle_InventoryPositionDTO bundle_inventoryPositionDTO) {
     UUID bundleId = UUID.fromString(stringPositionID);
