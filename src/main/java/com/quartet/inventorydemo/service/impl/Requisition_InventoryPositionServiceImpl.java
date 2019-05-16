@@ -87,13 +87,13 @@ public class Requisition_InventoryPositionServiceImpl implements
   }
 
   @Override
-  public Collection<Requisition_InventoryPosition> addAll(@NotBlank @Valid Collection<Requisition_InventoryPosition> positionLinks) {
+  public Collection<Requisition_InventoryPosition> addAll(@NotNull @Valid Collection<Requisition_InventoryPosition> positionLinks) {
     return requisition_inventoryPositionRepo.saveAll(positionLinks);
   }
 
   @Override
-  public Collection<Requisition_InventoryPosition> addAllByInventory(@NotBlank @Valid Requisition requisitionToAdd,
-      @NotBlank @Valid Collection<RequisitionInventoryPositionDTO> positionsToPatch) {
+  public Collection<Requisition_InventoryPosition> addAllByInventory(@NotNull @Valid Requisition requisitionToAdd,
+      @NotNull @Valid Collection<RequisitionInventoryPositionDTO> positionsToPatch) {
     if (!isNull(positionsToPatch)) {
       Map<InventoryPosition, Integer> positions = positionsToPatch
           .parallelStream()
