@@ -65,16 +65,16 @@ public class SampleFiller implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     Account admin =
         accountService.add(
-            new Account("Dmitriy", "Andreevych", "Antsevych", "admin", passwordEncoder.encode("a"), "admin", "a@a"));
+            new Account("aa", "aa", "aa", "aa", passwordEncoder.encode("a"), "admin", "aa@aa"));
     Account staff =
         accountService.add(
-            new Account("Dmitriy", "Sergeevych", "Myakishev", "staff", passwordEncoder.encode("s"), "staff", "s@s"));
+            new Account("John", "Runner", "Saw", "staff", passwordEncoder.encode("a"), "staff", "s@s"));
     Account user1 =
         accountService.add(
-            new Account("Kirill", "Sergeevych", "Danilyuk", "user1", passwordEncoder.encode("u1"), "user", "u1@u1"));
+            new Account("Smith", "Sleeps", "Wine", "user1", passwordEncoder.encode("a"), "user", "u1@u1"));
     Account user2 =
         accountService.add(
-            new Account("Nikita", "Dmitrievych", "Abramenko", "user2", passwordEncoder.encode("u2"), "user", "u2@u2"));
+            new Account("Jack", "Hopper", "Joseph", "user2", passwordEncoder.encode("a"), "user", "u2@u2"));
 
     Holder holder1 = holderService.add("uses equipment for programming", "programmer");
     Holder holder2 = holderService.add("uses computer parts", "computer parts holder");
