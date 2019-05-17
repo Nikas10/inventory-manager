@@ -96,6 +96,12 @@ public class Requisition extends History {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Set<Requisition_InventoryPosition> requisitionInventoryPositions;
 
+
+  @ApiModelProperty(position = 7, required = true, notes = "Creation date")
+  @NotNull(message = "Title must be not null")
+  @Column(name = "title", nullable = false)
+  private String title;
+
   private Requisition() {
   }
 
@@ -107,12 +113,14 @@ public class Requisition extends History {
       @PastOrPresent(message = "Provide correct date. It can not be future then now")
           Date creationDate,
       @NotNull(message = "Due date can not be null") Date dueDate,
+      @NotNull(message = "Title must not be null") String title,
       @NotNull(message = "Description can not be null") String description) {
     this.account = account;
     this.assignedtoAccount = assignedtoAccount;
     this.status = status;
     this.creationDate = creationDate;
     this.dueDate = dueDate;
+    this.title = title;
     this.description = description;
   }
 
@@ -123,6 +131,7 @@ public class Requisition extends History {
       @PastOrPresent(message = "Provide correct date. It can not be future then now")
           Date creationDate,
       @NotNull(message = "Due date can not be null") Date dueDate,
+      @NotNull(message = "Title must not be null") String title,
       @NotNull(message = "Description can not be null") String description,
       @NotNull(message = "Holder can not be null") Holder holder) {
     this.account = account;
@@ -130,6 +139,7 @@ public class Requisition extends History {
     this.status = status;
     this.creationDate = creationDate;
     this.dueDate = dueDate;
+    this.title = title;
     this.description = description;
     this.holder = holder;
   }
@@ -227,5 +237,13 @@ public class Requisition extends History {
 
   public void setDescription(@NotNull(message = "Description can not be null") String description) {
     this.description = description;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 }
