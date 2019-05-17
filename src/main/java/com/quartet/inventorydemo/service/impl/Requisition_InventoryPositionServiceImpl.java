@@ -105,7 +105,7 @@ public class Requisition_InventoryPositionServiceImpl implements
           requisitionToAdd
               .getAccount()
               .getHolders()
-              .parallelStream()
+              .stream()
               .flatMap(e -> e.getRoles().stream())
               .flatMap(e -> e.getInventoryPositions().stream())
               .collect(Collectors.toSet());

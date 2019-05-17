@@ -193,7 +193,7 @@ public class SampleFiller implements InitializingBean {
     Date creationDate = new Date();
     Date dueDate = new Date(creationDate.getTime() + 1000000000);
 
-    RequisitionDTO dto1 = new RequisitionDTO(null,
+    RequisitionDTO dto1 = new RequisitionDTO(null, "sample title 1",
         user1.getLogin(),
         null,
         "REVIEW_NEEDED",
@@ -208,7 +208,7 @@ public class SampleFiller implements InitializingBean {
                 e.getDescription()))
             .collect(Collectors.toList()));
 
-    RequisitionDTO dto2 = new RequisitionDTO(null,
+    RequisitionDTO dto2 = new RequisitionDTO(null,"sample title 2",
         user2.getLogin(),
         null,
         "REVIEW_NEEDED",
@@ -223,7 +223,7 @@ public class SampleFiller implements InitializingBean {
                 e.getDescription()))
             .collect(Collectors.toList()));
 
-    RequisitionDTO dto3 = new RequisitionDTO(null,
+    RequisitionDTO dto3 = new RequisitionDTO(null, "sample title 3",
         user2.getLogin(),
         null,
         "REVIEW_NEEDED",
