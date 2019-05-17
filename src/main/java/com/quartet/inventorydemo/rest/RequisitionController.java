@@ -245,11 +245,16 @@ public class RequisitionController {
       }
     }
     String assignedLogin = requisitionDTO.getAssignedTo();
-    if (StringUtils.isNotBlank(assignedLogin)) {
-      Account assignedTo = accountService.getByLogin(assignedLogin)
-          .orElseThrow(() -> new ResourceNotFoundException(
-              "User with name " + assignedLogin + "is not found."));
-      original.setAssignedtoAccount(assignedTo);
+    if (assignedLogin != null) {
+      if (!assignedLogin.equals("")){
+        Account assignedTo = accountService.getByLogin(assignedLogin)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "User with name " + assignedLogin + "is not found."));
+        original.setAssignedtoAccount(assignedTo);
+      } else {
+        original.setAssignedtoAccount(null);
+      }
+
     }
     String title = requisitionDTO.getTitle();
     if (StringUtils.isNotBlank(title)) {
