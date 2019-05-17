@@ -81,6 +81,7 @@ public class RequisitionController {
     requisitionInventoryPositionDTO
         .setAmount(requisitionDTO.getInventoryPositions().get(0).getAmount());
     RequisitionDTO resultRequisitionDTO = new RequisitionDTO(newRequisition.getId().toString(),
+        newRequisition.getTitle(),
         newRequisition.getAccount().getLogin(),
         null,
         newRequisition.getStatus(),
@@ -98,6 +99,7 @@ public class RequisitionController {
     List<RequisitionDTO> result = requisitionService.getAll().parallelStream()
         .map(e -> new RequisitionDTO(
             e.getId().toString(),
+            e.getTitle(),
             e.getAccount().getLogin(),
             isNull(e.getAssignedtoAccount())
                 ? StringUtils.EMPTY : e.getAssignedtoAccount().getLogin(),
@@ -128,6 +130,7 @@ public class RequisitionController {
     Requisition requisition = requisitionService.getById(requestId);
     RequisitionDTO result = new RequisitionDTO(
         requisition.getId().toString(),
+        requisition.getTitle(),
         requisition.getAccount().getLogin(),
         isNull(requisition.getAssignedtoAccount())
             ? StringUtils.EMPTY : requisition.getAssignedtoAccount().getLogin(),
@@ -247,6 +250,10 @@ public class RequisitionController {
           .orElseThrow(() -> new ResourceNotFoundException(
               "User with name " + assignedLogin + "is not found."));
       original.setAssignedtoAccount(assignedTo);
+    }
+    String title = requisitionDTO.getTitle();
+    if (StringUtils.isNotBlank(title)) {
+      original.setTitle(title);
     }
     String description = requisitionDTO.getDescription();
     if (StringUtils.isNotBlank(description)) {
