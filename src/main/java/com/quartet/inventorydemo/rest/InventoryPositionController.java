@@ -146,7 +146,7 @@ public class InventoryPositionController {
 
     for (RequirementValue current: bufRequirementValue) {
       result.add(new RequirementValueDTO(current.getValue(),
-                                         current.getInventoryPosition().getName(),
+                                         current.getRequirement().getName(),
                                          current.getRequirement().getId()));
     }
 
