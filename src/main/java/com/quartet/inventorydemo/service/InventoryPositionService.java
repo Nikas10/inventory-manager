@@ -21,7 +21,7 @@ public interface InventoryPositionService {
   Collection<InventoryPosition> getByPositionIDs(@NotNull @Valid Set<UUID> positionIDs);
 
   InventoryPosition add(@NotBlank @Valid String name, @NotNull @Valid String description,
-      boolean isBundle);
+      @NotNull @Valid Boolean isBundle);
 
   InventoryPosition update(@NotNull @Valid UUID id,
       @NotNull @Valid InventoryPositionDTO positionDTO);

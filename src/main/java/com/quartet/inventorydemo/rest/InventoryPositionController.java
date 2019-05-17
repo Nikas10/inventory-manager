@@ -231,5 +231,4 @@ public class InventoryPositionController {
 
     return new ResponseEntity<>(bundlePartDTOS, HttpStatus.OK);
   }
-
 }

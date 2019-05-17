@@ -67,7 +67,7 @@ public class InventoryPositionServiceImpl implements InventoryPositionService {
 
   @Override
   public InventoryPosition add(@NotBlank @Valid String name, @NotNull @Valid String description,
-      boolean isBundle) {
+      @NotNull @Valid Boolean isBundle) {
 
     Optional<InventoryPosition> optionalPosition = getByName(name);
 
