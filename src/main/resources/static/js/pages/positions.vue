@@ -2,6 +2,9 @@
   <c-default-page :storage="storage">
     <b-container>
       <h1>Positions</h1>
+      <b-form-group>
+        <b-button variant="primary" block to="/positions/new">Create New</b-button>
+      </b-form-group>
       <b-table small :items="positions" :fields="fields">
         <template slot="name" slot-scope="data">
           <b-link :to="'/positions/' + data.item.id">{{data.value}}</b-link>

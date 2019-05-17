@@ -21,11 +21,13 @@
 
   <script src="js/libs/vue-router.min.js"></script>
   <script src="js/libs/http-vue-loader.js"></script>
+
+  <script src="js/helpers.js"></script>
 </head>
 
 <body>
 <div id="app">
-  <router-view :storage="storage"></router-view>
+  <router-view v-if="ready" :storage="storage"></router-view>
 </div>
 
 <script src="js/router.js"></script>
@@ -46,6 +48,7 @@ window.app = new Vue({
   el: "#app",
   data: function() {
     return {
+      ready: false,
       storage: {
         user: null,
         pages: [
@@ -69,36 +72,42 @@ window.app = new Vue({
           },
           {
             id: 3,
+            title: "Report",
+            access: "User",
+            link: "/Report/"
+          },
+          {
+            id: 4,
             title: "Requirements",
             access: "Staff",
             link: "/requirements/"
           },
           {
-            id: 4,
+            id: 5,
             title: "Requisitions",
             access: "User",
             link: "/requisitions/"
           },
           {
-            id: 5,
+            id: 6,
             title: "Roles",
             access: "User",
             link: "/roles/"
           },
           {
-            id: 6,
+            id: 7,
             title: "Signin",
             access: "User",
             link: "/signin"
           },
           {
-            id: 7,
+            id: 8,
             title: "Signup",
             access: "User",
             link: "/Signup"
           },
           {
-            id: 8,
+            id: 9,
             title: "Users",
             access: "Staff",
             link: "/users/"
@@ -114,25 +123,23 @@ window.app = new Vue({
     unsetToken() {
       delete axios.defaults.headers.common["Authorization"];
     },
-    loadUser() {
+    async loadUser() {
       var self = this;
-      var promiseLoadUser = this.$server
-        .get("/accounts/me")
-        .then(function(response) {
-          self.storage.user = {
-            login: response.data.login,
-            email: response.data.email,
-            firstName: response.data.firstName,
-            middleName: response.data.middleName,
-            lastName: response.data.lastName,
-            role: response.data.role
-          };
-          // TODO Добавить перенаправление на другую страницу
-        });
-      return promiseLoadUser;
+      return this.$server.get("/accounts/me").then(function(response) {
+        self.storage.user = {
+          login: response.data.login,
+          email: response.data.email,
+          firstName: response.data.firstName,
+          middleName: response.data.middleName,
+          lastName: response.data.lastName,
+          role: response.data.role
+        };
+      });
     },
-    auth(login, password) {
-      var self = this;
+    auth(login, password, callback) {
+      const self = this;
+      const call = callback;
+
       return axios
         .post(
           baseURL +
@@ -152,7 +159,7 @@ window.app = new Vue({
           //setCookie("auth", token.access_token, token.expires_in);
 
           self.setToken(token.access_token);
-
+          call();
           self.loadUser();
         });
     },
@@ -163,14 +170,16 @@ window.app = new Vue({
       //eraseCookie("auth");
     }
   },
-  mounted() {
+  async mounted() {
     let tokenString = localStorage.getItem("token");
     if (tokenString) {
       let token = JSON.parse(tokenString);
-      console.log(token);
       this.setToken(token.access_token);
-      this.loadUser();
+
+      await this.loadUser();
     }
+
+    this.ready = true;
   }
 });
 </script>

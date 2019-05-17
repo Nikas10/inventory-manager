@@ -2,6 +2,7 @@ package com.quartet.inventorydemo;
 
 
 import com.quartet.inventorydemo.dto.AmountDTO;
+import com.quartet.inventorydemo.dto.Bundle_InventoryPositionDTO;
 import com.quartet.inventorydemo.dto.RequirementValueUpdateDTO;
 import com.quartet.inventorydemo.dto.RequisitionDTO;
 import com.quartet.inventorydemo.dto.RequisitionInventoryPositionDTO;
@@ -75,6 +76,7 @@ public class SampleFiller implements InitializingBean {
     Account user2 =
         accountService.add(
             new Account("Jack", "Hopper", "Joseph", "user2", passwordEncoder.encode("a"), "user", "u2@u2"));
+
 
     Holder holder1 = holderService.add("uses equipment for programming", "programmer");
     Holder holder2 = holderService.add("uses computer parts", "computer parts holder");
