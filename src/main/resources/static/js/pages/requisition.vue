@@ -94,8 +94,6 @@
         <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
 
         <b-button v-if="updateAllowed" @click="updateRequisition()">Update</b-button>
-
-        <b-button @click="updatePositions">TEST</b-button>
       </b-form-group>
       <h2>Requested Positions</h2>
 
@@ -367,7 +365,7 @@ module.exports = {
           self.forms.position.id = self.availablePositions[0];
         });
     },
-    updateRequisition: function(status) {
+    updateRequisition: async function(status) {
       const self = this;
       const requisitonId = this.$route.params.id;
 
@@ -376,6 +374,8 @@ module.exports = {
       if (status) {
         req = { ...req, status: status };
       }
+
+      await this.updatePositions();
 
       this.$server
         .patch("/requisitions/" + requisitonId, req)
@@ -444,11 +444,15 @@ module.exports = {
         );
       });
 
-      await Promise.all(updated.map(this.changePosition));
-      await Promise.all(created.map(this.createPosition));
-      await Promise.all(deleted.map(this.deletePosition));
-
       this.positions = deepClone(this.newPositions);
+
+      const tasks = [
+        ...updated.map(this.changePosition),
+        ...created.map(this.createPosition),
+        ...deleted.map(this.deletePosition)
+      ];
+
+      return Promise.all(tasks);
     },
     deletePosition: async function(position) {
       const requisitionId = this.$route.params.id;
