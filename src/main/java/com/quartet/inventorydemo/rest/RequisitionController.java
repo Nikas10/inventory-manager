@@ -108,7 +108,7 @@ public class RequisitionController {
             e.getHolder().getName(),
             e.getHolder().getId().toString(),
             e.getRequisitionInventoryPositions()
-                .parallelStream()
+                .stream()
                 .map(x -> new RequisitionInventoryPositionDTO(
                     x.getInventoryPosition().getId().toString(),
                     x.getAmount(),
@@ -230,7 +230,7 @@ public class RequisitionController {
         case "REJECTED":
           requisitionProcessService.reject(original);
           break;
-        case "REQUIRE_CLARIFICATION":
+        case "REQUIRED_CLARIFICATION":
           requisitionProcessService.requestClarification(original, "");
           break;
         case "REVIEW_NEEDED":
