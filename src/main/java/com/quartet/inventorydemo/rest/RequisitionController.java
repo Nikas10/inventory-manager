@@ -81,6 +81,7 @@ public class RequisitionController {
     requisitionInventoryPositionDTO
         .setAmount(requisitionDTO.getInventoryPositions().get(0).getAmount());
     RequisitionDTO resultRequisitionDTO = new RequisitionDTO(newRequisition.getId().toString(),
+        newRequisition.getTitle(),
         newRequisition.getAccount().getLogin(),
         null,
         newRequisition.getStatus(),
@@ -98,6 +99,7 @@ public class RequisitionController {
     List<RequisitionDTO> result = requisitionService.getAll().parallelStream()
         .map(e -> new RequisitionDTO(
             e.getId().toString(),
+            e.getTitle(),
             e.getAccount().getLogin(),
             isNull(e.getAssignedtoAccount())
                 ? StringUtils.EMPTY : e.getAssignedtoAccount().getLogin(),
@@ -128,6 +130,7 @@ public class RequisitionController {
     Requisition requisition = requisitionService.getById(requestId);
     RequisitionDTO result = new RequisitionDTO(
         requisition.getId().toString(),
+        requisition.getTitle(),
         requisition.getAccount().getLogin(),
         isNull(requisition.getAssignedtoAccount())
             ? StringUtils.EMPTY : requisition.getAssignedtoAccount().getLogin(),
@@ -253,6 +256,10 @@ public class RequisitionController {
       }
 
     }
+    String title = requisitionDTO.getTitle();
+    if (StringUtils.isNotBlank(title)) {
+      original.setTitle(title);
+    }
     String description = requisitionDTO.getDescription();
     if (StringUtils.isNotBlank(description)) {
       original.setDescription(description);
@@ -263,6 +270,7 @@ public class RequisitionController {
     }
     String holder = requisitionDTO.getHolderUUID();
     if (StringUtils.isNotBlank(holder)) {
+      UUID.fromString(holder);
       Holder toSet = original.getAccount()
           .getHolders()
           .stream()
@@ -272,7 +280,6 @@ public class RequisitionController {
               "Holder with id " + holder + "is not found."));
       original.setHolder(toSet);
     }
-
     requisitionService.update(original);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 

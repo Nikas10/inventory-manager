@@ -6,6 +6,7 @@ import java.util.List;
 public class RequisitionDTO {
 
   private String id;
+  private String title;
   private String login;
   private String assignedTo;
   private String status;
@@ -17,10 +18,11 @@ public class RequisitionDTO {
   private List<RequisitionInventoryPositionDTO> inventoryPositions;
 
 
-  public RequisitionDTO(String id, String login, String assignedTo, String status,
+  public RequisitionDTO(String id, String title, String login, String assignedTo, String status,
       Date creationDate, Date dueDate, String description, String holderName, String holderUUID,
       List<RequisitionInventoryPositionDTO> inventoryPositionNames) {
     this.id = id;
+    this.title = title;
     this.assignedTo = assignedTo;
     this.login = login;
     this.status = status;
@@ -33,6 +35,14 @@ public class RequisitionDTO {
   }
 
   private RequisitionDTO() {
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getId() {

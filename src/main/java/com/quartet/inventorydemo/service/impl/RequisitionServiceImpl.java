@@ -84,11 +84,12 @@ public class RequisitionServiceImpl implements RequisitionService {
         requisitionDTO.getStatus(),
         requisitionDTO.getCreationDate(),
         requisitionDTO.getDueDate(),
+        requisitionDTO.getTitle(),
         requisitionDTO.getDescription(),
         accountHolder));
     List<RequisitionInventoryPositionDTO> positionsToPatch = requisitionDTO.getInventoryPositions();
     requisitionToAdd.setRequisitionInventoryPositions(
-        new HashSet<>()); //nullpointer exception without this line
+        new HashSet<>());
     requisitionToAdd.getRequisitionInventoryPositions()
         .addAll(requisition_InventoryPositionService
             .addAllByInventory(requisitionToAdd, positionsToPatch));
