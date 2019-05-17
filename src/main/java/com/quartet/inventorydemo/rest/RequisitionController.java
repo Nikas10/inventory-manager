@@ -264,16 +264,15 @@ public class RequisitionController {
       original.setDueDate(dueDate);
     }
     String holder = requisitionDTO.getHolderUUID();
-    if (StringUtils.isNotBlank(holder)) {
-      Holder toSet = original.getAccount()
-          .getHolders()
-          .stream()
-          .filter(entry -> entry.getId().equals(UUID.fromString(holder)))
-          .findFirst()
-          .orElseThrow(() -> new ResourceNotFoundException(
-              "Holder with id " + holder + "is not found."));
-      original.setHolder(toSet);
-    }
+    UUID.fromString(holder);
+    Holder toSet = original.getAccount()
+        .getHolders()
+        .stream()
+        .filter(entry -> entry.getId().equals(UUID.fromString(holder)))
+        .findFirst()
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Holder with id " + holder + "is not found."));
+    original.setHolder(toSet);
 
     requisitionService.update(original);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
