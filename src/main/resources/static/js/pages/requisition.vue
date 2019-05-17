@@ -4,6 +4,16 @@
       <h1>Requisition</h1>
 
       <b-form>
+        <b-form-group label="Title:">
+          <b-form-input
+            id="description"
+            :disabled="!changesAllowed"
+            v-model="forms.requisition.title"
+            required
+            placeholder="Title"
+          ></b-form-input>
+        </b-form-group>
+
         <b-form-group label="Description:">
           <b-form-textarea
             id="description"
@@ -26,20 +36,18 @@
 
         <b-form-group label="Holder:">
           <b-form-select
-            :disabled="forms.requisition.status != 'NEW'"
+            :disabled="!isNew"
             v-model="forms.requisition.holderUUID"
             :options="holdersOptions"
           ></b-form-select>
         </b-form-group>
 
         <b-form-group label="Assigned To:">
-          <b-form-input
-            id="assigned"
+          <b-form-select
             :disabled="!changeOfAssignedAllowed"
-            v-model="forms.requisition.assigned"
-            required
-            placeholder="Assigned"
-          ></b-form-input>
+            v-model="forms.requisition.assignedTo"
+            :options="assignedToOptions"
+          ></b-form-select>
         </b-form-group>
 
         <b-form-group label="Status:">
@@ -143,6 +151,7 @@ module.exports = {
     return {
       forms: {
         requisition: {
+          title: "",
           description: "",
           login: "",
           status: "NEW",
@@ -174,6 +183,7 @@ module.exports = {
       orig: {
         requisition: {}
       },
+      staff: [],
       positions: [],
       newPositions: [],
       availablePositions: [],
@@ -265,6 +275,15 @@ module.exports = {
       return this.availableHolders.map(function(holder) {
         return { value: holder.id, text: holder.name };
       });
+    },
+    assignedToOptions: function() {
+      const options = this.staff.map(function(staff) {
+        return { value: staff.login, text: staff.login };
+      });
+
+      const defaultOption = { value: "", text: "None" };
+
+      return [defaultOption, ...options];
     }
   },
   methods: {
@@ -274,6 +293,10 @@ module.exports = {
       } else {
         this.loadPositions();
         await this.loadRequisition();
+      }
+
+      if (this.isStaff) {
+        this.loadStaff();
       }
 
       await this.loadHolders();
@@ -310,6 +333,17 @@ module.exports = {
         ];
         return Promise.resolve();
       }
+    },
+    loadStaff: async function() {
+      const self = this;
+
+      return this.$server.get("/accounts/").then(function(response) {
+        //self.positions = response.data;
+        //self.newPositions = deepClone(self.positions);
+        self.staff = response.data.filter(function(user) {
+          return ["staff", "admin"].includes(user.role);
+        });
+      });
     },
     loadPositions: async function() {
       const self = this;
