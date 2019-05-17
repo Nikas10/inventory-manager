@@ -69,7 +69,7 @@ public class Requisition_InventoryPositionServiceImpl implements
       validation.get().setAmount(amount);
       requisition_inventoryPositionRepo.saveAndFlush(validation.get());
     } else {
-      throw new UpdateNotSupportedException("Trying to add an already existing link!");
+      throw new UpdateNotSupportedException("Selected bundle does not contain selected position.");
     }
   }
 
@@ -78,11 +78,7 @@ public class Requisition_InventoryPositionServiceImpl implements
     requisition_inventoryPositionRepo
         .delete(requisition_inventoryPositionRepo
             .findByInventoryPosition_IdAndRequisition_Id(positionId, requisitionId)
-            .orElseThrow(() -> new ResourceNotFoundException("Position with id: "
-                + positionId
-                + " for requisition with id: "
-                + requisitionId
-                + " not found.")
+            .orElseThrow(() -> new ResourceNotFoundException("Selected bundle does not contain selected position.")
             )
         );
   }
