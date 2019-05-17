@@ -1,21 +1,20 @@
 <template>
   <c-default-page :storage="storage">
     <b-container>
-
       <b-form v-if="changesAllowed">
         <h1>Create new requirement</h1>
         <b-row>
           <b-col>
             <b-form-input
-            id="name"
-            :disabled="!changesAllowed"
-            v-model="form.name"
-            required
-            placeholder="Inventory position name"
-          ></b-form-input>
+              id="name"
+              :disabled="!changesAllowed"
+              v-model="form.name"
+              required
+              placeholder="Inventory position name"
+            ></b-form-input>
           </b-col>
           <b-col>
-            <b-button variant="primary" block v-on:click="saveRequirement">Create New</b-button>
+            <b-button variant="primary" block v-on:click="createRequirement">Create New</b-button>
           </b-col>
         </b-row>
       </b-form>
@@ -56,11 +55,23 @@ module.exports = {
     }
   },
   methods: {
-    loadRequirements: function() {
+    loadRequirements: async function() {
       const self = this;
-      this.$server.get("/requirements/").then(function(response) {
+
+      return this.$server.get("/requirements/").then(function(response) {
         self.requirements = response.data;
       });
+    },
+    createRequirement: async function() {
+      const self = this;
+
+      return this.$server
+        .post("/requirements/", {
+          name: this.form.name
+        })
+        .then(function(response) {
+          self.loadRequirements();
+        });
     }
   },
   mounted: function() {
