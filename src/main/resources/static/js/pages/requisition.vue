@@ -4,6 +4,16 @@
       <h1>Requisition</h1>
 
       <b-form>
+        <b-form-group label="Title:">
+          <b-form-input
+            id="description"
+            :disabled="!changesAllowed"
+            v-model="forms.requisition.title"
+            required
+            placeholder="Title"
+          ></b-form-input>
+        </b-form-group>
+
         <b-form-group label="Description:">
           <b-form-textarea
             id="description"
@@ -141,6 +151,7 @@ module.exports = {
     return {
       forms: {
         requisition: {
+          title: "",
           description: "",
           login: "",
           status: "NEW",

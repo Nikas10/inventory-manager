@@ -15,7 +15,7 @@
             <template slot="holderName" slot-scope="data">
               <b-link :to="'/holders/' + data.item.holderUUID">{{data.value}}</b-link>
             </template>
-            <template slot="id" slot-scope="data">
+            <template slot="title" slot-scope="data">
               <b-link :to="'/requisitions/' + data.item.id">{{data.value}}</b-link>
             </template>
             <template slot="creationDate" slot-scope="data">{{formatDate(data.value) }}</template>
@@ -41,16 +41,16 @@ module.exports = {
   data: function() {
     return {
       fields: {
-        id: {
-          label: "Id",
-          sortable: true
-        },
-        holderName: {
-          label: "Holder",
+        title: {
+          label: "Title",
           sortable: true
         },
         description: {
           label: "Description",
+          sortable: true
+        },
+        holderName: {
+          label: "Holder",
           sortable: true
         },
         status: {
