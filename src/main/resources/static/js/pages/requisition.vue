@@ -35,7 +35,7 @@
         <b-form-group label="Assigned To:">
           <b-form-input
             id="assigned"
-            disabled
+            :disabled="!changeOfAssignedAllowed"
             v-model="forms.requisition.assigned"
             required
             placeholder="Assigned"
@@ -62,33 +62,30 @@
         </b-form-group>
 
         <b-form-group label="Creation Date:">
-          <b-form-input
-            id="creationDate"
-            :disabled="!changesAllowed"
-            v-model="creationDate"
-            type="date"
-            required
-          ></b-form-input>
+          <b-form-input id="creationDate" disabled v-model="creationDate" type="date" required></b-form-input>
         </b-form-group>
       </b-form>
 
       <b-form-group>
-        <b-button v-if="approveAllowed" @click="setStatusApproved">Approve</b-button>
+        <b-button v-if="approveAllowed" @click="updateRequisition('APPROVED')">Approve</b-button>
 
         <b-button
           v-if="clarificationAllowed"
-          @click="setStatusRequiredClarification"
+          @click="updateRequisition('REQUIRED_CLARIFICATION')"
         >Require Clarification</b-button>
 
-        <b-button v-if="rejectAllowed" @click="setStatusRejected">Reject</b-button>
+        <b-button v-if="rejectAllowed" @click="updateRequisition('REJECTED')">Reject</b-button>
 
-        <b-button v-if="completeAllowed" @click="setStatusCompleted">Complete</b-button>
+        <b-button v-if="completeAllowed" @click="updateRequisition('COMPLETED')">Complete</b-button>
 
-        <b-button v-if="completeChangeAllowed" @click="setStatusCompletedChanges">Complete Changes</b-button>
+        <b-button
+          v-if="completeChangeAllowed"
+          @click="updateRequisition('REVIEW_NEEDED')"
+        >Complete Changes</b-button>
 
         <b-button v-if="createAllowed" @click="createRequisition">Create</b-button>
 
-        <b-button v-if="updateAllowed" @click="updateRequisition">Update</b-button>
+        <b-button v-if="updateAllowed" @click="updateRequisition()">Update</b-button>
 
         <b-button @click="updatePositions">TEST</b-button>
       </b-form-group>
@@ -207,45 +204,57 @@ module.exports = {
 
       return ["staff", "admin"].includes(this.storage.user.role);
     },
+    reviewNeeded: function() {
+      return this.forms.requisition.status == "REVIEW_NEEDED";
+    },
+    requiredClarification: function() {
+      return this.forms.requisition.status == "REQUIRED_CLARIFICATION";
+    },
+    approved: function() {
+      return this.forms.requisition.status == "APPROVED";
+    },
+    isNew: function() {
+      return this.forms.requisition.status == "NEW";
+    },
+    changeOfAssignedAllowed: function() {
+      return (
+        this.isStaff &&
+        (this.reviewNeeded || this.requiredClarification || this.approved)
+      );
+    },
+    needsClarification: function() {
+      return this.forms.requisition.status == "REQUIRED_CLARIFICATION";
+    },
     changesAllowed: function() {
       if (!this.storage.user) {
         return false;
       }
 
-      const isNew = this.forms.requisition.status == "NEW";
-      const needsClarification =
-        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
-
-      return isNew || needsClarification || this.isStaff;
+      return (
+        this.isNew ||
+        ((this.reviewNeeded || this.needsClarification) && this.isStaff)
+      );
     },
     updateAllowed: function() {
-      const requiredClarification =
-        this.forms.requisition.status == "REQUIRED_CLARIFICATION";
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return (requiredClarification || reviewNeeded) && this.isStaff;
+      return (this.requiredClarification || this.reviewNeeded) && this.isStaff;
     },
     approveAllowed: function() {
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return reviewNeeded && this.isStaff;
+      return this.reviewNeeded && this.isStaff;
     },
     rejectAllowed: function() {
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return reviewNeeded && this.isStaff;
+      return this.reviewNeeded && this.isStaff;
     },
     clarificationAllowed: function() {
-      const reviewNeeded = this.forms.requisition.status == "REVIEW_NEEDED";
-
-      return reviewNeeded && this.isStaff;
+      return this.reviewNeeded && this.isStaff;
     },
-    completeAllowed: function() {},
-    completeChangeAllowed: function() {},
+    completeAllowed: function() {
+      return this.isStaff && this.approved;
+    },
+    completeChangeAllowed: function() {
+      return this.requiredClarification;
+    },
     createAllowed: function() {
-      const isNew = this.forms.requisition.status == "NEW";
-
-      return isNew;
+      return this.isNew;
     },
     positionOptions: function() {
       return this.availablePositions.map(function(pos) {
@@ -279,12 +288,6 @@ module.exports = {
         .then(function(response) {
           self.orig.requisition = response.data;
           self.forms.requisition = deepClone(response.data);
-          self.forms.requisition.dueDate = self.formatDate(
-            response.data.dueDate
-          );
-          self.forms.requisition.creationDate = self.formatDate(
-            response.data.creationDate
-          );
         });
     },
     loadHolders: async function() {
@@ -330,54 +333,33 @@ module.exports = {
           self.forms.position.id = self.availablePositions[0];
         });
     },
-    setStatusApproved: function() {
+    updateRequisition: function(status) {
       const self = this;
       const requisitonId = this.$route.params.id;
 
-      this.$server
-        .patch("/requisitions/" + requisitonId, { status: "APPROVED" })
-        .then(function(response) {});
-    },
-    setStatusRequiredClarification: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
+      let req = { ...objDiff(this.orig.requisition, this.forms.requisition) };
+
+      if (status) {
+        req = { ...req, status: status };
+      }
 
       this.$server
-        .patch("/requisitions/" + requisitonId, {
-          status: "REQUIRED_CLARIFICATION"
-        })
-        .then(function(response) {});
-    },
-    setStatusRejected: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      this.$server
-        .patch("/requisitions/" + requisitonId, { status: "REJECTED" })
-        .then(function(response) {});
-    },
-    setStatusCompleted: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      this.$server
-        .patch("/requisitions/" + requisitonId, { status: "COMPLETED" })
-        .then(function(response) {});
-    },
-    setStatusCompletedChanges: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      this.$server
-        .patch("/requisitions/" + requisitonId, { status: "REVIEW_NEEDED" })
-        .then(function(response) {});
+        .patch("/requisitions/" + requisitonId, req)
+        .then(function(response) {
+          self.$router.go();
+        });
     },
     createRequisition: function() {
       const self = this;
 
-      this.$server
-        .post("/requisitions/", this.forms.requisition)
-        .then(function(response) {});
+      const req = {
+        ...this.forms.requisition,
+        inventoryPositions: this.newPositions
+      };
+
+      this.$server.post("/requisitions/", req).then(function(response) {
+        self.$router.push("/requisitions/" + response.data.id);
+      });
     },
     addNewPosition: function() {
       // TODO сделать копию positions, чтобы потом по разнице определять какие запросы нужно отправить
@@ -397,16 +379,6 @@ module.exports = {
       const index = this.newPositions.indexOf(position);
 
       this.newPositions.splice(index, 1);
-    },
-    updateRequisition: function() {
-      const self = this;
-      const requisitonId = this.$route.params.id;
-
-      console.log(objDiff(this.orig.requisition, this.forms.requisition));
-      /*
-      this.$server
-        .patch("/requisitions/" + requisitonId)
-        .then(function(response) {});*/
     },
     updatePositions: async function() {
       const self = this;
