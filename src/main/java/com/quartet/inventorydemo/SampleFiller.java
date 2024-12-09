@@ -66,66 +66,55 @@ public class SampleFiller implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     Account admin =
         accountService.add(
-            new Account("a", "a", "a", "a", passwordEncoder.encode("a"), "admin", "a@a"));
+            new Account("aa", "aa", "aa", "aa", passwordEncoder.encode("a"), "admin", "aa@aa"));
     Account staff =
         accountService.add(
-            new Account("s", "s", "s", "s", passwordEncoder.encode("s"), "staff", "s@s"));
+            new Account("John", "Runner", "Saw", "staff", passwordEncoder.encode("a"), "staff", "s@s"));
     Account user1 =
         accountService.add(
-            new Account("u1", "u1", "u1", "u1", passwordEncoder.encode("u1"), "user", "u1@u1"));
+            new Account("Smith", "Sleeps", "Wine", "user1", passwordEncoder.encode("a"), "user", "u1@u1"));
     Account user2 =
         accountService.add(
-            new Account("u2", "u2", "u2", "u2", passwordEncoder.encode("u2"), "user", "u2@u2"));
+            new Account("Jack", "Hopper", "Joseph", "user2", passwordEncoder.encode("a"), "user", "u2@u2"));
 
-    Holder holder1 = holderService.add("holder description 1", "holder name 1");
-    Holder holder2 = holderService.add("holder description 2", "holder name 2");
-    Holder holder3 = holderService.add("holder description 3", "holder name 3");
-    Holder holder4 = holderService.add("holder description 4", "holder name 4");
-    Holder holder5 = holderService.add("holder description 5", "holder name 5");
 
-    Role role1 = roleService.add(new Role("role name 1", "role description 1"));
-    Role role2 = roleService.add(new Role("role name 2", "role description 2"));
-    Role role3 = roleService.add(new Role("role name 3", "role description 3"));
-    Role role4 = roleService.add(new Role("role name 4", "role description 4"));
-    Role role5 = roleService.add(new Role("role name 5", "role description 5"));
+    Holder holder1 = holderService.add("uses equipment for programming", "programmer");
+    Holder holder2 = holderService.add("uses computer parts", "computer parts holder");
+    Holder holder3 = holderService.add("holds nothing", "empty1");
+    Holder holder4 = holderService.add("holds nothing", "empty2");
+    Holder holder5 = holderService.add("holds nothing", "empty3");
+
+    Role role1 = roleService.add(new Role("Holds any kind of tables.", "table holder"));
+    Role role2 = roleService.add(new Role("Holds any kind of computers.", "computer holder"));
+    Role role3 = roleService.add(new Role("Holds any kind of computer mouses.", "mouse holder"));
+    Role role4 = roleService.add(new Role("Holds any kind of spoons.", "spoon holder"));
+    Role role5 = roleService.add(new Role("Holds nothing.", "empty holder"));
 
     InventoryPosition inventoryPosition1 =
         inventoryPositionService.add(
-            "inventory position name 1", "inventory position description 1", false);
+            "table", "wooden table", false);
     InventoryPosition inventoryPosition2 =
         inventoryPositionService.add(
-            "inventory position name 2", "inventory position description 2", false);
+            "computer", "computer for work", false);
     InventoryPosition inventoryPosition3 =
         inventoryPositionService.add(
-            "inventory position name 3", "inventory position description 3", false);
+            "chair", "common chair for sitting", false);
     InventoryPosition inventoryPosition4 =
         inventoryPositionService.add(
-            "inventory position name 4", "inventory position description 4", false);
+            "gold spoon", "gold spoon for showing richness", false);
     InventoryPosition inventoryPosition5 =
         inventoryPositionService.add(
-            "inventory position name 5", "inventory position description 5", false);
+            "iron spoon", "iron spoon which has multifunctionality", false);
 
-    InventoryPosition inventoryPosition6 =
-        inventoryPositionService.add(
-            "inventory position name 6", "inventory position description 6", true);
-    InventoryPosition inventoryPosition7 =
-        inventoryPositionService.add(
-            "inventory position name 7", "inventory position description 7", true);
-
-    bundle_inventoryPositionService.add(inventoryPosition6.getId(), inventoryPosition1.getId(),
-        new Bundle_InventoryPositionDTO(1));
-    bundle_inventoryPositionService.add(inventoryPosition6.getId(), inventoryPosition2.getId(),
-        new Bundle_InventoryPositionDTO(2));
-
-    Requirement requirement1 = requirementService.add(new Requirement("requirement name 1"));
-    Requirement requirement2 = requirementService.add(new Requirement("requirement name 2"));
+    Requirement requirement1 = requirementService.add(new Requirement("height"));
+    Requirement requirement2 = requirementService.add(new Requirement("width"));
 
     requirementValueService.add(inventoryPosition1.getId(), requirement1.getId(),
-        new RequirementValueUpdateDTO("requirement value 1"));
+        new RequirementValueUpdateDTO("3"));
     requirementValueService.add(inventoryPosition2.getId(), requirement1.getId(),
-        new RequirementValueUpdateDTO("requirement value 1 (2)"));
+        new RequirementValueUpdateDTO("1"));
     requirementValueService.add(inventoryPosition2.getId(), requirement2.getId(),
-        new RequirementValueUpdateDTO("requirement value 1"));
+        new RequirementValueUpdateDTO("2"));
 
     accountService.addHolder(user1.getLogin(), holder1.getId());
     accountService.addHolder(user1.getLogin(), holder2.getId());
